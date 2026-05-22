@@ -2,6 +2,11 @@
 
 @import "tailwindcss";
 
+:root {
+    color-scheme: light;
+    accent-color: #9333ea;
+}
+
 /* Tailwind Theme Configuration */
 @theme {
     /* Custom Colors */
@@ -30,6 +35,11 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+:where(a:any-link, button, input, select, textarea):focus-visible {
+    outline: 3px solid rgba(147, 51, 234, 0.45);
+    outline-offset: 2px;
 }
 
 /* Apply Space Grotesk to headings */
@@ -240,8 +250,8 @@ input[type="number"] {
 }
 
 .phone-input-container.phone-input-error:focus-within {
-    ring-color: rgba(239, 68, 68, 0.3);
     border-color: #f87171;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
 /* Mobile Safe Area */
@@ -253,4 +263,15 @@ input[type="number"] {
 .touch-target {
     min-width: 48px;
     min-height: 48px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
 }

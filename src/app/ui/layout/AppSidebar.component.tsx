@@ -1,8 +1,9 @@
-import type { SidebarNavigationItem } from '../../types/navigation.types'
-import SidebarBrand from '../atoms/SidebarBrand.component'
-import SidebarFooter from '../atoms/SidebarFooter.component'
-import SidebarNavItem from '../atoms/SidebarNavItem.component'
-import Skeleton from '../atoms/Skeleton.component'
+import type { SidebarNavigationItem } from '../../router/sidebarNavigation.types'
+import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
+import Skeleton from '@src/shared/ui/atoms/Skeleton.component'
+import SidebarBrand from '../sidebar/SidebarBrand.component'
+import SidebarFooter from '../sidebar/SidebarFooter.component'
+import SidebarNavItem from '../sidebar/SidebarNavItem.component'
 
 interface AppSidebarProps {
   items: readonly SidebarNavigationItem[]
@@ -13,8 +14,8 @@ interface AppSidebarProps {
 
 function AppSidebar({ items, loading = false, loadingItemCount = items.length, onLogoutClick }: Readonly<AppSidebarProps>) {
   return (
-    <div className="py-2 h-full">
-      <aside className="w-20 hidden md:flex flex-col rounded-[2rem] glass-panel border-r-0 shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-50 h-full">
+    <div className="h-full">
+      <BaseContainer as="aside" className="w-20 hidden md:flex flex-col border-r-0 z-50 h-full" padding="none">
         <SidebarBrand />
 
         <nav className="flex-1 px-3 py-6 space-y-3 z-10" aria-label="Navegación principal">
@@ -24,7 +25,7 @@ function AppSidebar({ items, loading = false, loadingItemCount = items.length, o
         </nav>
 
         <SidebarFooter onLogoutClick={onLogoutClick} />
-      </aside>
+      </BaseContainer>
     </div>
   )
 }

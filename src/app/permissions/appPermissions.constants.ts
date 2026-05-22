@@ -1,0 +1,17 @@
+export const APP_PERMISSIONS = {
+  DASHBOARD_READ: 'Permite acceder al dashboard y visualizar métricas generales de la operación.',
+  CALENDAR_READ: 'Permite acceder a la agenda y consultar turnos, disponibilidad y bloqueos.',
+  PATIENTS_LIST_READ: 'Permite acceder al listado de pacientes y consultar información resumida.',
+  DOCTORS_LIST_READ: 'Permite acceder a la gestión y consulta de profesionales del centro.',
+  TREATMENTS_LIST_READ: 'Permite acceder a la gestión y consulta de tratamientos y servicios clínicos.',
+  STOCK_READ: 'Permite acceder al inventario, catálogo y movimientos de stock.',
+  SETTINGS_READ: 'Permite acceder a la configuración del centro y perfil operativo.',
+} as const
+
+export type AppPermission = keyof typeof APP_PERMISSIONS
+
+export const APP_PERMISSION_CODES = Object.fromEntries(
+  Object.keys(APP_PERMISSIONS).map((permission) => [permission, permission]),
+) as { readonly [Permission in AppPermission]: Permission }
+
+export const APP_PERMISSION_KEYS = Object.keys(APP_PERMISSIONS) as AppPermission[]
