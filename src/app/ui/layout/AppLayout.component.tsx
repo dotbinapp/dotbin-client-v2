@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@src/app/router/sidebarNavigation.constants'
+import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@src/app/ui/sidebar/sidebarNavigation.constants'
 import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
 import AppSidebar from './AppSidebar.component'
 

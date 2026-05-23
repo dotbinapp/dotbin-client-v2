@@ -1,4 +1,4 @@
-import type { SidebarNavigationItem } from '../../router/sidebarNavigation.types'
+import type { SidebarNavigationItem } from '../sidebar/sidebarNavigation.types'
 import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
 import Skeleton from '@src/shared/ui/atoms/Skeleton.component'
 import SidebarBrand from '../sidebar/SidebarBrand.component'
