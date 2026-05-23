@@ -1,1 +1,0 @@
-export * from './appPermissions.constants'

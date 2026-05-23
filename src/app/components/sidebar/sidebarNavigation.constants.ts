@@ -1,5 +1,5 @@
 import { CalendarDays, LayoutDashboard, Package, Settings, Stethoscope, Users, VenusAndMars } from 'lucide-react'
-import { APP_PERMISSION_CODES } from '@src/app/permissions'
+import { APP_PERMISSION_CODES } from '@src/domains/identity-access'
 import type { AppSidebarNavigationItem } from './sidebarNavigation.types'
 
 export const APP_SIDEBAR_NAVIGATION_ITEMS = [

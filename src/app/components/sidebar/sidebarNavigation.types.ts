@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import type { AppPermission } from '../../permissions/appPermissions.constants'
+import type { AppPermission } from '@src/domains/identity-access'
 
 export interface SidebarNavigationItem {
   path: string
