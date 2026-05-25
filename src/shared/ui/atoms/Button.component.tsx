@@ -28,9 +28,9 @@ const BUTTON_VARIANT_CLASS: Record<ButtonVariant, string> = {
 }
 
 const BUTTON_SIZE_CLASS: Record<ButtonSize, string> = {
-  sm: 'min-h-10 rounded-xl px-3 text-xs',
-  md: 'min-h-12 rounded-xl px-4 text-sm',
-  lg: 'min-h-[3.25rem] rounded-2xl px-5 text-base',
+  sm: 'min-h-8 rounded-xl px-3 text-xs',
+  md: 'min-h-10 rounded-xl px-4 text-sm',
+  lg: 'min-h-12 rounded-2xl px-5 text-base',
   icon: 'size-12 rounded-2xl p-0',
 }
 

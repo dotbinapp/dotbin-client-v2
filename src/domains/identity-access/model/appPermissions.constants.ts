@@ -1,6 +1,7 @@
 export const APP_PERMISSIONS = {
   DASHBOARD_READ: 'Permite acceder al dashboard y visualizar métricas generales de la operación.',
   CALENDAR_READ: 'Permite acceder a la agenda y consultar turnos, disponibilidad y bloqueos.',
+  CALENDAR_EDIT: 'Permite crear y modificar turnos, disponibilidad y bloqueos de agenda.',
   PATIENTS_LIST_READ: 'Permite acceder al listado de pacientes y consultar información resumida.',
   PATIENTS_READ: 'Permite acceder al detalle de un paciente.',
   PATIENTS_PAYMENT_HISTORY_READ: 'Permite acceder al historial de pagos de un paciente.',
