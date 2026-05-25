@@ -1,23 +1,48 @@
+import { useState } from 'react'
 import { LogOut } from 'lucide-react'
+import { useLogout } from '@src/domains/identity-access'
 import Button from '@src/shared/ui/atoms/Button.component'
+import { ConfirmModal } from '@src/shared/ui/molecules'
 
 interface SidebarFooterProps {
   onLogoutClick?: () => void
 }
 
 function SidebarFooter({ onLogoutClick }: Readonly<SidebarFooterProps>) {
+  const [openLogoutModal, setOpenLogoutModal] = useState(false)
+  const logout = useLogout()
+
+  const handleConfirmLogout = () => {
+    if (onLogoutClick) {
+      onLogoutClick()
+      return
+    }
+
+    logout()
+  }
+
   return (
     <div className="p-3 z-10 relative">
       <Button
         aria-label="Cerrar sesión"
-        disabled={!onLogoutClick}
         fullWidth
         iconOnly
         Icon={LogOut}
-        onClick={onLogoutClick}
+        onClick={() => setOpenLogoutModal(true)}
         title="Cerrar sesión"
-        variant="danger"
+        variant="ghost"
+        className='text-red-500 hover:bg-red-100'
       />
+      {openLogoutModal ? (
+        <ConfirmModal
+          description="¿Estás seguro de que querés cerrar sesión?"
+          Icon={LogOut}
+          onClose={() => setOpenLogoutModal(false)}
+          onConfirm={handleConfirmLogout}
+          primaryAction="danger"
+          title="Cerrar sesión"
+        />
+      ) : null}
     </div>
   )
 }

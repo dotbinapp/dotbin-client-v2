@@ -12,6 +12,7 @@ interface BaseContainerProps<TElement extends ElementType = 'div'> {
   padding?: BaseContainerPadding
   radius?: BaseContainerRadius
   surface?: BaseContainerSurface
+  fullHeight?: boolean
 }
 
 const BASE_CONTAINER_SURFACE_CLASS: Record<BaseContainerSurface, string> = {
@@ -42,9 +43,11 @@ function BaseContainer<TElement extends ElementType = 'div'>({
   padding = 'md',
   radius = '2xl',
   surface = 'glass',
+  fullHeight = false,
   ...props
 }: BaseContainerProps<TElement> & Omit<ComponentProps<TElement>, keyof BaseContainerProps<TElement>>) {
   const Component = as ?? 'div'
+  const fullHeightClass = fullHeight ? 'h-full' : ''
 
   return (
     <Component
@@ -52,6 +55,7 @@ function BaseContainer<TElement extends ElementType = 'div'>({
         BASE_CONTAINER_SURFACE_CLASS[surface],
         BASE_CONTAINER_PADDING_CLASS[padding],
         BASE_CONTAINER_RADIUS_CLASS[radius],
+        fullHeightClass,
         className,
       )}
       {...props}

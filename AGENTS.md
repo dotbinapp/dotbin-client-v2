@@ -38,6 +38,7 @@ src/
 │   ├── patients/
 │   ├── scheduling/
 │   ├── clinical-services/
+│   ├── doctors/
 │   ├── inventory/
 │   ├── catalog/
 │   ├── billing-payments/
@@ -83,7 +84,8 @@ identity-access     # sesión, usuario, permisos, Auth0, perfil
 center-management   # centro, configuración, integraciones del centro
 patients            # pacientes, detalle, documentos, historia clínica, consultas
 scheduling          # agenda, turnos, bloqueos, disponibilidad, cierre de turno
-clinical-services   # doctores, tratamientos, categorías de tratamiento
+clinical-services   # tratamientos, categorías de tratamiento, servicios clínicos
+doctors             # profesionales/doctores, agenda profesional, disponibilidad profesional
 inventory           # stock, movimientos, recepción, órdenes de compra
 catalog             # productos y proveedores
 billing-payments    # pagos, carrito, recibos, PDFs, checkout
@@ -96,7 +98,11 @@ dotty-assistant     # IA, importación asistida, panel Dotty
 ```txt
 domains/<domain>/
 ├── index.ts
-├── routes.tsx
+├── routes/
+│   ├── index.ts
+│   └── routes.tsx
+├── pages/
+│   └── *.page.tsx
 ├── model/
 │   ├── *.types.ts
 │   ├── *.schema.ts
@@ -113,7 +119,6 @@ domains/<domain>/
 │   ├── *.hook.ts
 │   └── *.service.ts
 ├── ui/
-│   ├── pages/
 │   ├── components/
 │   ├── forms/
 │   ├── sections/
@@ -130,7 +135,8 @@ domains/<domain>/
 - `api/`: adaptadores HTTP. No deben contener lógica de UI.
 - `state/`: Redux slices, selectors y thunks si el dominio necesita estado global.
 - `application/`: hooks/casos de uso que orquestan UI + API + state.
-- `ui/`: pantallas y componentes específicos del dominio.
+- `pages/`: pantallas/rutas del dominio. Componen componentes, no concentran UI reusable.
+- `ui/`: componentes específicos del dominio. No meter pages acá.
 - `utils/`: helpers privados del dominio.
 
 ## 6. Atomic Design
@@ -166,7 +172,6 @@ No repetir Atomic Design automáticamente dentro de cada dominio. En dominios us
 
 ```txt
 domains/patients/ui/
-├── pages/
 ├── components/
 ├── forms/
 ├── sections/
@@ -215,8 +220,8 @@ Sufijos permitidos:
 Ejemplo correcto:
 
 ```txt
-domains/patients/ui/pages/Patients.page.tsx
-domains/patients/ui/pages/PatientDetail.page.tsx
+domains/patients/pages/Patients.page.tsx
+domains/patients/pages/PatientDetail.page.tsx
 domains/patients/ui/forms/PatientCreate.form.tsx
 domains/patients/ui/tables/PatientTable.table.tsx
 domains/patients/ui/dialogs/PatientDelete.dialog.tsx
@@ -268,12 +273,12 @@ import { patientsReducer } from '@domains/patients/state/patients.slice';
 
 ## 9. Router y store
 
-Cada dominio puede publicar rutas desde `routes.tsx`.
+Cada dominio puede publicar rutas desde `routes/routes.tsx` y exponerlas por `routes/index.ts`.
 
 ```txt
-domains/patients/routes.tsx
-domains/scheduling/routes.tsx
-domains/clinical-services/routes.tsx
+domains/patients/routes/routes.tsx
+domains/scheduling/routes/routes.tsx
+domains/clinical-services/routes/routes.tsx
 ```
 
 El router global compone esas rutas en `app/router`.
@@ -282,7 +287,21 @@ El store global compone reducers publicados por dominios desde `app/store`.
 
 Los slices viven cerca del dominio, no en una carpeta global de slices.
 
-## 10. Tratamientos y categorías de tratamiento
+## 10. Doctores, tratamientos y categorías de tratamiento
+
+La gestión de doctores/profesionales pertenece a `doctors`.
+
+```txt
+domains/doctors/
+├── model/
+│   ├── doctor.types.ts
+│   └── doctor.schema.ts
+├── api/
+│   └── doctors.api.ts
+├── state/
+├── application/
+└── ui/
+```
 
 La gestión de tratamientos pertenece a `clinical-services`.
 

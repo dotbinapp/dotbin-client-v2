@@ -1,30 +1,6 @@
 import { useMemo } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useAppSelector } from '@src/app/store'
 import type { IdentityAccessPermission, PermissionCheck } from '../model/identityAccessPermissions.types'
-import { APP_PERMISSION_KEYS } from '../model/appPermissions.constants'
-
-const AUTH0_PERMISSION_CLAIMS = ['permissions', 'https://dotbin.app/permissions'] as const
-const KNOWN_PERMISSION_KEYS = new Set<IdentityAccessPermission>(APP_PERMISSION_KEYS)
-
-type Auth0UserClaims = Record<string, unknown>
-
-function isPermission(value: unknown): value is IdentityAccessPermission {
-  return typeof value === 'string' && KNOWN_PERMISSION_KEYS.has(value as IdentityAccessPermission)
-}
-
-function readPermissionClaim(user: Auth0UserClaims | undefined): readonly IdentityAccessPermission[] {
-  if (!user) {
-    return []
-  }
-
-  const permissions = AUTH0_PERMISSION_CLAIMS.flatMap((claim) => {
-    const value = user[claim]
-
-    return Array.isArray(value) ? value.filter(isPermission) : []
-  })
-
-  return [...new Set(permissions)]
-}
 
 export function hasPermission(permissions: readonly IdentityAccessPermission[] | undefined, code: IdentityAccessPermission): boolean {
   return permissions?.includes(code) ?? false
@@ -64,8 +40,7 @@ export function checkPermissionAccess(
 }
 
 export function usePermissions() {
-  const { user } = useAuth0<Auth0UserClaims>()
-  const permissions = useMemo(() => readPermissionClaim(user), [user])
+  const permissions = useAppSelector((state) => state.session.user?.permissions ?? [])
 
   return useMemo(
     () => ({

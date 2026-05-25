@@ -3,6 +3,7 @@ import { LockKeyhole } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { useAppSelector } from '@src/app/store'
 import type { IdentityAccessPermission } from '@src/domains/identity-access'
 import { usePermissions } from '@src/domains/identity-access'
 import Text from '@src/shared/ui/atoms/Text.component'
@@ -59,8 +60,10 @@ function ProtectedRoute({ children, requiredPermission, requiredPermissions }: R
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
   const redirectAttempted = useRef(false)
   const isCallback = isAuthCallbackUrl()
+  const sessionStatus = useAppSelector((state) => state.session.status)
   const { checkAccess } = usePermissions()
   const { hasAccess } = checkAccess(requiredPermission, requiredPermissions)
+  const requiresPermission = Boolean(requiredPermission || requiredPermissions?.length)
 
   useEffect(() => {
     if (isCallback) {
@@ -84,6 +87,10 @@ function ProtectedRoute({ children, requiredPermission, requiredPermissions }: R
   }, [isAuthenticated, isCallback, isLoading, loginWithRedirect])
 
   if (isLoading || isCallback || !isAuthenticated) {
+    return <LoadingScreen />
+  }
+
+  if (requiresPermission && (sessionStatus === 'idle' || sessionStatus === 'loading')) {
     return <LoadingScreen />
   }
 

@@ -14,19 +14,17 @@ interface AppSidebarProps {
 
 function AppSidebar({ items, loading = false, loadingItemCount = items.length, onLogoutClick }: Readonly<AppSidebarProps>) {
   return (
-    <div className="h-full">
-      <BaseContainer as="aside" className="w-20 hidden md:flex flex-col border-r-0 z-50 h-full" padding="none">
-        <SidebarBrand />
+    <BaseContainer as="aside" className="w-20 h-fit self-start hidden md:flex flex-col border-r-0 z-50" padding="none">
+      <SidebarBrand />
 
-        <nav className="flex-1 px-3 py-6 space-y-3 z-10" aria-label="Navegación principal">
-          {loading
-            ? Array.from({ length: loadingItemCount }, (_, index) => <Skeleton key={index} size="md" />)
-            : items.map((item) => <SidebarNavItem key={item.path} {...item} />)}
-        </nav>
+      <nav className="px-3 py-6 space-y-3 z-10" aria-label="Navegación principal">
+        {loading
+          ? Array.from({ length: loadingItemCount }, (_, index) => <Skeleton key={index} size="md" />)
+          : items.map((item) => <SidebarNavItem key={item.path} {...item} />)}
+      </nav>
 
-        <SidebarFooter onLogoutClick={onLogoutClick} />
-      </BaseContainer>
-    </div>
+      <SidebarFooter onLogoutClick={onLogoutClick} />
+    </BaseContainer>
   )
 }
 
