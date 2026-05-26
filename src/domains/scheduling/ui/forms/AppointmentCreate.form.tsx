@@ -1,12 +1,19 @@
 import { CalendarDays, Clock, DollarSign, Stethoscope } from 'lucide-react'
 import { Input, Select } from '@src/shared/ui/atoms'
 
-function AppointmentCreateForm() {
+interface AppointmentCreateFormProps {
+  initialValues?: {
+    date: string
+    startTime: string
+  }
+}
+
+function AppointmentCreateForm({ initialValues }: Readonly<AppointmentCreateFormProps>) {
   return (
     <form className="space-y-4" id="appointment-create-form">
       <section className="grid grid-cols-2 gap-3" aria-label="Fecha y horario del turno">
-        <Input Icon={CalendarDays} label="Fecha" name="date" size="compact" type="date" />
-        <Input Icon={Clock} label="Hora inicio" name="startTime" placeholder="HH:mm" size="compact" type="time" />
+        <Input Icon={CalendarDays} defaultValue={initialValues?.date} label="Fecha" name="date" size="compact" type="date" />
+        <Input Icon={Clock} defaultValue={initialValues?.startTime} label="Hora inicio" name="startTime" placeholder="HH:mm" size="compact" type="time" />
       </section>
 
       <section className="grid grid-cols-2 gap-3" aria-label="Duración y costo del turno">

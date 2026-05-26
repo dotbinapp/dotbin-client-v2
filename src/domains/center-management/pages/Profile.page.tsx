@@ -3,7 +3,7 @@ import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
 
 function ProfilePage() {
   return (
-    <BaseContainer as="main" padding="lg" fullHeight>
+    <BaseContainer as="main" padding="none" surface="transparent" fullHeight>
       <Text as="h1" variant="title">
         Perfil
       </Text>

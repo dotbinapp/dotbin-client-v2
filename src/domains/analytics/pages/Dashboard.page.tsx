@@ -3,7 +3,7 @@ import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
 
 function DashboardPage() {
   return (
-    <BaseContainer as="main" padding="lg" fullHeight>
+    <BaseContainer as="main" surface="transparent" padding="none" fullHeight>
       <Text as="h1" variant="title">
         Dashboard
       </Text>

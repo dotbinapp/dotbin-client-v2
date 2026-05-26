@@ -1,5 +1,6 @@
 export { default as Button } from './Button.component'
 export { default as Input } from './Input.component'
+export { default as Pill } from './Pill.component'
 export { default as Select } from './Select.component'
 export { default as Skeleton } from './Skeleton.component'
 export { default as Text } from './Text.component'

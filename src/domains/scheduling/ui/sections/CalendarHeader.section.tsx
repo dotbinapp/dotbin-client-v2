@@ -4,32 +4,51 @@ import { APP_PERMISSION_CODES, usePermissions } from '@src/domains/identity-acce
 import { MenuButton } from '@src/shared/ui/molecules'
 import { WeekPicker } from '../components'
 import { AppointmentCreateDialog } from '../dialogs'
-import { toIsoDateValue } from '../../utils/weekPicker.utils'
+import type { CalendarSlotIntent } from '../../model/scheduling.types'
 
-function CalendarHeader() {
+interface SlotSelection {
+  date: string
+  intent: CalendarSlotIntent
+  startTime: string
+}
+
+interface CalendarHeaderProps {
+  onDateChange: (date: string) => void
+  onSlotSelectionConsumed: () => void
+  selectedDate: string
+  slotSelection: SlotSelection | null
+}
+
+function CalendarHeader({ onDateChange, onSlotSelectionConsumed, selectedDate, slotSelection }: Readonly<CalendarHeaderProps>) {
   const { hasPermission } = usePermissions()
 
   const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(() => toIsoDateValue(new Date()))
+  const [creationIntent, setCreationIntent] = useState<CalendarSlotIntent>('appointment')
   const canCreateAppointment = hasPermission(APP_PERMISSION_CODES.CALENDAR_EDIT)
 
   const creationOptions = [
     {
       Icon: CalendarPlus,
       label: 'Nuevo turno',
-      onSelect: () => setIsAppointmentDialogOpen(true),
+      onSelect: () => {
+        setCreationIntent('appointment')
+        setIsAppointmentDialogOpen(true)
+      },
     },
     {
       Icon: Lock,
       label: 'Nuevo bloqueo',
-      onSelect: () => undefined,
+      onSelect: () => {
+        setCreationIntent('block')
+        setIsAppointmentDialogOpen(true)
+      },
     },
   ]
 
   return (
     <>
       <div className="flex flex-row justify-between">
-        <WeekPicker onChange={setSelectedDate} value={selectedDate} />
+        <WeekPicker onChange={onDateChange} value={selectedDate} />
 
         {canCreateAppointment ? (
           <MenuButton
@@ -42,7 +61,14 @@ function CalendarHeader() {
         ) : null}
       </div>
 
-      <AppointmentCreateDialog isOpen={isAppointmentDialogOpen} onClose={() => setIsAppointmentDialogOpen(false)} />
+      <AppointmentCreateDialog
+        initialValues={slotSelection ?? { date: selectedDate, intent: creationIntent, startTime: '' }}
+        isOpen={isAppointmentDialogOpen || Boolean(slotSelection)}
+        onClose={() => {
+          setIsAppointmentDialogOpen(false)
+          onSlotSelectionConsumed()
+        }}
+      />
     </>
   )
 }

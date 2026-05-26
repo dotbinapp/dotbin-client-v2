@@ -3,11 +3,18 @@ import { BaseDialog } from '@src/shared/ui/layout'
 import AppointmentCreateForm from '../forms/AppointmentCreate.form'
 
 interface AppointmentCreateDialogProps {
+  initialValues?: {
+    date: string
+    intent: string
+    startTime: string
+  }
   isOpen: boolean
   onClose: () => void
 }
 
-function AppointmentCreateDialog({ isOpen, onClose }: Readonly<AppointmentCreateDialogProps>) {
+function AppointmentCreateDialog({ initialValues, isOpen, onClose }: Readonly<AppointmentCreateDialogProps>) {
+  const title = initialValues?.intent === 'block' ? 'Nuevo bloqueo' : 'Nuevo turno'
+
   return (
     <BaseDialog
       description="Completá los datos del turno."
@@ -24,9 +31,9 @@ function AppointmentCreateDialog({ isOpen, onClose }: Readonly<AppointmentCreate
       isOpen={isOpen}
       onClose={onClose}
       size="lg"
-      title="Nuevo turno"
+      title={title}
     >
-      <AppointmentCreateForm />
+      <AppointmentCreateForm initialValues={initialValues} />
     </BaseDialog>
   )
 }

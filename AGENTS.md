@@ -124,6 +124,8 @@ domains/<domain>/
 │   ├── sections/
 │   ├── dialogs/
 │   ├── drawers/
+│   ├── styles/
+│   ├── types/
 │   └── tabs/
 └── utils/
     └── *.utils.ts
@@ -137,6 +139,8 @@ domains/<domain>/
 - `application/`: hooks/casos de uso que orquestan UI + API + state.
 - `pages/`: pantallas/rutas del dominio. Componen componentes, no concentran UI reusable.
 - `ui/`: componentes específicos del dominio. No meter pages acá.
+- `ui/styles`: tokens visuales, class maps y estilos compartidos dentro del dominio. No meter reglas de negocio acá.
+- `ui/types`: tipos estrictamente visuales o de interacción UI. Los tipos de negocio siguen viviendo en `model`.
 - `utils/`: helpers privados del dominio.
 
 ## 6. Atomic Design
@@ -212,6 +216,7 @@ Sufijos permitidos:
 .types.ts        # tipos del dominio
 .mapper.ts       # transformación API <-> dominio
 .constants.ts    # constantes
+.styles.ts       # tokens visuales/class maps compartidos dentro de ui
 .permissions.ts  # permisos del dominio
 .utils.ts        # helpers
 .service.ts      # caso de uso/servicio de aplicación
