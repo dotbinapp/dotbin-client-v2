@@ -19,7 +19,7 @@ const FIELD_SIZE_CLASS: Record<FieldSize, string> = {
 }
 
 const FIELD_BASE_CLASS =
-  'w-full border bg-white text-slate-700 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:ring-0'
+  'w-full border-2 bg-white text-slate-700 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-0 focus-visible:!outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:ring-0'
 
 const SUPPORT_TEXT_CLASS = 'mt-1.5 text-xs font-medium'
 
@@ -58,7 +58,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               FIELD_BASE_CLASS,
               FIELD_SIZE_CLASS[size],
               Icon && (size === 'compact' ? 'pl-9' : 'pl-10'),
-              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-500/25' : 'border-slate-300',
+              error ? 'border-red-300 bg-red-50/30 focus:border-red-400' : 'border-slate-300',
               className,
             )}
             disabled={disabled}
