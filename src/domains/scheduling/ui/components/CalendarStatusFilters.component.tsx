@@ -1,5 +1,5 @@
 import { X } from 'lucide-react'
-import { Pill } from '@src/shared/ui/atoms'
+import { Pill } from '@shared/ui/atoms'
 import { CALENDAR_QUICK_STATUS_FILTERS } from '../../model/calendar.constants'
 import type { AppointmentStatus } from '../../model/scheduling.types'
 import { getCalendarStatusPresentation } from '../styles/calendarStatus.styles'

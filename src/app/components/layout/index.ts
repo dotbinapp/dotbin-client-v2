@@ -1,3 +1,6 @@
 export { default as AppBreadcrumb } from './AppBreadcrumb.component'
+export { default as AppHeader } from './AppHeader.component'
 export { default as AppLayout } from './AppLayout.component'
 export { default as AppSidebar } from './AppSidebar.component'
+export { default as ProfileMenu } from './ProfileMenu.component'
+export { default as ThemeModeSwitch } from './ThemeModeSwitch.component'

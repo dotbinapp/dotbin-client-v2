@@ -1,26 +1,31 @@
-import type { SidebarNavigationItem } from '../sidebar/sidebarNavigation.types'
-import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
-import Skeleton from '@src/shared/ui/atoms/Skeleton.component'
+import type { SidebarNavigationGroup } from '../sidebar/sidebarNavigation.types'
+import { Skeleton } from '@shared/ui/atoms'
+import { BaseContainer } from '@shared/ui/layout'
 import SidebarBrand from '../sidebar/SidebarBrand.component'
 import SidebarFooter from '../sidebar/SidebarFooter.component'
-import SidebarNavItem from '../sidebar/SidebarNavItem.component'
+import SidebarNavGroup from '../sidebar/SidebarNavGroup.component'
 
 interface AppSidebarProps {
-  items: readonly SidebarNavigationItem[]
+  groups: readonly SidebarNavigationGroup[]
   loading?: boolean
   loadingItemCount?: number
   onLogoutClick?: () => void
 }
 
-function AppSidebar({ items, loading = false, loadingItemCount = items.length, onLogoutClick }: Readonly<AppSidebarProps>) {
+function AppSidebar({
+  groups,
+  loading = false,
+  loadingItemCount = groups.reduce((total, group) => total + group.items.length, 0),
+  onLogoutClick,
+}: Readonly<AppSidebarProps>) {
   return (
-    <BaseContainer as="aside" className="w-20 h-fit self-start hidden md:flex flex-col border-r-0 z-50" padding="none">
+    <BaseContainer as="aside" className="w-20 h-full self-start hidden md:flex flex-col border-r-0 z-50" padding="none" radius="none">
       <SidebarBrand />
 
-      <nav className="px-3 py-6 space-y-3 z-10" aria-label="Navegación principal">
+      <nav className="px-3 py-6 space-y-4 z-10 flex-1" aria-label="Navegación principal">
         {loading
           ? Array.from({ length: loadingItemCount }, (_, index) => <Skeleton key={index} size="md" />)
-          : items.map((item) => <SidebarNavItem key={item.path} {...item} />)}
+          : groups.map((group) => <SidebarNavGroup key={group.label} {...group} />)}
       </nav>
 
       <SidebarFooter onLogoutClick={onLogoutClick} />

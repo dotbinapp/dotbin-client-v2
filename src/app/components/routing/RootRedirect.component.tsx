@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { DEFAULT_ROUTE } from '@src/app/router/route.constants'
-import Text from '@src/shared/ui/atoms/Text.component'
+import { DEFAULT_ROUTE } from '@app/router/route.constants'
+import { Text } from '@shared/ui/atoms'
 
 function RootRedirect() {
   const location = useLocation()

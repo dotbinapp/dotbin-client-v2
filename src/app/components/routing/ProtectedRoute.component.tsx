@@ -3,11 +3,11 @@ import { LockKeyhole } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppSelector } from '@src/app/store'
-import type { IdentityAccessPermission } from '@src/domains/identity-access'
-import { usePermissions } from '@src/domains/identity-access'
-import Text from '@src/shared/ui/atoms/Text.component'
-import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
+import { useAppSelector } from '@app/store'
+import type { IdentityAccessPermission } from '@domains/identity-access'
+import { usePermissions } from '@domains/identity-access'
+import { Text } from '@shared/ui/atoms'
+import { BaseContainer } from '@shared/ui/layout'
 
 interface ProtectedRouteProps {
   children: ReactNode

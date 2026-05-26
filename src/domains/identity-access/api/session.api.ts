@@ -1,4 +1,4 @@
-import { apiClient } from '@src/shared/api'
+import { apiClient } from '@shared/api'
 import type { AuthMeResponse } from '../model/session.types'
 
 const AUTH_ME_ENDPOINT = '/v1/auth/me'

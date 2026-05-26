@@ -1,8 +1,8 @@
 import { ChevronRight, Home } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
-import { DEFAULT_ROUTE } from '@src/app/router/route.constants'
-import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@src/app/components/sidebar/sidebarNavigation.constants'
-import { composeClassName } from '@src/shared/ui/utils/className.utils'
+import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@app/components/sidebar/sidebarNavigation.constants'
+import { DEFAULT_ROUTE } from '@app/router/route.constants'
+import { composeClassName } from '@shared/ui/utils/className.utils'
 
 interface BreadcrumbItem {
   label: string

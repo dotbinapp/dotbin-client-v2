@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useAppDispatch, useAppSelector } from '@src/app/store'
+import { useDispatch, useSelector } from 'react-redux'
 import { getUserSession } from '../api/session.api'
+import { selectSessionStatus } from '../state/session.selectors'
 import { markSessionLoading, setSession, setSessionError } from '../state/session.slice'
 
 const AUTH_ERROR_STATUSES = new Set([401, 403, 404])
@@ -18,8 +19,8 @@ function isAuthError(error: unknown): boolean {
 }
 
 export function useUserSessionBootstrap() {
-  const dispatch = useAppDispatch()
-  const sessionStatus = useAppSelector((state) => state.session.status)
+  const dispatch = useDispatch()
+  const sessionStatus = useSelector(selectSessionStatus)
   const { getAccessTokenSilently, isAuthenticated, isLoading, logout } = useAuth0()
 
   useEffect(() => {

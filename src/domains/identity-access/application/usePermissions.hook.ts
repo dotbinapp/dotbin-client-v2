@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
-import { useAppSelector } from '@src/app/store'
+import { useSelector } from 'react-redux'
 import type { IdentityAccessPermission, PermissionCheck } from '../model/identityAccessPermissions.types'
+import { selectSessionPermissions } from '../state/session.selectors'
 
 export function hasPermission(permissions: readonly IdentityAccessPermission[] | undefined, code: IdentityAccessPermission): boolean {
   return permissions?.includes(code) ?? false
@@ -40,7 +41,7 @@ export function checkPermissionAccess(
 }
 
 export function usePermissions() {
-  const permissions = useAppSelector((state) => state.session.user?.permissions ?? [])
+  const permissions = useSelector(selectSessionPermissions)
 
   return useMemo(
     () => ({

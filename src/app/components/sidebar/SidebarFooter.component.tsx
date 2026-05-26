@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { LogOut } from 'lucide-react'
-import { useLogout } from '@src/domains/identity-access'
-import Button from '@src/shared/ui/atoms/Button.component'
-import { ConfirmModal } from '@src/shared/ui/molecules'
+import { useLogout } from '@domains/identity-access'
+import { Button } from '@shared/ui/atoms'
+import { ConfirmModal } from '@shared/ui/molecules'
 
 interface SidebarFooterProps {
   onLogoutClick?: () => void

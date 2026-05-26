@@ -1,5 +1,5 @@
-import { Button } from '@src/shared/ui/atoms'
-import { BaseDialog } from '@src/shared/ui/layout'
+import { Button } from '@shared/ui/atoms'
+import { BaseDialog } from '@shared/ui/layout'
 import AppointmentCreateForm from '../forms/AppointmentCreate.form'
 
 interface AppointmentCreateDialogProps {

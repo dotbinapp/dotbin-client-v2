@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import type { SidebarNavigationItem } from './sidebarNavigation.types'
 
-const SIDEBAR_NAV_ITEM_BASE_CLASS = 'w-full flex items-center justify-center py-3 rounded-2xl transition-all duration-300 group relative overflow-hidden'
+const SIDEBAR_NAV_ITEM_BASE_CLASS = 'flex items-center justify-center py-3 rounded-2xl transition-all duration-300 group relative overflow-hidden'
 const SIDEBAR_NAV_ITEM_ACTIVE_CLASS = 'bg-white/70 text-primary-700 font-bold shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-white/60'
 const SIDEBAR_NAV_ITEM_INACTIVE_CLASS = 'text-slate-500 hover:bg-white/40 hover:text-slate-700'
 

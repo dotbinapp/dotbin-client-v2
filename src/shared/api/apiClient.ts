@@ -1,4 +1,4 @@
-import { env } from '@src/shared/config/env'
+import { env } from '@shared/config/env'
 
 interface RequestOptions extends RequestInit {
   headers?: HeadersInit

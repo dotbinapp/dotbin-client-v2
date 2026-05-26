@@ -1,9 +1,9 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AppSessionBootstrap } from '@src/app/bootstrap'
-import { Auth0ProviderWithNavigate, StoreProvider } from '@src/app/providers'
-import { AppRouter } from '@src/app/router'
-import { AppLayout } from '@src/app/components/layout'
-import { Toast } from '@src/shared/ui/feedback'
+import { AppSessionBootstrap } from '@app/bootstrap'
+import { AppLayout } from '@app/components/layout'
+import { Auth0ProviderWithNavigate, StoreProvider } from '@app/providers'
+import { AppRouter } from '@app/router'
+import { Toast } from '@shared/ui/feedback'
 
 function App() {
   return (

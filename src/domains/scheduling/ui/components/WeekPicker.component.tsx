@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { composeClassName } from '@src/shared/ui/utils/className.utils'
+import { composeClassName } from '@shared/ui/utils/className.utils'
 import {
   getNextSchedulingMonth,
   getNextSchedulingWeek,

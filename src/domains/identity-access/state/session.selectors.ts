@@ -1,5 +1,9 @@
-import type { RootState } from '@src/app/store'
+import type { SessionState } from './session.slice'
 
-export const selectSessionStatus = (state: RootState) => state.session.status
-export const selectSessionUser = (state: RootState) => state.session.user
-export const selectSessionPermissions = (state: RootState) => state.session.user?.permissions ?? []
+interface SessionRootState {
+  session: SessionState
+}
+
+export const selectSessionStatus = (state: SessionRootState) => state.session.status
+export const selectSessionUser = (state: SessionRootState) => state.session.user
+export const selectSessionPermissions = (state: SessionRootState) => state.session.user?.permissions ?? []

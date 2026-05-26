@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@src/app/components/sidebar/sidebarNavigation.constants'
-import AppBreadcrumb from './AppBreadcrumb.component'
+import { APP_SIDEBAR_NAVIGATION_GROUPS } from '@app/components/sidebar/sidebarNavigation.constants'
+import AppHeader from './AppHeader.component'
 import AppSidebar from './AppSidebar.component'
 
 interface AppLayoutProps {
@@ -9,14 +9,14 @@ interface AppLayoutProps {
 
 function AppLayout({ children }: Readonly<AppLayoutProps>) {
   return (
-    <div className="h-screen p-4">
-      <div className="flex h-full gap-10">
-        <AppSidebar items={APP_SIDEBAR_NAVIGATION_ITEMS} />
+    <div className="h-screen">
+      <div className="flex h-full">
+        <AppSidebar groups={APP_SIDEBAR_NAVIGATION_GROUPS} />
 
-        <div className="flex h-full min-w-0 flex-1 flex-col gap-4 py-4">
-          <AppBreadcrumb />
+        <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+          <AppHeader />
 
-          <div className="min-h-0 flex-1">
+          <div className="min-h-0 flex-1 p-4 pl-8">
             {children}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { sessionReducer } from '@src/domains/identity-access'
+import { sessionReducer } from '@domains/identity-access'
 
 export const store = configureStore({
   reducer: {

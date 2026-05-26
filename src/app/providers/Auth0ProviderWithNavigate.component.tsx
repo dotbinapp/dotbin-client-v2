@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Auth0Provider } from '@auth0/auth0-react'
 import type { AppState } from '@auth0/auth0-react'
 import type { ReactNode } from 'react'
-import { env } from '@src/shared/config/env'
+import { env } from '@shared/config/env'
 
 interface Auth0ProviderWithNavigateProps {
   children: ReactNode

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useUserSessionBootstrap } from '@src/domains/identity-access'
+import { useUserSessionBootstrap } from '@domains/identity-access'
 
 interface AppSessionBootstrapProps {
   children: ReactNode

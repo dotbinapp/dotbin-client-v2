@@ -1,5 +1,5 @@
 import { CalendarDays, Clock, DollarSign, Stethoscope } from 'lucide-react'
-import { Input, Select } from '@src/shared/ui/atoms'
+import { Input, Select } from '@shared/ui/atoms'
 
 interface AppointmentCreateFormProps {
   initialValues?: {

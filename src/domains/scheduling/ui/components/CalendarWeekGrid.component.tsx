@@ -6,7 +6,7 @@ import CalendarDayColumn from './WeekGrid/CalendarDayColumn.component'
 import CalendarTimeColumn from './WeekGrid/CalendarTimeColumn.component'
 import CalendarWeekHeader from './WeekGrid/CalendarWeekHeader.component'
 import type { HoverHighlight, SlotMenuState } from '../types/weekGrid.types'
-import { useCalendarWeek } from '../../hooks/useCalendarWeek.hook'
+import { useCalendarWeek } from '../../application/useCalendarWeek.hook'
 import type {
   CalendarItem,
   CalendarSlotIntent,

@@ -1,5 +1,5 @@
-import Text from '@src/shared/ui/atoms/Text.component'
-import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
+import { Text } from '@shared/ui/atoms'
+import { BaseContainer } from '@shared/ui/layout'
 
 function DashboardPage() {
   return (

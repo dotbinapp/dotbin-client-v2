@@ -3,7 +3,7 @@ import { composeClassName } from '../utils/className.utils'
 
 type BaseContainerSurface = 'glass' | 'solid' | 'subtle' | 'transparent'
 type BaseContainerPadding = 'none' | 'sm' | 'md' | 'lg'
-type BaseContainerRadius = 'lg' | 'xl' | '2xl' | 'full'
+type BaseContainerRadius = 'lg' | 'xl' | '2xl' | 'full' | 'none'
 
 interface BaseContainerProps<TElement extends ElementType = 'div'> {
   as?: TElement
@@ -34,6 +34,7 @@ const BASE_CONTAINER_RADIUS_CLASS: Record<BaseContainerRadius, string> = {
   xl: 'rounded-2xl',
   '2xl': 'rounded-[2rem]',
   full: 'rounded-full',
+  none: '',
 }
 
 function BaseContainer<TElement extends ElementType = 'div'>({

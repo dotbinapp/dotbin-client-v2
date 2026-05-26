@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import BaseContainer from '@src/shared/ui/layout/BaseContainer.component'
+import { BaseContainer } from '@shared/ui/layout'
 import { CalendarBody, CalendarHeader } from '../ui/sections'
 import { toIsoDateValue } from '../utils/weekPicker.utils'
 import type { CalendarSlotIntent } from '../model/scheduling.types'
