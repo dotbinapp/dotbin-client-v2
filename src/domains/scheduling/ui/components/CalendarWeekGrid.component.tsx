@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { KeyboardEvent, MouseEvent } from 'react'
+import { themeClass } from '@shared/styles/theme.styles'
 import CalendarSlotIntentMenu from './CalendarSlotIntentMenu.component'
 import CalendarStatusFilters from './CalendarStatusFilters.component'
 import CalendarDayColumn from './WeekGrid/CalendarDayColumn.component'
@@ -109,7 +110,7 @@ function CalendarWeekGrid({
   }, [slottingEnabled])
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-slate-50/50">
+    <div className={`relative flex h-full flex-col overflow-hidden ${themeClass.surface.muted}`}>
       <CalendarStatusFilters
         counts={calendarWeek.statusFilterCounts}
         onClear={calendarWeek.clearStatusFilters}

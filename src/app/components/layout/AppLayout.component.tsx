@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { APP_SIDEBAR_NAVIGATION_GROUPS } from '@app/components/sidebar/sidebarNavigation.constants'
+import { themeClass } from '@shared/styles/theme.styles'
 import AppHeader from './AppHeader.component'
 import AppSidebar from './AppSidebar.component'
 
@@ -9,7 +10,7 @@ interface AppLayoutProps {
 
 function AppLayout({ children }: Readonly<AppLayoutProps>) {
   return (
-    <div className="h-screen bg-slate-100 text-slate-700 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-200">
+    <div className={`h-screen ${themeClass.layout.app}`}>
       <div className="flex h-full">
         <AppSidebar groups={APP_SIDEBAR_NAVIGATION_GROUPS} />
 

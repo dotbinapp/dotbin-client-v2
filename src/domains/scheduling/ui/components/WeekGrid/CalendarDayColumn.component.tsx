@@ -1,3 +1,4 @@
+import { themeClass } from '@shared/styles/theme.styles'
 import CalendarItemCard from '../CalendarItemCard.component'
 import CalendarSlotCell from './CalendarSlotCell.component'
 import type { HoverHighlight, HoverHighlightHandler, SlotKeyboardHandler, SlotPointerHandler } from '../../types/weekGrid.types'
@@ -43,9 +44,9 @@ function CalendarDayColumn({
   timezone,
 }: Readonly<CalendarDayColumnProps>) {
   return (
-    <div className={`relative overflow-visible border-r border-slate-300/60 ${closed ? 'bg-slate-100' : 'bg-white'}`}>
+    <div className={`relative overflow-visible border-r ${themeClass.border.strong} ${closed ? 'bg-ui-surface-muted' : 'bg-ui-surface'}`}>
       {slots.map((slot) => (closed
-        ? <div key={`${dayKey}-${slot}`} className={`${WEEK_GRID_LINE_CLASS} box-border bg-slate-200/40`} style={{ height: rowHeightPx, minHeight: rowHeightPx }} />
+        ? <div key={`${dayKey}-${slot}`} className={`${WEEK_GRID_LINE_CLASS} box-border bg-ui-surface-muted`} style={{ height: rowHeightPx, minHeight: rowHeightPx }} />
         : (
           <CalendarSlotCell
             key={`${dayKey}-${slot}`}

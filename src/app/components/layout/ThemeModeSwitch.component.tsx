@@ -1,10 +1,11 @@
 import { Moon, Sun } from 'lucide-react'
 import { useThemeMode } from '@app/providers'
+import { themeClass } from '@shared/styles/theme.styles'
 import { composeClassName } from '@shared/ui/utils/className.utils'
 
 const THEME_SWITCH_BUTTON_BASE_CLASS = 'inline-flex size-7 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-105'
-const THEME_SWITCH_BUTTON_ACTIVE_CLASS = 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-950'
-const THEME_SWITCH_BUTTON_INACTIVE_CLASS = 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200'
+const THEME_SWITCH_BUTTON_ACTIVE_CLASS = 'bg-ui-text text-ui-surface shadow-sm'
+const THEME_SWITCH_BUTTON_INACTIVE_CLASS = `${themeClass.text.subtle} hover:text-ui-text`
 
 function ThemeModeSwitch() {
   const { themeMode, setThemeMode } = useThemeMode()
@@ -12,7 +13,7 @@ function ThemeModeSwitch() {
   return (
     <div
       aria-label="Selector visual de tema"
-      className="inline-flex h-9 items-center rounded-full border border-slate-200/80 bg-white/65 p-1 shadow-sm shadow-slate-900/5 dark:border-slate-700/70 dark:bg-slate-900/65 dark:shadow-black/20"
+      className={`inline-flex h-9 items-center rounded-full p-1 shadow-sm shadow-slate-900/5 ${themeClass.surface.default}`}
       role="group"
     >
       <button

@@ -9,41 +9,41 @@ interface CalendarStatusPresentation {
 }
 
 const PENDING_PRESENTATION: CalendarStatusPresentation = {
-  cardClassName: 'border-amber-200 bg-amber-100/95 text-amber-800',
+  cardClassName: 'border-status-pending-border bg-status-pending-surface text-status-pending-text',
   dotClassName: 'bg-amber-500',
   label: 'Pendiente',
-  pillActiveClassName: 'border-amber-300 bg-amber-100 text-amber-800 ring-amber-400/40',
-  pillInactiveClassName: 'border-amber-200 bg-amber-50/80 text-amber-700 hover:bg-amber-100/90',
+  pillActiveClassName: 'border-status-pending-border bg-status-pending-surface text-status-pending-text ring-amber-400/40',
+  pillInactiveClassName: 'border-status-pending-border bg-status-pending-surface text-status-pending-text hover:brightness-105',
 }
 
 export const CALENDAR_STATUS_PRESENTATION: Record<AppointmentStatus, CalendarStatusPresentation> = {
   BLOCKED: {
-    cardClassName: 'border-slate-300 bg-slate-200/95 text-slate-700',
+    cardClassName: 'border-status-blocked-border bg-status-blocked-surface text-status-blocked-text',
     dotClassName: 'bg-slate-500',
     label: 'Bloqueado',
-    pillActiveClassName: 'border-slate-300 bg-slate-100 text-slate-700 ring-slate-400/40',
-    pillInactiveClassName: 'border-slate-200 bg-slate-50/80 text-slate-600 hover:bg-slate-100/90',
+    pillActiveClassName: 'border-status-blocked-border bg-status-blocked-surface text-status-blocked-text ring-slate-400/40',
+    pillInactiveClassName: 'border-status-blocked-border bg-status-blocked-surface text-status-blocked-text hover:brightness-105',
   },
   CANCELLED: {
-    cardClassName: 'border-red-200 bg-red-100/95 text-red-800',
+    cardClassName: 'border-status-cancelled-border bg-status-cancelled-surface text-status-cancelled-text',
     dotClassName: 'bg-red-500',
     label: 'Cancelado',
-    pillActiveClassName: 'border-red-300 bg-red-100 text-red-800 ring-red-400/40',
-    pillInactiveClassName: 'border-red-200 bg-red-50/80 text-red-700 hover:bg-red-100/90',
+    pillActiveClassName: 'border-status-cancelled-border bg-status-cancelled-surface text-status-cancelled-text ring-red-400/40',
+    pillInactiveClassName: 'border-status-cancelled-border bg-status-cancelled-surface text-status-cancelled-text hover:brightness-105',
   },
   COMPLETED: {
-    cardClassName: 'border-violet-200 bg-violet-100/95 text-violet-800',
+    cardClassName: 'border-status-completed-border bg-status-completed-surface text-status-completed-text',
     dotClassName: 'bg-violet-500',
     label: 'Completado',
-    pillActiveClassName: 'border-violet-300 bg-violet-100 text-violet-800 ring-violet-400/40',
-    pillInactiveClassName: 'border-violet-200 bg-violet-50/80 text-violet-700 hover:bg-violet-100/90',
+    pillActiveClassName: 'border-status-completed-border bg-status-completed-surface text-status-completed-text ring-violet-400/40',
+    pillInactiveClassName: 'border-status-completed-border bg-status-completed-surface text-status-completed-text hover:brightness-105',
   },
   CONFIRMED: {
-    cardClassName: 'border-emerald-200 bg-emerald-100/95 text-emerald-800',
+    cardClassName: 'border-status-confirmed-border bg-status-confirmed-surface text-status-confirmed-text',
     dotClassName: 'bg-emerald-500',
     label: 'Confirmado',
-    pillActiveClassName: 'border-emerald-300 bg-emerald-100 text-emerald-800 ring-emerald-400/40',
-    pillInactiveClassName: 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100/90',
+    pillActiveClassName: 'border-status-confirmed-border bg-status-confirmed-surface text-status-confirmed-text ring-emerald-400/40',
+    pillInactiveClassName: 'border-status-confirmed-border bg-status-confirmed-surface text-status-confirmed-text hover:brightness-105',
   },
   DEPOSIT_PENDING: PENDING_PRESENTATION,
   DEPOSIT_RECEIVED: PENDING_PRESENTATION,

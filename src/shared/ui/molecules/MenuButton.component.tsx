@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import Button from '../atoms/Button.component'
+import { themeClass } from '../../styles/theme.styles'
 
 type ButtonProps = ComponentProps<typeof Button>
 
@@ -17,9 +18,9 @@ interface MenuButtonProps extends Omit<ButtonProps, 'onClick'> {
 }
 
 const MENU_PANEL_CLASS =
-  'absolute right-0 top-full z-[80] mt-2 min-w-52 rounded-2xl border border-slate-100 bg-white p-2 shadow-xl shadow-slate-900/10'
+  `absolute right-0 top-full z-[80] mt-2 min-w-52 rounded-2xl p-2 ${themeClass.surface.elevated}`
 const MENU_OPTION_CLASS =
-  'flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40'
+  `flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40`
 
 function MenuButton({ children, className = '', options, ...buttonProps }: Readonly<MenuButtonProps>) {
   const [isOpen, setIsOpen] = useState(false)
@@ -68,7 +69,7 @@ function MenuButton({ children, className = '', options, ...buttonProps }: Reado
             {options.map((option) => (
               <li key={option.label}>
                 <button className={MENU_OPTION_CLASS} onClick={() => selectOption(option)} type="button">
-                  {option.Icon ? <option.Icon aria-hidden="true" className="shrink-0 text-primary-600" size={16} /> : null}
+                  {option.Icon ? <option.Icon aria-hidden="true" className={`shrink-0 ${themeClass.text.primary}`} size={16} /> : null}
                   <span className="whitespace-nowrap">{option.label}</span>
                 </button>
               </li>

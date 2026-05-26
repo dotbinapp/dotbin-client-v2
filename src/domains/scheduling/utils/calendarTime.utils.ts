@@ -72,3 +72,57 @@ export function getDurationMinutes(start: string, end: string | undefined, timez
 
   return toMinutes(getTimeFromIso(end, timezone)) - toMinutes(getTimeFromIso(start, timezone))
 }
+
+export function getTimezoneDateRangeUtc(date: Date, timezone = DEFAULT_CALENDAR_TIMEZONE): { from: string; to: string } {
+  const startOfWeek = new Date(date)
+  const day = startOfWeek.getDay()
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1)
+  startOfWeek.setDate(diff)
+
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(startOfWeek.getDate() + 6)
+
+  return {
+    from: zonedDateTimeToUtc(startOfWeek, 'start', timezone).toISOString(),
+    to: zonedDateTimeToUtc(endOfWeek, 'end', timezone).toISOString(),
+  }
+}
+
+function zonedDateTimeToUtc(date: Date, boundary: 'start' | 'end', timezone: string): Date {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  const day = date.getDate()
+  const hours = boundary === 'start' ? 0 : 23
+  const minutes = boundary === 'start' ? 0 : 59
+  const seconds = boundary === 'start' ? 0 : 59
+  const milliseconds = boundary === 'start' ? 0 : 999
+  const utcGuess = new Date(Date.UTC(year, month, day, hours, minutes, seconds, milliseconds))
+  const offset = getTimezoneOffsetMilliseconds(utcGuess, timezone)
+
+  return new Date(utcGuess.getTime() - offset)
+}
+
+function getTimezoneOffsetMilliseconds(date: Date, timezone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    day: '2-digit',
+    hour: '2-digit',
+    hour12: false,
+    minute: '2-digit',
+    month: '2-digit',
+    second: '2-digit',
+    timeZone: timezone,
+    year: 'numeric',
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
+  const asUtc = Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+    Number(values.hour),
+    Number(values.minute),
+    Number(values.second),
+  )
+
+  return asUtc - date.getTime()
+}

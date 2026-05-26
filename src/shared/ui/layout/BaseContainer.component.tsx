@@ -1,4 +1,5 @@
 import type { ComponentProps, ElementType, ReactNode } from 'react'
+import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
 type BaseContainerSurface = 'glass' | 'solid' | 'subtle' | 'transparent'
@@ -17,9 +18,9 @@ interface BaseContainerProps<TElement extends ElementType = 'div'> {
 
 const BASE_CONTAINER_SURFACE_CLASS: Record<BaseContainerSurface, string> = {
   glass: 'glass-panel',
-  solid: 'border border-slate-200 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.08)]',
-  subtle: 'border border-white/60 bg-white/55 shadow-[0_2px_8px_rgba(15,23,42,0.06)]',
-  transparent: 'bg-transparent',
+  solid: `${themeClass.surface.default} shadow-[0_4px_12px_rgba(0,0,0,0.08)]`,
+  subtle: `${themeClass.surface.muted} shadow-[0_2px_8px_rgba(15,23,42,0.06)]`,
+  transparent: themeClass.surface.transparent,
 }
 
 const BASE_CONTAINER_PADDING_CLASS: Record<BaseContainerPadding, string> = {

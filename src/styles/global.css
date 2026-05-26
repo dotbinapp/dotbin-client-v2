@@ -24,24 +24,108 @@
     --color-primary-900: #581c87;
     --color-primary-950: #3b0764;
 
+    /* Semantic Theme Tokens */
+    --color-ui-background: var(--theme-ui-background);
+    --color-ui-surface: var(--theme-ui-surface);
+    --color-ui-surface-muted: var(--theme-ui-surface-muted);
+    --color-ui-surface-elevated: var(--theme-ui-surface-elevated);
+    --color-ui-surface-hover: var(--theme-ui-surface-hover);
+    --color-ui-border: var(--theme-ui-border);
+    --color-ui-border-strong: var(--theme-ui-border-strong);
+    --color-ui-text: var(--theme-ui-text);
+    --color-ui-text-muted: var(--theme-ui-text-muted);
+    --color-ui-text-subtle: var(--theme-ui-text-subtle);
+    --color-ui-primary-soft: var(--theme-ui-primary-soft);
+    --color-ui-primary-text: var(--theme-ui-primary-text);
+    --color-status-pending-surface: var(--theme-status-pending-surface);
+    --color-status-pending-border: var(--theme-status-pending-border);
+    --color-status-pending-text: var(--theme-status-pending-text);
+    --color-status-cancelled-surface: var(--theme-status-cancelled-surface);
+    --color-status-cancelled-border: var(--theme-status-cancelled-border);
+    --color-status-cancelled-text: var(--theme-status-cancelled-text);
+    --color-status-completed-surface: var(--theme-status-completed-surface);
+    --color-status-completed-border: var(--theme-status-completed-border);
+    --color-status-completed-text: var(--theme-status-completed-text);
+    --color-status-confirmed-surface: var(--theme-status-confirmed-surface);
+    --color-status-confirmed-border: var(--theme-status-confirmed-border);
+    --color-status-confirmed-text: var(--theme-status-confirmed-text);
+    --color-status-blocked-surface: var(--theme-status-blocked-surface);
+    --color-status-blocked-border: var(--theme-status-blocked-border);
+    --color-status-blocked-text: var(--theme-status-blocked-text);
+
   /* Custom Font Families */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
 }
 
+:root {
+    --theme-ui-background: #f1f5f9;
+    --theme-ui-surface: #ffffff;
+    --theme-ui-surface-muted: #f8fafc;
+    --theme-ui-surface-elevated: #ffffff;
+    --theme-ui-surface-hover: #f1f5f9;
+    --theme-ui-border: rgba(226, 232, 240, 0.9);
+    --theme-ui-border-strong: rgba(203, 213, 225, 0.8);
+    --theme-ui-text: #334155;
+    --theme-ui-text-muted: #64748b;
+    --theme-ui-text-subtle: #94a3b8;
+    --theme-ui-primary-soft: rgba(243, 232, 255, 0.8);
+    --theme-ui-primary-text: #7e22ce;
+    --theme-status-pending-surface: rgba(254, 243, 199, 0.8);
+    --theme-status-pending-border: #fde68a;
+    --theme-status-pending-text: #b45309;
+    --theme-status-cancelled-surface: rgba(254, 226, 226, 0.8);
+    --theme-status-cancelled-border: #fecaca;
+    --theme-status-cancelled-text: #b91c1c;
+    --theme-status-completed-surface: rgba(237, 233, 254, 0.8);
+    --theme-status-completed-border: #ddd6fe;
+    --theme-status-completed-text: #6d28d9;
+    --theme-status-confirmed-surface: rgba(209, 250, 229, 0.8);
+    --theme-status-confirmed-border: #a7f3d0;
+    --theme-status-confirmed-text: #047857;
+    --theme-status-blocked-surface: rgba(241, 245, 249, 0.9);
+    --theme-status-blocked-border: #cbd5e1;
+    --theme-status-blocked-text: #475569;
+}
+
+.dark {
+    --theme-ui-background: #020617;
+    --theme-ui-surface: #0f172a;
+    --theme-ui-surface-muted: #111827;
+    --theme-ui-surface-elevated: #111827;
+    --theme-ui-surface-hover: #1e293b;
+    --theme-ui-border: rgba(51, 65, 85, 0.9);
+    --theme-ui-border-strong: rgba(71, 85, 105, 0.9);
+    --theme-ui-text: #cbd5e1;
+    --theme-ui-text-muted: #94a3b8;
+    --theme-ui-text-subtle: #64748b;
+    --theme-ui-primary-soft: rgba(168, 85, 247, 0.14);
+    --theme-ui-primary-text: #d8b4fe;
+    --theme-status-pending-surface: rgba(245, 158, 11, 0.15);
+    --theme-status-pending-border: rgba(251, 191, 36, 0.45);
+    --theme-status-pending-text: #fde68a;
+    --theme-status-cancelled-surface: rgba(239, 68, 68, 0.15);
+    --theme-status-cancelled-border: rgba(248, 113, 113, 0.45);
+    --theme-status-cancelled-text: #fecaca;
+    --theme-status-completed-surface: rgba(139, 92, 246, 0.16);
+    --theme-status-completed-border: rgba(167, 139, 250, 0.45);
+    --theme-status-completed-text: #ddd6fe;
+    --theme-status-confirmed-surface: rgba(16, 185, 129, 0.15);
+    --theme-status-confirmed-border: rgba(52, 211, 153, 0.45);
+    --theme-status-confirmed-text: #a7f3d0;
+    --theme-status-blocked-surface: rgba(51, 65, 85, 0.7);
+    --theme-status-blocked-border: rgba(100, 116, 139, 0.55);
+    --theme-status-blocked-text: #cbd5e1;
+}
+
 /* Base Styles */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #eef2f6;
-    color: #334155;
+    background-color: var(--theme-ui-background);
+    color: var(--theme-ui-text);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-.dark body {
-    background-color: #020617;
-    color: #cbd5e1;
 }
 
 :where(a:any-link, button, input, select, textarea):focus-visible {

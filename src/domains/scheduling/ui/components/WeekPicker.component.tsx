@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { themeClass } from '@shared/styles/theme.styles'
 import { composeClassName } from '@shared/ui/utils/className.utils'
 import {
   getNextSchedulingMonth,
@@ -28,12 +29,12 @@ const POPUP_WIDTH = 320
 const POPUP_MAX_HEIGHT = 380
 const POPUP_MIN_HEIGHT = 240
 const TRIGGER_ICON_BUTTON_CLASS =
-  'cursor-pointer rounded-lg text-slate-500 transition-colors hover:bg-white/60 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40'
-const POPUP_ICON_BUTTON_CLASS = 'rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-primary-700'
+  `cursor-pointer rounded-lg transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40`
+const POPUP_ICON_BUTTON_CLASS = `rounded-lg p-1.5 transition-colors ${themeClass.interactive.ghost}`
 const SELECT_CLASS =
-  'h-9 rounded-xl border border-slate-300 bg-white px-3 py-1 text-sm font-semibold text-slate-700 shadow-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20'
+  `h-9 rounded-xl px-3 py-1 text-sm font-semibold shadow-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 ${themeClass.surface.default} ${themeClass.text.default}`
 const WEEK_RANGE_BUTTON_CLASS =
-  'grid w-full cursor-pointer grid-cols-7 gap-1 rounded-xl p-1 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+  `grid w-full cursor-pointer grid-cols-7 gap-1 rounded-xl p-1 text-sm font-bold transition-colors ${themeClass.focus}`
 
 function WeekPicker({ onChange, value }: Readonly<WeekPickerProps>) {
   const [isOpen, setIsOpen] = useState(false)
@@ -132,7 +133,7 @@ function WeekPicker({ onChange, value }: Readonly<WeekPickerProps>) {
 
         <button
           aria-expanded={isOpen}
-          className="cursor-pointer text-xl font-black capitalize tracking-tight text-slate-800 transition-colors hover:text-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+          className={`cursor-pointer text-xl font-black capitalize tracking-tight transition-colors hover:text-ui-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 ${themeClass.text.default}`}
           onClick={openWeekMenu}
           type="button"
         >
@@ -152,7 +153,7 @@ function WeekPicker({ onChange, value }: Readonly<WeekPickerProps>) {
       {isOpen && popupStyle
         ? createPortal(
             <div
-              className="fixed z-[500] overflow-auto rounded-2xl border border-slate-100 bg-white p-3 shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200"
+              className={`fixed z-[500] overflow-auto rounded-2xl p-3 shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 ${themeClass.surface.elevated}`}
               ref={popupRef}
               style={popupStyle}
             >
@@ -206,7 +207,7 @@ function WeekPicker({ onChange, value }: Readonly<WeekPickerProps>) {
 
               <div className="mb-1 grid grid-cols-7 gap-1">
                 {WEEK_DAY_INITIALS.map((day) => (
-                  <span className="py-1 text-center text-[11px] font-bold text-slate-400" key={day}>
+                  <span className={`py-1 text-center text-[11px] font-bold ${themeClass.text.subtle}`} key={day}>
                     {day}
                   </span>
                 ))}
@@ -223,7 +224,7 @@ function WeekPicker({ onChange, value }: Readonly<WeekPickerProps>) {
                         aria-pressed={isSelected}
                         className={composeClassName(
                           WEEK_RANGE_BUTTON_CLASS,
-                          isSelected ? 'bg-primary-600 text-white' : 'text-slate-700 hover:bg-slate-100 hover:text-primary-700',
+                          isSelected ? 'bg-primary-600 text-white' : themeClass.interactive.ghost,
                         )}
                         onClick={() => selectWeek(week.value)}
                         type="button"

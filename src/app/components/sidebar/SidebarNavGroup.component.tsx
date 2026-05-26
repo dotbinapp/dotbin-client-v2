@@ -1,3 +1,4 @@
+import { themeClass } from '@shared/styles/theme.styles'
 import SidebarNavItem from './SidebarNavItem.component'
 import type { SidebarNavigationGroup } from './sidebarNavigation.types'
 
@@ -6,7 +7,7 @@ function SidebarNavGroup({ label, items, isLast }: Readonly<SidebarNavigationGro
     <section
       aria-label={label}
     >
-      <ul className={`space-y-1 border-b border-slate-200 pb-4 dark:border-slate-800 ${isLast ? 'border-b-0' : ''}`}>
+      <ul className={`space-y-1 border-b pb-4 ${themeClass.border.default} ${isLast ? 'border-b-0' : ''}`}>
         {items.map((item) => (
           <li key={item.path}>
             <SidebarNavItem {...item} />

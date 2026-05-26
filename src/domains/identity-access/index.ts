@@ -3,7 +3,7 @@ export type { IdentityAccessPermission, PermissionCheck } from './model/identity
 export type { AuthMeResponse, CenterSummary, DoctorSummary, UserProfile, UserSession } from './model/session.types'
 export { getUserSession } from './api/session.api'
 export { APP_PERMISSION_CODES, APP_PERMISSION_KEYS, APP_PERMISSIONS } from './model/appPermissions.constants'
-export { selectSessionPermissions, selectSessionStatus, selectSessionUser } from './state/session.selectors'
+export { selectSessionCenter, selectSessionDoctor, selectSessionPermissions, selectSessionStatus, selectSessionUser } from './state/session.selectors'
 export { clearSession, markSessionLoading, sessionReducer, setSession, setSessionError } from './state/session.slice'
 export { useLogout } from './application/useLogout.hook'
 export { checkPermissionAccess, hasAnyPermission, hasPermission, usePermissions } from './application/usePermissions.hook'

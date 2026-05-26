@@ -2,6 +2,7 @@ import { ChevronRight, Home } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { APP_SIDEBAR_NAVIGATION_ITEMS } from '@app/components/sidebar/sidebarNavigation.constants'
 import { DEFAULT_ROUTE } from '@app/router/route.constants'
+import { themeClass } from '@shared/styles/theme.styles'
 import { composeClassName } from '@shared/ui/utils/className.utils'
 
 interface BreadcrumbItem {
@@ -15,12 +16,12 @@ function AppBreadcrumb() {
   const items = [currentItem]
 
   return (
-    <nav aria-label="Ubicación actual" className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+    <nav aria-label="Ubicación actual" className={`flex items-center text-sm ${themeClass.text.muted}`}>
       <ol className="flex min-w-0 items-center gap-2">
         <li className="flex shrink-0 items-center">
           <Link
             aria-label="Ir al inicio"
-            className="inline-flex size-8 items-center justify-center rounded-xl border border-slate-200/80 bg-white/65 text-slate-500 shadow-sm transition-colors hover:bg-white hover:text-slate-800 dark:border-slate-700/70 dark:bg-slate-900/65 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            className={`inline-flex size-8 items-center justify-center rounded-xl shadow-sm transition-colors ${themeClass.surface.default} ${themeClass.interactive.ghost}`}
             to={DEFAULT_ROUTE}
           >
             <Home aria-hidden="true" size={16} strokeWidth={2} />
@@ -32,7 +33,7 @@ function AppBreadcrumb() {
 
           return (
             <li className="flex min-w-0 items-center " key={`${item.label}-${item.path ?? 'current'}`}>
-              <ChevronRight aria-hidden="true" className="shrink-0 text-slate-300 dark:text-slate-700" size={16} strokeWidth={2} />
+              <ChevronRight aria-hidden="true" className={`shrink-0 ${themeClass.text.subtle}`} size={16} strokeWidth={2} />
               <BreadcrumbSegment item={item} isCurrent={isLastItem} />
             </li>
           )
@@ -45,7 +46,7 @@ function AppBreadcrumb() {
 function BreadcrumbSegment({ item, isCurrent }: Readonly<{ item: BreadcrumbItem; isCurrent: boolean }>) {
   const className = composeClassName(
     'inline-flex max-w-48 items-center truncate rounded-xl px-3 py-2 font-semibold transition-colors',
-    'text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white'
+    `${themeClass.text.default} hover:bg-ui-surface-hover hover:text-ui-text`
   )
 
   if (isCurrent || !item.path) {

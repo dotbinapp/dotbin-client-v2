@@ -155,6 +155,8 @@ WeekView
 
 Este es el orden. No saltear al formulario porque “se ve más productivo”. Sin lectura real primero, después no sabés si creaste bien, si mapeaste bien o si rompiste timezone.
 
+Estado: primer corte implementado parcialmente. Ya se configuró TanStack Query, `apiClient` soporta métodos mutables, existe API/mapper/query semanal de appointments y `CalendarBody` dejó de usar `EMPTY_CALENDAR_ITEMS`. Todavía falta selector real de doctores, schedule real del centro y validación runtime contra backend.
+
 1. **Infraestructura mínima de requests**
    - Instalar/configurar TanStack Query y `QueryClientProvider` en `app/providers`.
    - Extender `apiClient` con métodos HTTP faltantes y soporte de headers/auth.
