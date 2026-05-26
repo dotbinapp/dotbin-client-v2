@@ -9,7 +9,7 @@ interface AppLayoutProps {
 
 function AppLayout({ children }: Readonly<AppLayoutProps>) {
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-slate-100 text-slate-700 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-200">
       <div className="flex h-full">
         <AppSidebar groups={APP_SIDEBAR_NAVIGATION_GROUPS} />
 

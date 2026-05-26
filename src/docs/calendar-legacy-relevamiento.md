@@ -53,30 +53,46 @@ Regla práctica:
 
 ## Orden sugerido de migración
 
-1. **Modelo y API de scheduling**
-   - Tipos `Appointment`, `CalendarAppointment`, `CalendarBlock`, `AppointmentStatus`.
-   - API `appointments.api.ts`: listar semana, crear, actualizar, cancelar/cambiar estado, eliminar bloqueo.
+1. **Modelo base de scheduling — parcialmente hecho**
+   - Ya existen `CalendarAppointment`, `CalendarBlock`, `CalendarItem`, `AppointmentStatus`, `CenterSchedule` y tipos de grilla en `model/scheduling.types.ts`.
+   - Falta separar contratos de API/formulario de tipos visuales. No mezclar `CalendarItem` de UI con DTOs del backend, porque después una mutation termina acoplada a cómo se dibuja una card. Eso es una bomba de tiempo, no arquitectura.
+   - Falta `model/appointment.schema.ts` para validar creación/edición con Zod.
 
-2. **Estado base del calendario**
-   - Appointments, loading, error, filtros por doctor.
-   - Regla legacy: si no hay doctores seleccionados, no mostrar turnos.
-   - Regla legacy: no mostrar `APPOINTMENT` cancelados.
-   - Regla legacy: `BLOCK` sin `doctorId` se muestra como bloqueo general.
+2. **Persistencia y server state — próximo corte obligatorio**
+   - Crear `api/appointments.api.ts` y `api/appointments.mapper.ts`.
+   - Crear `queries/appointments.queryKeys.ts`, `queries/appointments.query.ts` y mutations de crear/editar/cambiar estado/eliminar.
+   - Agregar TanStack Query al proyecto y provider global antes de empezar a pedir datos reales. `AGENTS.md` es claro: datos del backend van a TanStack Query, no a Redux.
+   - Extender `shared/api/apiClient.ts` con `post`, `put`, `patch`, `delete`, `AbortSignal` y headers de autorización. Hoy solo soporta `GET`, así no se persiste nada.
 
-3. **Week view sin acoplamiento**
-   - Extraer cálculos de semana, slots, columnas, filtros y posicionamiento.
-   - `CalendarWeekGrid` debe recibir datos y callbacks; no leer Redux directo.
+3. **Contexto real del calendario — bloqueante para API**
+   - Obtener `centerId`, `token`, `timezone`, permisos y schedule desde fronteras públicas existentes o bootstrap de app.
+   - Definir frontera pública para datos auxiliares: doctores, pacientes y tratamientos. No importar deep internals de esos dominios.
+   - Mientras esos dominios no tengan APIs públicas reales, usar contratos explícitos en `scheduling/application`, no mocks desperdigados en UI.
 
-4. **Modal de creación/edición**
-   - Migrar equivalente de `CalendarAppointmentModal`.
-   - Forms separados: `Appointment.form.tsx` y `Block.form.tsx`.
+4. **Estado base del calendario — rediseñar según AGENTS.md**
+   - Appointments/listado/loading/error deben vivir en TanStack Query.
+   - Filtros de UI locales pueden vivir en `useCalendarWeek` si solo afectan la pantalla actual.
+   - Filtro de doctores puede ser local al calendario en primera iteración; solo llevarlo a Redux si debe persistir globalmente o coordinarse con otras pantallas.
+   - Mantener reglas legacy: si no hay doctores seleccionados, no mostrar turnos; no mostrar `APPOINTMENT` cancelados en grilla principal; `BLOCK` sin `doctorId` se muestra como bloqueo general.
+
+5. **Week view sin acoplamiento — mayormente hecho**
+   - Ya existe `CalendarWeekGrid` sin Redux directo y con cálculo en `useCalendarWeek` + utils.
+   - Ya existen menús de slot/intervalo, filtros rápidos, columnas, time column y card mínima.
+   - Falta conectar `schedule`, `items`, `loading`, `timezone`, `canEdit` y `onItemOpen` con casos de uso reales.
+   - Falta reintroducir disponibilidad visual del doctor cuando hay un único doctor seleccionado. La función pura existe (`isSlotWithinDoctorWorkHours`), pero no está aplicada en la grilla nueva.
+   - Falta mobile parity: scroll horizontal sincronizado, header mobile y línea de hora actual. Decidir si entra en el primer corte o queda explícitamente fuera.
+
+6. **Modal de creación/edición — scaffold hecho, funcionalidad pendiente**
+   - Ya existe `AppointmentCreate.dialog.tsx` y `AppointmentCreate.form.tsx`, pero hoy son UI sin submit real, sin schema, sin carga de pacientes/doctores/tratamientos y sin distinguir de verdad turno vs bloqueo.
+   - Renombrar/evolucionar hacia `CalendarAppointment.dialog.tsx`, `Appointment.form.tsx` y `Block.form.tsx` cuando se implemente edición real. No hacerlo antes solo para “parecer prolijo”.
    - Mantener precarga desde slot: fecha + hora + intención.
 
-5. **Cards y detalle operativo**
-   - Migrar card mínima para turno y bloqueo.
-   - Migrar detalle con acciones: editar, cancelar, registrar pago, completar.
+7. **Cards y detalle operativo — pendiente**
+   - Ya existe `CalendarItemCard.component.tsx` mínimo para visualizar.
+   - Falta panel/drawer/dialog de detalle con editar, cancelar, eliminar bloqueo, registrar pago y completar.
+   - La card NO debe llamar servicios complejos. La card abre acciones; `application/` orquesta. No repitamos el monstruo legacy.
 
-6. **Completar turno**
+8. **Completar turno — fuera del primer corte salvo decisión explícita**
    - Migrar `UpdateStatusModal` y flujo `TurnCompletion` solo si el corte funcional requiere completar desde calendario.
    - Separar cierre clínico/stock de la card para no convertir la card en un dios de 700 líneas.
 
@@ -104,6 +120,110 @@ WeekView
                   ├─ notas evolutivas
                   └─ consumos de stock
 ```
+
+## Estado actual en `dotbin-client-2`
+
+### Ya creado
+
+- `pages/Calendar.page.tsx`: compone header/body y mantiene `selectedDate` + selección de slot.
+- `ui/sections/CalendarHeader.section.tsx`: week picker, botón `Nuevo`, permiso `CALENDAR_EDIT` y apertura de dialog.
+- `ui/sections/CalendarBody.section.tsx`: monta la grilla semanal, pero con `EMPTY_CALENDAR_ITEMS` y timezone default.
+- `ui/components/CalendarWeekGrid.component.tsx`: grilla desacoplada de Redux, con callbacks para slot e item.
+- `ui/components/WeekGrid/*`: header, columna de horas, columna de día y celdas separadas.
+- `ui/components/CalendarStatusFilters.component.tsx`, `CalendarIntervalMenu.component.tsx`, `CalendarSlotIntentMenu.component.tsx`.
+- `ui/components/CalendarItemCard.component.tsx`: card mínima para turno/bloqueo.
+- `application/useCalendarWeek.hook.ts`: cálculo de slots, columnas, filtros y posicionamiento.
+- `utils/calendarWeek.utils.ts`, `calendarTime.utils.ts`, `weekGrid.utils.ts`, `weekPicker.utils.ts`: cálculos puros extraídos.
+- `model/calendar.constants.ts` y `model/scheduling.types.ts`: constantes y tipos base.
+
+### Todavía falta, y es lo que realmente importa ahora
+
+- No hay `api/` implementada en `scheduling`.
+- No hay `queries/` ni TanStack Query instalado/configurado, aunque `AGENTS.md` lo exige para server state.
+- `shared/api/apiClient.ts` solo tiene `GET`; no sirve para crear, editar, cancelar, completar ni eliminar.
+- La grilla usa `EMPTY_CALENDAR_ITEMS`; todavía no lee turnos reales.
+- No hay mapper API ↔ dominio. La UI depende de tipos internos inventados para la migración, no del contrato real del backend.
+- No hay schema Zod para creación/edición.
+- El form no envía nada: el botón `Confirmar` está fuera del submit real y no dispara mutation.
+- No hay carga real de pacientes, doctores ni tratamientos para selects.
+- No hay filtro por doctor ni regla legacy aplicada antes de renderizar items.
+- No hay schedule real del centro conectado; por eso los slots usan fallback.
+- No hay detalle operativo de card.
+- No hay flujo de edición, cancelación, pago ni completado.
+
+## Próximo corte recomendado: conectar lectura real semanal
+
+Este es el orden. No saltear al formulario porque “se ve más productivo”. Sin lectura real primero, después no sabés si creaste bien, si mapeaste bien o si rompiste timezone.
+
+1. **Infraestructura mínima de requests**
+   - Instalar/configurar TanStack Query y `QueryClientProvider` en `app/providers`.
+   - Extender `apiClient` con métodos HTTP faltantes y soporte de headers/auth.
+   - Definir cómo se obtiene el token Auth0 para adaptadores o hooks de query. No hardcodear token en servicios.
+
+2. **Contrato de calendario semanal**
+   - Crear `appointments.api.ts` con endpoints legacy equivalentes:
+     - `GET /v1/appointment?from&to&centerId`
+     - `POST /v1/appointment`
+     - `PUT /v1/appointment`
+     - `PATCH /v1/appointment/status`
+     - `DELETE /v1/appointment`
+   - Crear mapper para transformar `Appointment` backend → `CalendarItem`.
+   - Calcular `from/to` por semana y timezone del centro. El legacy usa rango semanal convertido a UTC; mantener esa intención.
+
+3. **Query semanal**
+   - Crear `appointments.queryKeys.ts` con key estable por `centerId`, `weekStart`, `timezone`, `doctorIds` si aplica.
+   - Crear `useWeeklyAppointmentsQuery`.
+   - Aplicar reglas legacy de visibilidad en `application/`, no en JSX:
+     - sin doctores seleccionados: grilla sin turnos;
+     - `APPOINTMENT CANCELLED` fuera de la grilla principal;
+     - `BLOCK` sin `doctorId` visible como bloqueo general;
+     - `BLOCK` con `doctorId` visible si el doctor está seleccionado.
+
+4. **Integración en `CalendarBody.section.tsx`**
+   - Reemplazar `EMPTY_CALENDAR_ITEMS` por datos de query.
+   - Pasar `loading`, `schedule`, `timezone`, `canEdit` y `onItemOpen` reales.
+   - Mostrar error/empty state simple y accionable. Nada de errores técnicos crudos.
+
+5. **Recién después: creación real**
+   - Crear schema Zod de appointment/block.
+   - Separar `Appointment.form.tsx` y `Block.form.tsx` cuando haya reglas distintas reales.
+   - Conectar submit a mutation y hacer invalidación de la query semanal.
+   - Verificar roundtrip: crear → invalidar → reaparece en grilla en el slot correcto.
+
+## Decisiones de frontera para persistencia
+
+- **Turnos y bloqueos** pertenecen a `scheduling`.
+- **Doctores** pertenecen a `doctors`; `scheduling` solo consume una frontera pública para listar/select de profesionales y disponibilidad necesaria.
+- **Pacientes** pertenecen a `patients`; `scheduling` no debe importar componentes ni services internos para crear el selector.
+- **Tratamientos** pertenecen a `clinical-services`; costo/duración se puede consumir por frontera pública, no duplicar reglas en scheduling.
+- **Pagos** pertenecen a `billing-payments`; registrar pago desde calendario debe abrir una integración pública o quedar fuera del primer corte.
+- **Stock/cierre clínico** cruza `inventory` y `patients`; no meterlo en la card. Ese flujo necesita caso de uso propio.
+
+## Faltantes técnicos concretos
+
+```txt
+domains/scheduling/
+├── api/
+│   ├── appointments.api.ts          # endpoints del backend
+│   └── appointments.mapper.ts       # DTO backend <-> CalendarItem/form payload
+├── queries/
+│   ├── appointments.queryKeys.ts    # keys por centro/rango/filtros
+│   ├── appointments.query.ts        # lectura semanal
+│   └── appointments.mutation.ts     # create/update/status/delete
+├── model/
+│   └── appointment.schema.ts        # Zod para turno/bloqueo
+├── application/
+│   ├── useWeeklyCalendarData.hook.ts
+│   ├── useCalendarDoctorFilter.hook.ts
+│   └── useCalendarBookingDialog.hook.ts
+└── ui/
+    ├── dialogs/CalendarAppointment.dialog.tsx
+    ├── forms/Appointment.form.tsx
+    ├── forms/Block.form.tsx
+    └── drawers|dialogs/CalendarItemDetail.*
+```
+
+Crear estos archivos solo cuando el paso correspondiente se implemente. Carpeta vacía + nombre lindo = teatro.
 
 ## Dependencias legacy del flujo
 
@@ -294,27 +414,33 @@ Estado:
 
 ## Propuesta mínima de archivos destino
 
+Estado recomendado actualizado: server state con TanStack Query; Redux solo si el filtro o preferencia debe sobrevivir fuera de esta pantalla.
+
 ```txt
 domains/scheduling/
 ├── pages/Calendar.page.tsx
-├── model/appointment.types.ts
+├── model/scheduling.types.ts
 ├── model/appointment.schema.ts
 ├── model/calendar.constants.ts
 ├── api/appointments.api.ts
-├── state/appointments.slice.ts
-├── state/appointments.selectors.ts
+├── api/appointments.mapper.ts
+├── queries/appointments.queryKeys.ts
+├── queries/appointments.query.ts
+├── queries/appointments.mutation.ts
 ├── application/useCalendarWeek.hook.ts
+├── application/useWeeklyCalendarData.hook.ts
 ├── application/useCalendarBookingDialog.hook.ts
 ├── application/useCompleteAppointment.hook.ts
 ├── ui/sections/CalendarHeader.section.tsx
-├── ui/sections/CalendarWeek.section.tsx
+├── ui/sections/CalendarBody.section.tsx
 ├── ui/components/CalendarWeekGrid.component.tsx
-├── ui/components/AppointmentCard.component.tsx
+├── ui/components/CalendarItemCard.component.tsx
 ├── ui/dialogs/CalendarAppointment.dialog.tsx
 ├── ui/dialogs/UpdateAppointmentStatus.dialog.tsx
 ├── ui/forms/Appointment.form.tsx
 ├── ui/forms/Block.form.tsx
-└── utils/calendar.utils.ts
+├── ui/drawers/CalendarItemDetail.drawer.tsx
+└── utils/calendarWeek.utils.ts
 ```
 
 Crear solo lo que se implemente. Carpetas vacías para “parecer prolijo” son teatro, no arquitectura.

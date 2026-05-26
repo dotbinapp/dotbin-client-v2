@@ -1,2 +1,4 @@
 export { default as Auth0ProviderWithNavigate } from './Auth0ProviderWithNavigate.component'
 export { default as StoreProvider } from './StoreProvider.component'
+export { default as ThemeModeProvider } from './ThemeModeProvider.component'
+export { useThemeMode } from '../hooks/useThemeMode.hook'

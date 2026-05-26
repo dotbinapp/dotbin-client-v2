@@ -25,7 +25,7 @@ function AppSidebar({
       <nav className="px-3 py-6 space-y-4 z-10 flex-1" aria-label="Navegación principal">
         {loading
           ? Array.from({ length: loadingItemCount }, (_, index) => <Skeleton key={index} size="md" />)
-          : groups.map((group) => <SidebarNavGroup key={group.label} {...group} />)}
+          : groups.map((group, idx) => <SidebarNavGroup key={group.label} {...group} isLast={idx === groups.length - 1} />)}
       </nav>
 
       <SidebarFooter onLogoutClick={onLogoutClick} />

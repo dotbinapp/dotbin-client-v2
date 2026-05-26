@@ -25,14 +25,14 @@ function ProfileMenu() {
   return (
     <MenuButton
       aria-label="Abrir opciones de perfil"
-      className="size-10 overflow-visible rounded-full border border-slate-200/80 bg-white/65 p-0 shadow-sm shadow-slate-900/5 hover:bg-white"
+      className="size-10 overflow-visible rounded-full border border-slate-200/80 bg-white/65 p-0 shadow-sm shadow-slate-900/5 hover:bg-white dark:border-slate-700/70 dark:bg-slate-900/65 dark:shadow-black/20 dark:hover:bg-slate-800"
       options={profileMenuOptions}
       size="icon"
       variant="ghost"
     >
       <span className="relative inline-flex size-9 items-center justify-center rounded-full">
-        <img alt="Perfil de usuario" className="size-9 rounded-full object-cover ring-2 ring-white" src={PROFILE_AVATAR_SRC} />
-        <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-white bg-emerald-400" />
+        <img alt="Perfil de usuario" className="size-9 rounded-full object-cover ring-2 ring-white dark:ring-slate-900" src={PROFILE_AVATAR_SRC} />
+        <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-900" />
       </span>
     </MenuButton>
   )

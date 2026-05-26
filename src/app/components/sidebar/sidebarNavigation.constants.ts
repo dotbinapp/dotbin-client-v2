@@ -2,7 +2,7 @@ import { CalendarDays, LayoutDashboard, Package, Stethoscope, Users, VenusAndMar
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import type { AppSidebarNavigationGroup } from './sidebarNavigation.types'
 
-export const APP_SIDEBAR_NAVIGATION_GROUPS = [
+export const APP_SIDEBAR_NAVIGATION_GROUPS: readonly AppSidebarNavigationGroup[] = [
   {
     label: 'Vista general',
     items: [
@@ -54,6 +54,6 @@ export const APP_SIDEBAR_NAVIGATION_GROUPS = [
       },
     ],
   },
-] satisfies readonly AppSidebarNavigationGroup[]
+] as const
 
 export const APP_SIDEBAR_NAVIGATION_ITEMS = APP_SIDEBAR_NAVIGATION_GROUPS.flatMap((group) => group.items)

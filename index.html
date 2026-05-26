@@ -4,7 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>dotbin-client-2</title>
+    <script>
+      (() => {
+        const storageKey = 'dotbin-theme-mode'
+        const savedThemeMode = localStorage.getItem(storageKey)
+        const systemThemeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        const themeMode = savedThemeMode === 'dark' || savedThemeMode === 'light' ? savedThemeMode : systemThemeMode
+        const root = document.documentElement
+        const colorSchemeMeta = document.querySelector('meta[name="color-scheme"]')
+
+        root.classList.toggle('dark', themeMode === 'dark')
+        root.dataset.theme = themeMode
+
+        if (colorSchemeMeta) {
+          colorSchemeMeta.setAttribute('content', themeMode)
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
