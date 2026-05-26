@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
 type FieldSize = 'md' | 'compact'
@@ -19,7 +20,7 @@ const FIELD_SIZE_CLASS: Record<FieldSize, string> = {
 }
 
 const FIELD_BASE_CLASS =
-  'w-full border-2 bg-white text-slate-700 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-0 focus-visible:!outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:ring-0'
+  'w-full border bg-ui-surface text-ui-text shadow-[var(--theme-shadow-surface)] outline-none transition-all placeholder:text-ui-text-subtle focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus-visible:!outline-none disabled:cursor-not-allowed disabled:border-ui-border disabled:bg-ui-surface-muted disabled:text-ui-text-subtle disabled:ring-0'
 
 const SUPPORT_TEXT_CLASS = 'mt-1.5 text-xs font-medium'
 
@@ -33,7 +34,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label ? (
-          <label className="mb-1.5 block text-sm font-bold text-slate-700" htmlFor={inputId}>
+          <label className={`mb-1.5 block text-sm font-bold ${themeClass.text.default}`} htmlFor={inputId}>
             {label}
             {required ? <span className="ml-1 text-primary-600">*</span> : null}
           </label>
@@ -45,7 +46,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               aria-hidden="true"
               className={composeClassName(
                 'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2',
-                disabled ? 'text-slate-300' : error ? 'text-red-400' : 'text-slate-400',
+                disabled ? themeClass.text.subtle : error ? 'text-red-400' : themeClass.text.muted,
               )}
               size={size === 'compact' ? 16 : 18}
             />
@@ -58,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               FIELD_BASE_CLASS,
               FIELD_SIZE_CLASS[size],
               Icon && (size === 'compact' ? 'pl-9' : 'pl-10'),
-              error ? 'border-red-300 bg-red-50/30 focus:border-red-400' : 'border-slate-300',
+              error ? 'border-red-300 bg-red-50/30 focus:border-red-400' : 'border-ui-border-strong',
               className,
             )}
             disabled={disabled}
@@ -70,7 +71,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {helperText ? (
-          <p className={composeClassName(SUPPORT_TEXT_CLASS, 'text-slate-500')} id={helperId}>
+          <p className={composeClassName(SUPPORT_TEXT_CLASS, themeClass.text.muted)} id={helperId}>
             {helperText}
           </p>
         ) : null}

@@ -44,7 +44,7 @@ function CalendarDayColumn({
   timezone,
 }: Readonly<CalendarDayColumnProps>) {
   return (
-    <div className={`relative overflow-visible border-r ${themeClass.border.strong} ${closed ? 'bg-ui-surface-muted' : 'bg-ui-surface'}`}>
+    <div className={`relative overflow-visible border-r ${themeClass.border.grid} ${closed ? 'bg-ui-surface-muted' : 'bg-ui-surface'}`}>
       {slots.map((slot) => (closed
         ? <div key={`${dayKey}-${slot}`} className={`${WEEK_GRID_LINE_CLASS} box-border bg-ui-surface-muted`} style={{ height: rowHeightPx, minHeight: rowHeightPx }} />
         : (

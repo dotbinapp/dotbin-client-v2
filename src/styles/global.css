@@ -32,6 +32,7 @@
     --color-ui-surface-hover: var(--theme-ui-surface-hover);
     --color-ui-border: var(--theme-ui-border);
     --color-ui-border-strong: var(--theme-ui-border-strong);
+    --color-ui-grid-line: var(--theme-ui-grid-line);
     --color-ui-text: var(--theme-ui-text);
     --color-ui-text-muted: var(--theme-ui-text-muted);
     --color-ui-text-subtle: var(--theme-ui-text-subtle);
@@ -66,6 +67,7 @@
     --theme-ui-surface-hover: #f1f5f9;
     --theme-ui-border: rgba(226, 232, 240, 0.9);
     --theme-ui-border-strong: rgba(203, 213, 225, 0.8);
+    --theme-ui-grid-line: rgba(226, 232, 240, 0.7);
     --theme-ui-text: #334155;
     --theme-ui-text-muted: #64748b;
     --theme-ui-text-subtle: #94a3b8;
@@ -86,16 +88,20 @@
     --theme-status-blocked-surface: rgba(241, 245, 249, 0.9);
     --theme-status-blocked-border: #cbd5e1;
     --theme-status-blocked-text: #475569;
+    --theme-shadow-elevated: 0 18px 45px rgba(15, 23, 42, 0.14);
+    --theme-shadow-surface: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --theme-shadow-inner: inset 0 1px 8px rgba(15, 23, 42, 0.08);
 }
 
 .dark {
     --theme-ui-background: #020617;
-    --theme-ui-surface: #0f172a;
-    --theme-ui-surface-muted: #111827;
+    --theme-ui-surface: #111827;
+    --theme-ui-surface-muted: #0f172a;
     --theme-ui-surface-elevated: #111827;
-    --theme-ui-surface-hover: #1e293b;
-    --theme-ui-border: rgba(51, 65, 85, 0.9);
-    --theme-ui-border-strong: rgba(71, 85, 105, 0.9);
+    --theme-ui-surface-hover: rgba(51, 65, 85, 0.55);
+    --theme-ui-border: rgba(71, 85, 105, 0.38);
+    --theme-ui-border-strong: rgba(71, 85, 105, 0.46);
+    --theme-ui-grid-line: rgba(71, 85, 105, 0.32);
     --theme-ui-text: #cbd5e1;
     --theme-ui-text-muted: #94a3b8;
     --theme-ui-text-subtle: #64748b;
@@ -116,6 +122,9 @@
     --theme-status-blocked-surface: rgba(51, 65, 85, 0.7);
     --theme-status-blocked-border: rgba(100, 116, 139, 0.55);
     --theme-status-blocked-text: #cbd5e1;
+    --theme-shadow-elevated: 0 24px 64px rgba(0, 0, 0, 0.48);
+    --theme-shadow-surface: 0 14px 34px rgba(0, 0, 0, 0.28);
+    --theme-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.025), inset 0 -18px 36px rgba(0, 0, 0, 0.12);
 }
 
 /* Base Styles */

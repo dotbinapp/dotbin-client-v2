@@ -29,19 +29,6 @@ function CalendarBody({ onSlotIntent, selectedDate }: Readonly<CalendarBodyProps
   const canEdit = hasPermission(APP_PERMISSION_CODES.CALENDAR_EDIT)
 
   return (
-    <section className={`mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl shadow-sm ${themeClass.surface.default}`} aria-label="Calendario semanal">
-      {calendarData.isError ? (
-        <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700" role="alert">
-          No se pudieron cargar los turnos. Intentá nuevamente.
-        </div>
-      ) : null}
-
-      {selectedDoctorIds.length === 0 ? (
-        <div className="border-b border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800" role="status">
-          No hay profesional seleccionado para mostrar turnos.
-        </div>
-      ) : null}
-
       <CalendarWeekGrid
         canEdit={canEdit}
         items={calendarData.items}
@@ -50,7 +37,6 @@ function CalendarBody({ onSlotIntent, selectedDate }: Readonly<CalendarBodyProps
         timezone={timezone}
         onSlotIntent={onSlotIntent}
       />
-    </section>
   )
 }
 

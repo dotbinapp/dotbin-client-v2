@@ -1,5 +1,6 @@
 import { CalendarDays, Clock, DollarSign, Stethoscope } from 'lucide-react'
 import { Input, Select } from '@shared/ui/atoms'
+import { themeClass } from '@shared/styles/theme.styles'
 
 interface AppointmentCreateFormProps {
   initialValues?: {
@@ -33,26 +34,26 @@ function AppointmentCreateForm({ initialValues }: Readonly<AppointmentCreateForm
         <option value="">Seleccionar tratamientos</option>
       </Select>
 
-      <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700">
-        <input className="size-4 rounded border-slate-300 text-primary-600" name="isFreeAppointment" type="checkbox" />
+      <label className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${themeClass.surface.muted} ${themeClass.text.default}`}>
+        <input className="size-4 rounded border-ui-border-strong text-primary-600 accent-primary-600" name="isFreeAppointment" type="checkbox" />
         Turno sin costo
       </label>
 
-      <aside className="rounded-2xl border border-slate-200 bg-slate-100 p-4 shadow-inner shadow-white" aria-label="Resumen estimado del turno">
+      <aside className={`rounded-2xl p-4 ${themeClass.surface.inner}`} aria-label="Resumen estimado del turno">
         <div className="flex items-center justify-between gap-4">
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+          <span className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wide ${themeClass.text.muted}`}>
             <Clock aria-hidden="true" size={14} />
             Duración estimada
           </span>
-          <strong className="text-sm font-bold text-slate-900">0h 0min</strong>
+          <strong className={`text-sm font-bold ${themeClass.text.default}`}>0h 0min</strong>
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-4">
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+          <span className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wide ${themeClass.text.muted}`}>
             <Stethoscope aria-hidden="true" size={14} />
             Costo estimado
           </span>
-          <strong className="text-base font-bold text-primary-700">$ 0</strong>
+          <strong className={`text-base font-bold ${themeClass.text.primary}`}>$ 0</strong>
         </div>
       </aside>
     </form>

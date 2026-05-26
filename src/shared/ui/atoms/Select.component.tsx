@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
 type FieldSize = 'md' | 'compact'
@@ -27,7 +28,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label ? (
-          <label className="mb-1.5 block text-sm font-bold text-slate-700" htmlFor={selectId}>
+          <label className={`mb-1.5 block text-sm font-bold ${themeClass.text.default}`} htmlFor={selectId}>
             {label}
             {required ? <span className="ml-1 text-primary-600">*</span> : null}
           </label>
@@ -38,9 +39,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-describedby={composeClassName(helperId, errorId) || undefined}
             aria-invalid={error ? true : undefined}
             className={composeClassName(
-              'w-full appearance-none border bg-white text-slate-700 shadow-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:ring-0',
+              'w-full appearance-none border bg-ui-surface text-ui-text shadow-[var(--theme-shadow-surface)] outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:border-ui-border disabled:bg-ui-surface-muted disabled:text-ui-text-subtle disabled:ring-0',
               SELECT_SIZE_CLASS[size],
-              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-500/25' : 'border-slate-300',
+              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-500/25' : 'border-ui-border-strong',
               className,
             )}
             disabled={disabled}
@@ -56,14 +57,14 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-hidden="true"
             className={composeClassName(
               'pointer-events-none absolute right-3 top-1/2 -translate-y-1/2',
-              disabled ? 'text-slate-300' : 'text-slate-400',
+              disabled ? themeClass.text.subtle : themeClass.text.muted,
             )}
             size={18}
           />
         </div>
 
         {helperText ? (
-          <p className="mt-1.5 text-xs font-medium text-slate-500" id={helperId}>
+          <p className={`mt-1.5 text-xs font-medium ${themeClass.text.muted}`} id={helperId}>
             {helperText}
           </p>
         ) : null}

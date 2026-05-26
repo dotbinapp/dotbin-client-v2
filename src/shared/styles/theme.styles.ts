@@ -1,6 +1,7 @@
 export const themeClass = {
   border: {
     default: 'border-ui-border',
+    grid: 'border-ui-grid-line',
     strong: 'border-ui-border-strong',
   },
   focus: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-ui-background',
@@ -13,8 +14,9 @@ export const themeClass = {
     header: 'border-ui-border bg-ui-background/30 transition-colors duration-200',
   },
   surface: {
-    default: 'border border-ui-border bg-ui-surface',
-    elevated: 'border border-ui-border bg-ui-surface-elevated shadow-xl shadow-slate-900/10',
+    default: 'border border-ui-border bg-ui-surface shadow-[var(--theme-shadow-surface)]',
+    elevated: 'border border-ui-border bg-ui-surface-elevated shadow-[var(--theme-shadow-elevated)]',
+    inner: 'border border-ui-border bg-ui-surface-muted shadow-[var(--theme-shadow-inner)]',
     muted: 'border border-ui-border bg-ui-surface-muted',
     transparent: 'bg-transparent',
   },

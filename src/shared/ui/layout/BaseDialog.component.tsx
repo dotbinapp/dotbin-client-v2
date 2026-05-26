@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useId, useRef } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '../atoms'
+import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
 type BaseDialogSize = 'sm' | 'md' | 'lg' | 'xl'
@@ -96,7 +97,7 @@ function BaseDialog({
       aria-describedby={description ? descriptionId : undefined}
       aria-labelledby={titleId}
       className={composeClassName(
-        'm-auto max-h-[90vh] w-[min(92vw,100%)] overflow-hidden rounded-3xl border border-slate-200 bg-white p-0 text-slate-800 shadow-2xl shadow-slate-950/20 backdrop:bg-slate-950/45 backdrop:backdrop-blur-sm',
+        `m-auto max-h-[90vh] w-[min(92vw,100%)] overflow-hidden rounded-3xl p-0 backdrop:bg-slate-950/45 backdrop:backdrop-blur-sm ${themeClass.surface.elevated} ${themeClass.text.default}`,
         DIALOG_SIZE_CLASS[size],
         className,
       )}
@@ -104,15 +105,15 @@ function BaseDialog({
       {...CLOSED_BY_LIGHT_DISMISS}
     >
       <div className="flex max-h-[90vh] flex-col">
-        <header className="shrink-0 border-b border-slate-200 bg-slate-50/90 px-6 py-5">
+        <header className={`shrink-0 border-b bg-ui-surface-muted/90 px-6 py-5 ${themeClass.border.default}`}>
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 space-y-1">
-              <h2 className="font-heading text-xl font-bold tracking-tight text-slate-900" id={titleId}>
+              <h2 className={`font-heading text-xl font-bold tracking-tight ${themeClass.text.default}`} id={titleId}>
                 {title}
               </h2>
 
               {description ? (
-                <p className="max-w-2xl text-sm leading-6 text-slate-500" id={descriptionId}>
+                <p className={`max-w-2xl text-sm leading-6 ${themeClass.text.muted}`} id={descriptionId}>
                   {description}
                 </p>
               ) : null}
@@ -124,7 +125,7 @@ function BaseDialog({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
 
-        {footer ? <footer className="shrink-0 border-t border-slate-200 bg-slate-50 px-6 py-4">{footer}</footer> : null}
+        {footer ? <footer className={`shrink-0 border-t bg-ui-surface-muted px-6 py-4 ${themeClass.border.default}`}>{footer}</footer> : null}
       </div>
     </dialog>
   )

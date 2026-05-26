@@ -110,7 +110,7 @@ function CalendarWeekGrid({
   }, [slottingEnabled])
 
   return (
-    <div className={`relative flex h-full flex-col overflow-hidden ${themeClass.surface.muted}`}>
+    <div className={`relative flex h-full flex-col overflow-hidden rounded-2xl mt-4 ${themeClass.surface.muted}`}>
       <CalendarStatusFilters
         counts={calendarWeek.statusFilterCounts}
         onClear={calendarWeek.clearStatusFilters}

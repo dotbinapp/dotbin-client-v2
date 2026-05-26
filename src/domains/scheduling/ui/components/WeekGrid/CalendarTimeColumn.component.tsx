@@ -12,7 +12,7 @@ interface CalendarTimeColumnProps {
 
 function CalendarTimeColumn({ activeSlotHighlight, hoverHighlight, rowHeightPx, slots, slottingEnabled }: Readonly<CalendarTimeColumnProps>) {
   return (
-    <div className={`z-10 border-r bg-ui-surface-muted ${themeClass.border.strong}`}>
+    <div className={`z-10 border-r bg-ui-surface-muted ${themeClass.border.grid}`}>
       {slots.map((slot) => {
         const rowActive = slottingEnabled && activeSlotHighlight?.slot === slot
         const rowHover = slottingEnabled && !rowActive && hoverHighlight?.slot === slot
