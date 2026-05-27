@@ -3,7 +3,7 @@ import { AppSessionBootstrap } from '@app/bootstrap'
 import { AppLayout } from '@app/components/layout'
 import { Auth0ProviderWithNavigate, QueryProvider, StoreProvider, ThemeModeProvider } from '@app/providers'
 import { AppRouter } from '@app/router'
-import { Toast } from '@shared/ui/feedback'
+import { Toast } from '@shared/ui/atoms'
 
 function App() {
   return (

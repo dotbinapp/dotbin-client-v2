@@ -1,8 +1,8 @@
 import { UserRound } from 'lucide-react'
-import type { PatientTablePreview } from './patientTable.types'
+import type { PatientSummary } from '@domains/patients/model/patient.types'
 
 interface PatientIdentityCellProps {
-  patient: PatientTablePreview
+  patient: PatientSummary
 }
 
 function PatientIdentityCell({ patient }: Readonly<PatientIdentityCellProps>) {
