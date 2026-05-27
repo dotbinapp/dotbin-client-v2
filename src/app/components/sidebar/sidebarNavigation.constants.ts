@@ -30,8 +30,8 @@ export const APP_SIDEBAR_NAVIGATION_GROUPS: readonly AppSidebarNavigationGroup[]
         requiredPermissions: [APP_PERMISSION_CODES.PATIENTS_LIST_READ],
       },
       {
-        path: '/doctors',
-        label: 'Doctores',
+        path: '/professionals',
+        label: 'Profesionales',
         Icon: VenusAndMars,
         requiredPermissions: [APP_PERMISSION_CODES.DOCTORS_LIST_READ],
       },

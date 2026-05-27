@@ -5,10 +5,10 @@ import { DEFAULT_ROUTE } from '@app/router/route.constants'
 import { ANALYTICS_DASHBOARD_ROUTE_PATH, AnalyticsDashboardPage } from '@domains/analytics'
 import { CENTER_MANAGEMENT_PROFILE_ROUTE_PATH, CenterManagementProfilePage } from '@domains/center-management'
 import { CLINICAL_SERVICES_TREATMENTS_ROUTE_PATH, ClinicalServicesTreatmentsPage } from '@domains/clinical-services'
-import { DOCTORS_ROUTE_PATH, DoctorsPage } from '@domains/doctors'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import { STOCKS_ROUTE_PATH, StocksPage } from '@domains/inventory'
 import { PATIENTS_ROUTE_PATH, PatientsPage } from '@domains/patients'
+import { PROFESSIONALS_ROUTE_PATH, ProfessionalsPage } from '@domains/professionals'
 import { SCHEDULING_CALENDAR_ROUTE_PATH, SchedulingCalendarPage } from '@domains/scheduling'
 
 function AppRouter() {
@@ -41,10 +41,10 @@ function AppRouter() {
           }
         />
         <Route
-          path={DOCTORS_ROUTE_PATH}
+          path={PROFESSIONALS_ROUTE_PATH}
           element={
             <ProtectedRoute requiredPermission={APP_PERMISSION_CODES.DOCTORS_LIST_READ}>
-              <DoctorsPage />
+              <ProfessionalsPage />
             </ProtectedRoute>
           }
         />

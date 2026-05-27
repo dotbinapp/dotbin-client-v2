@@ -153,7 +153,7 @@ Ejemplos válidos:
 pacientes
 turnos
 tratamientos
-doctores
+profesionales
 disponibilidad
 historial clínico
 pagos
@@ -270,7 +270,7 @@ src/
 │   ├── patients/
 │   ├── scheduling/
 │   ├── clinical-services/
-│   ├── doctors/
+│   ├── professionals/
 │   ├── inventory/
 │   ├── catalog/
 │   ├── billing-payments/
@@ -318,7 +318,7 @@ center-management   # centro, configuración, integraciones del centro
 patients            # pacientes, detalle, documentos, historia clínica, consultas
 scheduling          # agenda, turnos, bloqueos, disponibilidad, cierre de turno
 clinical-services   # tratamientos, categorías de tratamiento, servicios clínicos
-doctors             # profesionales/doctores, agenda profesional, disponibilidad profesional
+professionals       # staff/profesionales, agenda profesional, disponibilidad profesional
 inventory           # stock, movimientos, recepción, órdenes de compra
 catalog             # productos y proveedores
 billing-payments    # pagos, carrito, recibos, PDFs, checkout
@@ -547,17 +547,17 @@ Los slices viven cerca del dominio, no en una carpeta global de slices.
 
 TanStack Query se configura a nivel app desde `app/providers` o `app/bootstrap`, pero las queries/mutations viven cerca del dominio que las usa.
 
-## 14. Doctores, tratamientos y categorías de tratamiento
+## 14. Profesionales, tratamientos y categorías de tratamiento
 
-La gestión de doctores/profesionales pertenece a `doctors`.
+La gestión de profesionales/staff pertenece a `professionals`.
 
 ```txt
-domains/doctors/
+domains/professionals/
 ├── model/
-│   ├── doctor.types.ts
-│   └── doctor.schema.ts
+│   ├── professional.types.ts
+│   └── professional.schema.ts
 ├── api/
-│   └── doctors.api.ts
+│   └── professionals.api.ts
 ├── state/
 ├── queries/
 ├── application/
