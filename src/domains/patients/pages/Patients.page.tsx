@@ -10,7 +10,6 @@ function PatientsPage() {
           Pacientes
         </Text>
       </header>
-
       <PatientTable />
     </BaseContainer>
   )

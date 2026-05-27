@@ -1,25 +1,23 @@
 import type { BaseTableSortState } from '@shared/ui/organisms'
-import type { PatientStatusFilter, PatientTablePreview, PatientTableSortField } from './patientTable.types'
+import type { PatientTableFilter, PatientTablePreview, PatientTableSortField } from './patientTable.types'
 
 export function getVisiblePatients(
   patients: PatientTablePreview[],
   searchTerm: string,
-  statusFilter: PatientStatusFilter,
+  activeFilterValues: PatientTableFilter[],
   sortState: BaseTableSortState<PatientTableSortField>,
 ) {
   const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase()
   const filteredPatients = patients.filter((patient) => {
     const matchesSearch = normalizedSearchTerm
       ? patient.fullName.toLocaleLowerCase().includes(normalizedSearchTerm) ||
-        patient.documentNumber.toLocaleLowerCase().includes(normalizedSearchTerm)
+        patient.instagramAccount?.toLocaleLowerCase().includes(normalizedSearchTerm) ||
+        patient.phone.toLocaleLowerCase().includes(normalizedSearchTerm)
       : true
 
-    const matchesStatus =
-      statusFilter === 'all' ||
-      (statusFilter === 'active' && patient.isActive) ||
-      (statusFilter === 'inactive' && !patient.isActive)
+    const matchesFilters = activeFilterValues.every((filterValue) => patientMatchesFilter(patient, filterValue))
 
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesFilters
   })
 
   if (!sortState) return filteredPatients
@@ -39,6 +37,28 @@ export function formatPatientVisitDate(lastVisitAt: string | null) {
     month: '2-digit',
     year: 'numeric',
   }).format(new Date(lastVisitAt))
+}
+
+export function getInstagramProfileUrl(instagramAccount: string) {
+  return `https://instagram.com/${instagramAccount.replace('@', '')}`
+}
+
+export function getWhatsAppUrl(phone: string) {
+  return `https://wa.me/${phone.replace(/\D/g, '')}`
+}
+
+export function getPaginatedPatients(patients: PatientTablePreview[], page: number, pageSize: number) {
+  const startIndex = (page - 1) * pageSize
+
+  return patients.slice(startIndex, startIndex + pageSize)
+}
+
+function patientMatchesFilter(patient: PatientTablePreview, filterValue: PatientTableFilter) {
+  if (filterValue === 'active') return patient.isActive
+  if (filterValue === 'inactive') return !patient.isActive
+  if (filterValue === 'withInstagram') return Boolean(patient.instagramAccount)
+
+  return Boolean(patient.phone)
 }
 
 function comparePatients(

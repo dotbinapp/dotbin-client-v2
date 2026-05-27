@@ -1,11 +1,12 @@
 export type PatientTableSortField = 'fullName' | 'lastVisitAt'
 
-export type PatientStatusFilter = 'all' | 'active' | 'inactive'
+export type PatientTableFilter = 'active' | 'inactive' | 'withInstagram' | 'withPhone'
 
 export interface PatientTablePreview {
   documentNumber: string
   fullName: string
   id: string
+  instagramAccount: string | null
   isActive: boolean
   lastVisitAt: string | null
   phone: string
