@@ -3,7 +3,9 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { Plus } from 'lucide-react'
 import { useAppSelector } from '@app/store/hooks'
 import { selectSessionCenter } from '@domains/identity-access'
+import { usePatientCreateFlow } from '@domains/patients/application'
 import { usePatientsQuery } from '@domains/patients/queries/patients.query'
+import { PatientCreateDialog } from '@domains/patients/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
@@ -20,6 +22,7 @@ function PatientTable() {
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
+  const [isCreatePatientDialogOpen, setIsCreatePatientDialogOpen] = useState(false)
 
   const patientListParams = useMemo(
     () => ({
@@ -31,6 +34,21 @@ function PatientTable() {
     }),
     [page, pageSize, searchTerm, sortState],
   )
+
+  const firstPagePatientListParams = useMemo(
+    () => ({
+      ...patientListParams,
+      offset: 0,
+    }),
+    [patientListParams],
+  )
+
+  const { createPatient, isCreatingPatient } = usePatientCreateFlow({
+    centerId: center?.id,
+    getAccessToken: getAccessTokenSilently,
+    listParams: firstPagePatientListParams,
+    onCreated: () => setPage(INITIAL_PAGE),
+  })
 
   const patientsQuery = usePatientsQuery({
     centerId: isAuthenticated ? center?.id : undefined,
@@ -57,29 +75,33 @@ function PatientTable() {
   }
 
   return (
-    <BaseTable
-      actions={
-        <Button Icon={Plus} size="sm">
-          Crear paciente
-        </Button>
-      }
-      columns={PATIENT_TABLE_COLUMNS}
-      emptyMessage={patientsQuery.isError ? 'No se pudieron cargar los pacientes' : 'No hay pacientes para mostrar'}
-      loading={patientsQuery.isLoading}
-      onSearchChange={handleSearchChange}
-      onSortChange={handleSortChange}
-      pagination={{
-        onPageChange: setPage,
-        onPageSizeChange: handlePageSizeChange,
-        page,
-        pageSize,
-        totalRows: totalPatients,
-      }}
-      rowKey={(patient) => patient.id}
-      rows={patients}
-      searchPlaceholder="Buscar por nombre"
-      sortState={sortState}
-    />
+    <>
+      <BaseTable
+        actions={
+          <Button Icon={Plus} onClick={() => setIsCreatePatientDialogOpen(true)} size="sm">
+            Crear paciente
+          </Button>
+        }
+        columns={PATIENT_TABLE_COLUMNS}
+        emptyMessage={patientsQuery.isError ? 'No se pudieron cargar los pacientes' : 'No hay pacientes para mostrar'}
+        loading={patientsQuery.isLoading}
+        onSearchChange={handleSearchChange}
+        onSortChange={handleSortChange}
+        pagination={{
+          onPageChange: setPage,
+          onPageSizeChange: handlePageSizeChange,
+          page,
+          pageSize,
+          totalRows: totalPatients,
+        }}
+        rowKey={(patient) => patient.id}
+        rows={patients}
+        searchPlaceholder="Buscar por nombre"
+        sortState={sortState}
+      />
+
+      <PatientCreateDialog isCreating={isCreatingPatient} isOpen={isCreatePatientDialogOpen} onClose={() => setIsCreatePatientDialogOpen(false)} onCreatePatient={createPatient} />
+    </>
   )
 }
 

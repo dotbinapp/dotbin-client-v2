@@ -4,6 +4,7 @@ import type { ToasterProps } from 'sonner'
 function Toast({ position = 'top-right', visibleToasts = 4, ...props }: Readonly<ToasterProps>) {
   return (
     <SonnerToaster
+      className="!z-[2147483647]"
       closeButton={false}
       gap={12}
       mobileOffset={16}
@@ -12,7 +13,7 @@ function Toast({ position = 'top-right', visibleToasts = 4, ...props }: Readonly
       theme="light"
       toastOptions={{
         classNames: {
-          toast: '!bg-transparent !border-0 !shadow-none !p-0',
+          toast: '!z-[2147483647] !bg-transparent !border-0 !shadow-none !p-0',
         },
       }}
       visibleToasts={visibleToasts}

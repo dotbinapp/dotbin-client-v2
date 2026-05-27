@@ -8,6 +8,25 @@ interface JsonRequestOptions extends Omit<RequestOptions, 'body'> {
   body?: unknown
 }
 
+interface ApiErrorPayload {
+  code?: string
+  detail?: string
+  message?: string
+}
+
+function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
+  return typeof value === 'object' && value !== null
+}
+
+async function getApiErrorPayload(response: Response): Promise<ApiErrorPayload | null> {
+  try {
+    const payload: unknown = await response.json()
+    return isApiErrorPayload(payload) ? payload : null
+  } catch {
+    return null
+  }
+}
+
 class ApiClient {
   private readonly baseUrl: string
 
@@ -25,7 +44,10 @@ class ApiClient {
     })
 
     if (!response.ok) {
-      const error = new Error(`HTTP error ${response.status}`) as Error & { status?: number }
+      const errorPayload = await getApiErrorPayload(response)
+      const error = new Error(errorPayload?.message || `HTTP error ${response.status}`) as Error & { code?: string; detail?: string; status?: number }
+      error.code = errorPayload?.code
+      error.detail = errorPayload?.detail
       error.status = response.status
       throw error
     }

@@ -1,3 +1,5 @@
 export { default as ConfirmModal } from './ConfirmModal.component'
+export { default as ControlledInput } from './ControlledInput.component'
+export { default as ControlledSelect } from './ControlledSelect.component'
 export { default as MenuButton } from './MenuButton.component'
 export type { MenuButtonOption } from './MenuButton.component'

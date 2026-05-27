@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { LoaderCircle } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
@@ -12,6 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconOnly?: boolean
   Icon?: LucideIcon
   loading?: boolean
+  onLoading?: boolean
   size?: ButtonSize
   variant?: ButtonVariant
 }
@@ -43,13 +45,17 @@ function Button({
   iconOnly = false,
   Icon,
   loading = false,
+  onLoading = false,
   size = iconOnly ? 'icon' : 'md',
   type = 'button',
   variant = 'primary',
   ...props
 }: Readonly<ButtonProps>) {
+  const isLoading = loading || onLoading
+
   return (
     <button
+      aria-busy={isLoading || undefined}
       className={composeClassName(
         BUTTON_BASE_CLASS,
         BUTTON_VARIANT_CLASS[variant],
@@ -57,11 +63,12 @@ function Button({
         fullWidth && 'w-full',
         className,
       )}
-      disabled={disabled || loading}
+      disabled={disabled || isLoading}
       type={type}
       {...props}
     >
-      {Icon ? <Icon aria-hidden="true" className="shrink-0" size={size === 'sm' ? 16 : 18} /> : null}
+      {isLoading ? <LoaderCircle aria-hidden="true" className="shrink-0 animate-spin motion-reduce:animate-none" size={size === 'sm' ? 16 : 18} /> : null}
+      {!isLoading && Icon ? <Icon aria-hidden="true" className="shrink-0" size={size === 'sm' ? 16 : 18} /> : null}
       {iconOnly ? <span className="sr-only">{props['aria-label']}</span> : children}
     </button>
   )

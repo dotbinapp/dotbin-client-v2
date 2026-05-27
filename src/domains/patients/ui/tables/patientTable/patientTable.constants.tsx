@@ -1,4 +1,4 @@
-import { AtSign, CalendarClock, Hash, SquaresSubtract, MoreVertical, Phone, UserRound } from 'lucide-react'
+import { AtSign, CalendarClock, Hash, IdCard, SquaresSubtract, MoreVertical, Phone, UserRound } from 'lucide-react'
 import type { PatientSummary } from '@domains/patients/model/patient.types'
 import { Button } from '@shared/ui/atoms'
 import type { BaseTableColumn, BaseTableFilterOption } from '@shared/ui/organisms'
@@ -21,6 +21,12 @@ export const PATIENT_TABLE_COLUMNS: BaseTableColumn<PatientSummary, PatientTable
     renderCell: (patient) => <PatientIdentityCell patient={patient} />,
     sortField: 'fullName',
     widthClassName: 'min-w-72',
+  },
+  {
+    HeaderIcon: IdCard,
+    id: 'documentNumber',
+    label: 'Nro. documento',
+    renderCell: (patient) => <span className="font-mono text-ui-text-muted">{patient.documentNumber ?? '—'}</span>,
   },
   {
     HeaderIcon: AtSign,

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useId, useRef } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '../atoms'
+import { Toast } from '../atoms'
 import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
@@ -127,6 +128,7 @@ function BaseDialog({
 
         {footer ? <footer className={`shrink-0 border-t bg-ui-surface-muted px-6 py-4 ${themeClass.border.default}`}>{footer}</footer> : null}
       </div>
+      <Toast />
     </dialog>
   )
 }

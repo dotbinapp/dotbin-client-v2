@@ -1,11 +1,16 @@
 import { apiClient } from '@shared/api'
-import type { PatientListParams, PatientListResult } from '../model/patient.types'
-import type { PatientListResponseDto } from './patients.mapper'
-import { mapPatientListResponseDto } from './patients.mapper'
+import type { PatientCreatePayload, PatientListParams, PatientListResult, PatientSummary } from '../model/patient.types'
+import type { PatientCreateResponseDto, PatientListResponseDto } from './patients.mapper'
+import { mapPatientCreatePayloadToDto, mapPatientDtoToSummary, mapPatientListResponseDto } from './patients.mapper'
 
 const PATIENTS_ENDPOINT = '/v1/patient'
 
 interface GetPatientsParams extends PatientListParams {
+  token: string
+}
+
+interface CreatePatientParams {
+  patient: PatientCreatePayload
   token: string
 }
 
@@ -36,4 +41,13 @@ export async function getPatients({ limit, offset, searchTerm, sortDirection, so
   })
 
   return mapPatientListResponseDto(response)
+}
+
+export async function createPatient({ patient, token }: CreatePatientParams): Promise<PatientSummary> {
+  const response = await apiClient.post<PatientCreateResponseDto>(PATIENTS_ENDPOINT, {
+    body: mapPatientCreatePayloadToDto(patient),
+    headers: authHeaders(token),
+  })
+
+  return mapPatientDtoToSummary(response.patient)
 }
