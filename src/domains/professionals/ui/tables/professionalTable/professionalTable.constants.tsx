@@ -1,4 +1,4 @@
-import { MoreVertical, Pencil, Phone, SquaresSubtract, Stethoscope, UserRound } from 'lucide-react'
+import { Mail, MoreVertical, Pencil, Phone, SquaresSubtract, Stethoscope, UserRound } from 'lucide-react'
 import type { ProfessionalSummary } from '@domains/professionals/model'
 import { MenuButton } from '@shared/ui/molecules'
 import type { BaseTableColumn } from '@shared/ui/organisms'
@@ -25,6 +25,23 @@ export function getProfessionalTableColumns({ onEditProfessional }: Professional
       label: 'Especialidad',
       renderCell: (professional) => professional.specialty ? <span className="text-ui-text-muted">{professional.specialty}</span> : <span className="text-ui-text-subtle">—</span>,
       sortField: 'specialty',
+    },
+    {
+      HeaderIcon: Mail,
+      id: 'email',
+      label: 'Email',
+      renderCell: (professional) =>
+        professional.email ? (
+          <a
+            className="text-ui-text-muted underline underline-offset-4 transition-colors hover:text-ui-primary-text"
+            href={`mailto:${professional.email}`}
+          >
+            {professional.email}
+          </a>
+        ) : (
+          <span className="text-ui-text-subtle">—</span>
+        ),
+      sortField: 'email',
     },
     {
       HeaderIcon: Phone,

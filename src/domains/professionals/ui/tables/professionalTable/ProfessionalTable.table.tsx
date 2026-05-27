@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
-import type { ProfessionalSummary } from '@domains/professionals/model'
+import type { ProfessionalCreateFormValues, ProfessionalSummary } from '@domains/professionals/model'
+import { ProfessionalCreateDialog } from '@domains/professionals/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
@@ -13,22 +14,31 @@ const EMPTY_PROFESSIONALS: ProfessionalSummary[] = []
 
 interface ProfessionalTableProps {
   professionals?: ProfessionalSummary[]
+  isCreatingProfessional?: boolean
   loading?: boolean
-  onCreateProfessional?: () => void
+  onCreateProfessional?: (professionalDraft: ProfessionalCreateFormValues) => Promise<boolean> | boolean
   onEditProfessional?: (professional: ProfessionalSummary) => void
 }
 
 function getProfessionalSortValue(professional: ProfessionalSummary, sortField: ProfessionalTableSortField) {
   if (sortField === 'specialty') return professional.specialty ?? ''
+  if (sortField === 'email') return professional.email ?? ''
 
   return professional.fullName
 }
 
-function ProfessionalTable({ professionals = EMPTY_PROFESSIONALS, loading = false, onCreateProfessional, onEditProfessional }: Readonly<ProfessionalTableProps>) {
+function ProfessionalTable({
+  professionals = EMPTY_PROFESSIONALS,
+  isCreatingProfessional = false,
+  loading = false,
+  onCreateProfessional,
+  onEditProfessional,
+}: Readonly<ProfessionalTableProps>) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<ProfessionalTableSortField>>(null)
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
+  const [isProfessionalDialogOpen, setIsProfessionalDialogOpen] = useState(false)
 
   const professionalTableColumns = useMemo(() => getProfessionalTableColumns({ onEditProfessional }), [onEditProfessional])
 
@@ -77,30 +87,43 @@ function ProfessionalTable({ professionals = EMPTY_PROFESSIONALS, loading = fals
     setSortState(nextSortState)
   }
 
+  const openCreateProfessionalDialog = () => setIsProfessionalDialogOpen(true)
+
+  const closeCreateProfessionalDialog = () => setIsProfessionalDialogOpen(false)
+
   return (
-    <BaseTable
-      actions={
-        <Button disabled={!onCreateProfessional} Icon={Plus} onClick={onCreateProfessional} size="sm">
-          Crear profesional
-        </Button>
-      }
-      columns={professionalTableColumns}
-      emptyMessage="No hay profesionales para mostrar"
-      loading={loading}
-      onSearchChange={handleSearchChange}
-      onSortChange={handleSortChange}
-      pagination={{
-        onPageChange: setPage,
-        onPageSizeChange: handlePageSizeChange,
-        page: currentPage,
-        pageSize,
-        totalRows: totalProfessionals,
-      }}
-      rowKey={(professional) => professional.id}
-      rows={paginatedProfessionals}
-      searchPlaceholder="Buscar por nombre"
-      sortState={sortState}
-    />
+    <>
+      <BaseTable
+        actions={
+          <Button Icon={Plus} onClick={openCreateProfessionalDialog} size="sm">
+            Crear profesional
+          </Button>
+        }
+        columns={professionalTableColumns}
+        emptyMessage="No hay profesionales para mostrar"
+        loading={loading}
+        onSearchChange={handleSearchChange}
+        onSortChange={handleSortChange}
+        pagination={{
+          onPageChange: setPage,
+          onPageSizeChange: handlePageSizeChange,
+          page: currentPage,
+          pageSize,
+          totalRows: totalProfessionals,
+        }}
+        rowKey={(professional) => professional.id}
+        rows={paginatedProfessionals}
+        searchPlaceholder="Buscar por nombre"
+        sortState={sortState}
+      />
+
+      <ProfessionalCreateDialog
+        isCreating={isCreatingProfessional}
+        isOpen={isProfessionalDialogOpen}
+        onClose={closeCreateProfessionalDialog}
+        onCreateProfessional={onCreateProfessional}
+      />
+    </>
   )
 }
 

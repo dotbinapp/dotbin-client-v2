@@ -1,1 +1,1 @@
-export type ProfessionalTableSortField = 'fullName' | 'specialty'
+export type ProfessionalTableSortField = 'email' | 'fullName' | 'specialty'
