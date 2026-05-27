@@ -3,8 +3,12 @@ import type { ComponentProps, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import Button from '../atoms/Button.component'
 import { themeClass } from '../../styles/theme.styles'
+import { composeClassName } from '../utils/className.utils'
 
 type ButtonProps = ComponentProps<typeof Button>
+type MenuButtonSize = 'sm' | 'md' | 'l'
+type MenuButtonPanelOffset = 'tight' | 'normal'
+type MenuButtonPanelPlacement = 'bottom-start' | 'bottom-center' | 'bottom-end'
 
 export interface MenuButtonOption {
   Icon?: LucideIcon
@@ -12,17 +16,58 @@ export interface MenuButtonOption {
   onSelect: () => void
 }
 
-interface MenuButtonProps extends Omit<ButtonProps, 'onClick'> {
-  children: ReactNode
+interface MenuButtonProps extends Omit<ButtonProps, 'onClick' | 'size'> {
+  children?: ReactNode
   options: readonly MenuButtonOption[]
+  panelOffset?: MenuButtonPanelOffset
+  panelPlacement?: MenuButtonPanelPlacement
+  size?: MenuButtonSize
+  triggerSize?: ButtonProps['size']
 }
 
-const MENU_PANEL_CLASS =
-  `absolute right-0 top-full z-[80] mt-2 min-w-52 rounded-2xl p-2 ${themeClass.surface.elevated}`
-const MENU_OPTION_CLASS =
-  `flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40`
+const MENU_PANEL_SIZE_CLASS: Record<MenuButtonSize, string> = {
+  sm: 'min-w-36 rounded-xl p-1',
+  md: 'min-w-44 rounded-2xl p-1.5',
+  l: 'min-w-52 rounded-2xl p-2',
+}
 
-function MenuButton({ children, className = '', options, ...buttonProps }: Readonly<MenuButtonProps>) {
+const MENU_OPTION_SIZE_CLASS: Record<MenuButtonSize, string> = {
+  sm: 'gap-2 rounded-lg px-2 py-1.5 text-xs',
+  md: 'gap-2 rounded-xl px-2.5 py-2 text-sm',
+  l: 'gap-3 rounded-xl px-3 py-2.5 text-sm',
+}
+
+const MENU_OPTION_ICON_SIZE: Record<MenuButtonSize, number> = {
+  sm: 14,
+  md: 15,
+  l: 16,
+}
+
+const MENU_PANEL_OFFSET_CLASS: Record<MenuButtonPanelOffset, string> = {
+  tight: 'mt-1',
+  normal: 'mt-2',
+}
+
+const MENU_PANEL_PLACEMENT_CLASS: Record<MenuButtonPanelPlacement, string> = {
+  'bottom-start': 'left-0 top-full',
+  'bottom-center': 'left-1/2 top-full -translate-x-1/2',
+  'bottom-end': 'right-0 top-full',
+}
+
+const MENU_PANEL_BASE_CLASS = `absolute z-[80] ${themeClass.surface.elevated}`
+const MENU_OPTION_BASE_CLASS =
+  `flex w-full cursor-pointer items-center text-left font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40`
+
+function MenuButton({
+  children,
+  className = '',
+  options,
+  panelOffset = 'normal',
+  panelPlacement = 'bottom-end',
+  size = 'l',
+  triggerSize,
+  ...buttonProps
+}: Readonly<MenuButtonProps>) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -59,17 +104,34 @@ function MenuButton({ children, className = '', options, ...buttonProps }: Reado
 
   return (
     <div className="relative inline-flex" ref={containerRef}>
-      <Button aria-expanded={isOpen} className={className} onClick={() => setIsOpen((currentValue) => !currentValue)} {...buttonProps}>
+      <Button
+        aria-expanded={isOpen}
+        className={className}
+        onClick={() => setIsOpen((currentValue) => !currentValue)}
+        size={triggerSize}
+        {...buttonProps}
+      >
         {children}
       </Button>
 
       {isOpen ? (
-        <div className={MENU_PANEL_CLASS}>
+        <div
+          className={composeClassName(
+            MENU_PANEL_BASE_CLASS,
+            MENU_PANEL_PLACEMENT_CLASS[panelPlacement],
+            MENU_PANEL_OFFSET_CLASS[panelOffset],
+            MENU_PANEL_SIZE_CLASS[size],
+          )}
+        >
           <ul className="space-y-1">
             {options.map((option) => (
               <li key={option.label}>
-                <button className={MENU_OPTION_CLASS} onClick={() => selectOption(option)} type="button">
-                  {option.Icon ? <option.Icon aria-hidden="true" className={`shrink-0 ${themeClass.text.primary}`} size={16} /> : null}
+                <button
+                  className={`${MENU_OPTION_BASE_CLASS} ${MENU_OPTION_SIZE_CLASS[size]}`}
+                  onClick={() => selectOption(option)}
+                  type="button"
+                >
+                  {option.Icon ? <option.Icon aria-hidden="true" className={`shrink-0 ${themeClass.text.primary}`} size={MENU_OPTION_ICON_SIZE[size]} /> : null}
                   <span className="whitespace-nowrap">{option.label}</span>
                 </button>
               </li>

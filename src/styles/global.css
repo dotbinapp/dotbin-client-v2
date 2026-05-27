@@ -308,18 +308,6 @@ input[type="number"] {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.phone-input-container:focus-within {
-    outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
 }
 
 .phone-input-container .PhoneInputCountry {
@@ -330,6 +318,7 @@ input[type="number"] {
     padding: 0.25rem;
     border: none;
     background: transparent;
+    color: var(--theme-ui-text);
     cursor: pointer;
 }
 
@@ -349,23 +338,12 @@ input[type="number"] {
     border: none;
     background: transparent;
     font-size: 1rem;
-    color: #334155;
+    color: var(--theme-ui-text);
     outline: none;
 }
 
 .phone-input-container .PhoneInputInput::placeholder {
-    color: #94a3b8;
-}
-
-/* Phone Input Error State */
-.phone-input-container.phone-input-error {
-    border-color: #fca5a5;
-    background: rgba(254, 242, 242, 0.3);
-}
-
-.phone-input-container.phone-input-error:focus-within {
-    border-color: #f87171;
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    color: var(--theme-ui-text-subtle);
 }
 
 /* Mobile Safe Area */

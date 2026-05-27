@@ -1,13 +1,19 @@
 export type PatientListSortField = 'fullName'
 export type PatientListSortDirection = 'asc' | 'desc'
+export type PatientGender = 'female' | 'male'
 
 export interface PatientSummary {
+  dateOfBirth: string | null
   documentNumber: string | null
+  email: string | null
+  firstName: string
   fullName: string
+  gender: PatientGender | null
   id: string
   instagramAccount: string | null
   isActive: boolean
   lastVisitAt: string | null
+  lastName: string
   phone: string | null
   visits: number
 }
@@ -17,10 +23,10 @@ export interface PatientCreatePayload {
   documentNumber?: number
   email?: string
   firstName: string
-  gender?: 'female' | 'male' | ''
+  gender?: PatientGender | ''
   instagramAccount?: string
   lastName: string
-  phone?: number
+  phone?: string
 }
 
 export interface PatientListParams {

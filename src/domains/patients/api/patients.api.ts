@@ -14,6 +14,10 @@ interface CreatePatientParams {
   token: string
 }
 
+interface UpdatePatientParams extends CreatePatientParams {
+  patientId: string
+}
+
 function authHeaders(token: string) {
   return {
     Authorization: `Bearer ${token}`,
@@ -46,6 +50,18 @@ export async function getPatients({ limit, offset, searchTerm, sortDirection, so
 export async function createPatient({ patient, token }: CreatePatientParams): Promise<PatientSummary> {
   const response = await apiClient.post<PatientCreateResponseDto>(PATIENTS_ENDPOINT, {
     body: mapPatientCreatePayloadToDto(patient),
+    headers: authHeaders(token),
+  })
+
+  return mapPatientDtoToSummary(response.patient)
+}
+
+export async function updatePatient({ patient, patientId, token }: UpdatePatientParams): Promise<PatientSummary> {
+  const response = await apiClient.put<PatientCreateResponseDto>(PATIENTS_ENDPOINT, {
+    body: {
+      patientId,
+      ...mapPatientCreatePayloadToDto(patient),
+    },
     headers: authHeaders(token),
   })
 

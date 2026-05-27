@@ -12,12 +12,17 @@ export interface PatientCreateRequestDto {
 }
 
 export interface PatientDto {
+  dateOfBirth?: string | null
   documentNumber?: string | null
+  email?: string | null
+  firstName?: string | null
   fullName?: string | null
+  gender?: 'female' | 'male' | null
   id: string
   instagramAccount?: string | null
   isActive?: boolean | null
   lastVisitDate?: string | null
+  lastName?: string | null
   phone?: string | null
   visits?: number | null
 }
@@ -51,18 +56,26 @@ export function mapPatientCreatePayloadToDto(patient: PatientCreatePayload): Pat
     gender: patient.gender || undefined,
     instagramAccount: getOptionalText(patient.instagramAccount),
     lastName: patient.lastName.trim(),
-    phone: getOptionalNumericText(patient.phone),
+    phone: getOptionalText(patient.phone),
   }
 }
 
 export function mapPatientDtoToSummary(patientDto: PatientDto): PatientSummary {
+  const firstName = patientDto.firstName?.trim() || ''
+  const lastName = patientDto.lastName?.trim() || ''
+
   return {
+    dateOfBirth: patientDto.dateOfBirth ?? null,
     documentNumber: patientDto.documentNumber?.trim() || null,
-    fullName: patientDto.fullName?.trim() || 'Sin nombre',
+    email: patientDto.email?.trim() || null,
+    firstName,
+    fullName: patientDto.fullName?.trim() || `${firstName} ${lastName}`.trim() || 'Sin nombre',
+    gender: patientDto.gender ?? null,
     id: patientDto.id,
     instagramAccount: patientDto.instagramAccount?.trim() || null,
     isActive: patientDto.isActive ?? true,
     lastVisitAt: patientDto.lastVisitDate ?? null,
+    lastName,
     phone: patientDto.phone?.trim() || null,
     visits: patientDto.visits ?? 0,
   }

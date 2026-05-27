@@ -28,7 +28,7 @@ function ProfileMenu() {
       aria-label="Abrir opciones de perfil"
       className={`size-10 overflow-visible rounded-full p-0 shadow-sm shadow-slate-900/5 ${themeClass.surface.default} ${themeClass.interactive.ghost}`}
       options={profileMenuOptions}
-      size="icon"
+      triggerSize="icon"
       variant="ghost"
     >
       <span className="relative inline-flex size-9 items-center justify-center rounded-full">

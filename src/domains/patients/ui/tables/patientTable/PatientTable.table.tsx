@@ -1,15 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Plus } from 'lucide-react'
 import { useAppSelector } from '@app/store/hooks'
 import { selectSessionCenter } from '@domains/identity-access'
-import { usePatientCreateFlow } from '@domains/patients/application'
+import { usePatientSaveFlow } from '@domains/patients/application'
+import type { PatientSummary } from '@domains/patients/model'
 import { usePatientsQuery } from '@domains/patients/queries/patients.query'
 import { PatientCreateDialog } from '@domains/patients/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
-import { PATIENT_TABLE_COLUMNS } from './patientTable.constants'
+import { getPatientTableColumns } from './patientTable.constants'
 import type { PatientTableSortField } from './patientTable.types'
 
 const INITIAL_PAGE = 1
@@ -22,7 +23,8 @@ function PatientTable() {
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
-  const [isCreatePatientDialogOpen, setIsCreatePatientDialogOpen] = useState(false)
+  const [isPatientDialogOpen, setIsPatientDialogOpen] = useState(false)
+  const [activePatient, setActivePatient] = useState<PatientSummary | null>(null)
 
   const patientListParams = useMemo(
     () => ({
@@ -43,7 +45,7 @@ function PatientTable() {
     [patientListParams],
   )
 
-  const { createPatient, isCreatingPatient } = usePatientCreateFlow({
+  const { createPatient, isCreatingPatient, isUpdatingPatient, updatePatient } = usePatientSaveFlow({
     centerId: center?.id,
     getAccessToken: getAccessTokenSilently,
     listParams: firstPagePatientListParams,
@@ -58,6 +60,26 @@ function PatientTable() {
 
   const patients = patientsQuery.data?.patients ?? []
   const totalPatients = patientsQuery.data?.total ?? 0
+
+  const openCreatePatientDialog = () => {
+    setActivePatient(null)
+    setIsPatientDialogOpen(true)
+  }
+
+  const openEditPatientDialog = useCallback((patient: PatientSummary) => {
+    setActivePatient(patient)
+    setIsPatientDialogOpen(true)
+  }, [])
+
+  const closePatientDialog = () => {
+    setActivePatient(null)
+    setIsPatientDialogOpen(false)
+  }
+
+  const patientTableColumns = useMemo(
+    () => getPatientTableColumns({ onEditPatient: openEditPatientDialog }),
+    [openEditPatientDialog],
+  )
 
   const handleSearchChange = (nextSearchTerm: string) => {
     setPage(INITIAL_PAGE)
@@ -78,11 +100,11 @@ function PatientTable() {
     <>
       <BaseTable
         actions={
-          <Button Icon={Plus} onClick={() => setIsCreatePatientDialogOpen(true)} size="sm">
+          <Button Icon={Plus} onClick={openCreatePatientDialog} size="sm">
             Crear paciente
           </Button>
         }
-        columns={PATIENT_TABLE_COLUMNS}
+        columns={patientTableColumns}
         emptyMessage={patientsQuery.isError ? 'No se pudieron cargar los pacientes' : 'No hay pacientes para mostrar'}
         loading={patientsQuery.isLoading}
         onSearchChange={handleSearchChange}
@@ -100,7 +122,15 @@ function PatientTable() {
         sortState={sortState}
       />
 
-      <PatientCreateDialog isCreating={isCreatingPatient} isOpen={isCreatePatientDialogOpen} onClose={() => setIsCreatePatientDialogOpen(false)} onCreatePatient={createPatient} />
+      <PatientCreateDialog
+        activePatient={activePatient}
+        isCreating={isCreatingPatient}
+        isOpen={isPatientDialogOpen}
+        isUpdating={isUpdatingPatient}
+        onClose={closePatientDialog}
+        onCreatePatient={createPatient}
+        onUpdatePatient={updatePatient}
+      />
     </>
   )
 }

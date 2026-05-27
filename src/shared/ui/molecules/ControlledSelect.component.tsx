@@ -6,9 +6,13 @@ import { Select } from '../atoms'
 type SelectProps = ComponentProps<typeof Select>
 type HtmlFieldValue = string | number | readonly string[]
 
-interface ControlledSelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+interface ControlledSelectProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>
   extends Omit<SelectProps, 'defaultValue' | 'error' | 'name' | 'onBlur' | 'onChange' | 'ref' | 'value'> {
-  control: Control<TFieldValues>
+  control: Control<TFieldValues, unknown, TTransformedValues>
   name: TName
 }
 
@@ -20,15 +24,19 @@ function getHtmlFieldValue(value: unknown): HtmlFieldValue {
   return String(value)
 }
 
-function ControlledSelect<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
+function ControlledSelect<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>({
   control,
   name,
   ...selectProps
-}: Readonly<ControlledSelectProps<TFieldValues, TName>>) {
+}: Readonly<ControlledSelectProps<TFieldValues, TName, TTransformedValues>>) {
   const {
     field: { name: fieldName, onBlur, onChange, ref: selectRef, value },
     fieldState,
-  } = useController({ control, name })
+  } = useController<TFieldValues, TName, TTransformedValues>({ control, name })
 
   return (
     <Select

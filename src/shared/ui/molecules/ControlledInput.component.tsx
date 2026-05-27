@@ -6,9 +6,13 @@ import { Input } from '../atoms'
 type InputProps = ComponentProps<typeof Input>
 type HtmlFieldValue = string | number | readonly string[]
 
-interface ControlledInputProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+interface ControlledInputProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>
   extends Omit<InputProps, 'defaultValue' | 'error' | 'name' | 'onBlur' | 'onChange' | 'ref' | 'value'> {
-  control: Control<TFieldValues>
+  control: Control<TFieldValues, unknown, TTransformedValues>
   name: TName
 }
 
@@ -20,15 +24,19 @@ function getHtmlFieldValue(value: unknown): HtmlFieldValue {
   return String(value)
 }
 
-function ControlledInput<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
+function ControlledInput<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>({
   control,
   name,
   ...inputProps
-}: Readonly<ControlledInputProps<TFieldValues, TName>>) {
+}: Readonly<ControlledInputProps<TFieldValues, TName, TTransformedValues>>) {
   const {
     field: { name: fieldName, onBlur, onChange, ref: inputRef, value },
     fieldState,
-  } = useController({ control, name })
+  } = useController<TFieldValues, TName, TTransformedValues>({ control, name })
 
   return (
     <Input

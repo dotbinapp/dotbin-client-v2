@@ -1,16 +1,17 @@
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AtSign, CalendarDays, FileText, Mail, Phone, UserRound } from 'lucide-react'
+import { AtSign, CalendarDays, IdCard, Mail, UserRound } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import { patientCreateSchema } from '@domains/patients/model'
 import type { PatientCreateFormInputValues, PatientCreateFormValues } from '@domains/patients/model'
 import { themeClass } from '@shared/styles/theme.styles'
-import { ControlledInput, ControlledSelect } from '@shared/ui/molecules'
+import { ControlledInput, ControlledPhoneInput, ControlledSelect } from '@shared/ui/molecules'
 
 interface PatientCreateFormProps {
   disabled?: boolean
   formId: string
+  initialValues?: PatientCreateFormInputValues
   isOpen: boolean
   onMinimumDataChange: (hasMinimumData: boolean) => void
   onValidSubmit?: (patientDraft: PatientCreateFormValues) => Promise<void> | void
@@ -27,7 +28,7 @@ const PATIENT_CREATE_DEFAULT_VALUES: PatientCreateFormInputValues = {
   phone: '',
 }
 
-function PatientCreateForm({ disabled = false, formId, isOpen, onMinimumDataChange, onValidSubmit }: Readonly<PatientCreateFormProps>) {
+function PatientCreateForm({ disabled = false, formId, initialValues, isOpen, onMinimumDataChange, onValidSubmit }: Readonly<PatientCreateFormProps>) {
   const { control, handleSubmit, reset } = useForm<PatientCreateFormInputValues, unknown, PatientCreateFormValues>({
     defaultValues: PATIENT_CREATE_DEFAULT_VALUES,
     mode: 'onBlur',
@@ -39,15 +40,18 @@ function PatientCreateForm({ disabled = false, formId, isOpen, onMinimumDataChan
   const today = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
+    if (!isOpen) return
+
+    reset(initialValues ?? PATIENT_CREATE_DEFAULT_VALUES)
+  }, [initialValues, isOpen, reset])
+
+  useEffect(() => {
     onMinimumDataChange(Boolean(firstName.trim() && lastName.trim()))
   }, [firstName, lastName, onMinimumDataChange])
 
   useEffect(() => {
-    if (isOpen) return
-
-    reset(PATIENT_CREATE_DEFAULT_VALUES)
-    onMinimumDataChange(false)
-  }, [isOpen, onMinimumDataChange, reset])
+    if (!isOpen) onMinimumDataChange(false)
+  }, [isOpen, onMinimumDataChange])
 
   const submitPatientDraft: SubmitHandler<PatientCreateFormValues> = (patientDraft) => {
     onValidSubmit?.(patientDraft)
@@ -79,12 +83,12 @@ function PatientCreateForm({ disabled = false, formId, isOpen, onMinimumDataChan
 
         <div className="grid gap-3 sm:grid-cols-2">
           <ControlledInput Icon={Mail} autoComplete="email" control={control} disabled={disabled} inputMode="email" label="Email" name="email" size="compact" type="email" />
-          <ControlledInput Icon={Phone} autoComplete="tel" control={control} disabled={disabled} inputMode="numeric" label="Teléfono" min={0} name="phone" size="compact" step={1} type="number" />
+          <ControlledPhoneInput control={control} disabled={disabled} label="Teléfono" name="phone" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <ControlledInput Icon={AtSign} control={control} disabled={disabled} label="Instagram" name="instagramAccount" placeholder="usuario_instagram" size="compact" />
-          <ControlledInput Icon={FileText} control={control} disabled={disabled} inputMode="numeric" label="Nro. documento" min={0} name="documentNumber" size="compact" step={1} type="number" />
+          <ControlledInput Icon={IdCard} control={control} disabled={disabled} inputMode="numeric" label="Nro. documento" min={0} name="documentNumber" size="compact" step={1} type="number" />
         </div>
       </fieldset>
     </form>
