@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { AlertTriangle, CheckCircle2, X, XCircle } from 'lucide-react'
-import { composeClassName } from '../utils/className.utils'
+import { composeClassName } from '../../utils/className.utils'
 
 export type ToastType = 'error' | 'success' | 'warning'
 

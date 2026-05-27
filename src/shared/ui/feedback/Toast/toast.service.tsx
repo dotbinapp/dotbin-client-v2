@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 import { toast as sonnerToast } from 'sonner'
 import type { ExternalToast } from 'sonner'
-import ToastContent from './ToastContent.component'
-import type { ToastType } from './ToastContent.component'
+import ToastContent, { type ToastType } from './ToastContent.component'
 
 interface AppToastOptions extends Omit<ExternalToast, 'description' | 'icon'> {
   description?: ReactNode

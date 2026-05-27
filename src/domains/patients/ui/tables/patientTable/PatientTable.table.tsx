@@ -69,7 +69,7 @@ function PatientTable() {
       }}
       rowKey={(patient) => patient.id}
       rows={paginatedPatients}
-      searchPlaceholder="Buscar por nombre, Instagram o teléfono..."
+      searchPlaceholder="Buscar por nombre o usuario de Instagram"
       sortState={sortState}
     />
   )
