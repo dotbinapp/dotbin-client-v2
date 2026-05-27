@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '@app/store/hooks'
 import { APP_PERMISSION_CODES, selectSessionCenter, selectSessionDoctor, usePermissions } from '@domains/identity-access'
-import { themeClass } from '@shared/styles/theme.styles'
 import { DEFAULT_CALENDAR_TIMEZONE } from '../../model/calendar.constants'
 import type { CalendarSlotIntent } from '../../model/scheduling.types'
 import { useWeeklyCalendarData } from '../../application/useWeeklyCalendarData.hook'

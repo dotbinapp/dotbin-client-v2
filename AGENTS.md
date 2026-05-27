@@ -505,6 +505,7 @@ Reglas:
 - Un dominio no debe importar internos de otro dominio.
 - Si un dominio necesita exponer algo, debe hacerlo desde su `index.ts` público.
 - No importar deep internals de otro dominio.
+- Importar desde fronteras de dominio y aliases públicos (`@domains/<domain>`, `@shared/...`, `@app/...`); no resolver dependencias con rutas relativas ascendentes como `../../`.
 - `model/` no importa desde `api/`, `state/`, `queries/`, `application/`, `pages/` ni `ui/`.
 - `shared/ui` no importa desde `shared/api`.
 - `api/` puede importar desde `shared/api` y `model/`.
@@ -516,11 +517,14 @@ Permitido:
 ```ts
 import { Button } from '@shared/ui/atoms';
 import { patientsRoutes } from '@domains/patients';
+import { patientCreateSchema } from '@domains/patients/model';
 ```
 
 Evitar:
 
 ```ts
+import { Button } from '../../../shared/ui/atoms';
+import { patientCreateSchema } from '../../model/patient.schema';
 import { PatientTable } from '@domains/patients/ui/tables/PatientTable.table';
 import { patientsReducer } from '@domains/patients/state/patients.slice';
 ```

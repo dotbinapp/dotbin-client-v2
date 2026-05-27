@@ -1,15 +1,17 @@
+import { PatientTable } from '@domains/patients/ui/tables'
 import { Text } from '@shared/ui/atoms'
 import { BaseContainer } from '@shared/ui/layout'
 
 function PatientsPage() {
   return (
-    <BaseContainer as="main" padding="none" surface="transparent" fullHeight>
-      <Text as="h1" variant="title">
-        Pacientes
-      </Text>
-      <Text className="mt-2" tone="muted">
-        Página de listado y gestión inicial de pacientes.
-      </Text>
+    <BaseContainer as="main" className="flex min-h-0 flex-col gap-5" padding="none" surface="transparent" fullHeight>
+      <header>
+        <Text as="h1" variant="title">
+          Pacientes
+        </Text>
+      </header>
+
+      <PatientTable />
     </BaseContainer>
   )
 }
