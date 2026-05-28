@@ -1,3 +1,6 @@
+export type ProfessionalListSortField = 'email' | 'fullName' | 'specialty'
+export type ProfessionalListSortDirection = 'asc' | 'desc'
+
 export interface ProfessionalCreatePayload {
   email?: string
   firstName: string
@@ -14,4 +17,17 @@ export interface ProfessionalSummary {
   lastName: string
   phone: string | null
   specialty: string | null
+}
+
+export interface ProfessionalListParams {
+  limit: number
+  offset: number
+  searchTerm?: string
+  sortDirection?: ProfessionalListSortDirection
+  sortField?: ProfessionalListSortField
+}
+
+export interface ProfessionalListResult {
+  professionals: ProfessionalSummary[]
+  total: number
 }

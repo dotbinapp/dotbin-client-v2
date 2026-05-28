@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Plus } from 'lucide-react'
 import { useAppSelector } from '@app/store/hooks'
-import { selectSessionCenter } from '@domains/identity-access'
+import { APP_PERMISSION_CODES, selectSessionCenter, usePermissions } from '@domains/identity-access'
 import { usePatientSaveFlow } from '@domains/patients/application'
 import type { PatientSummary } from '@domains/patients/model'
 import { usePatientsQuery } from '@domains/patients/queries/patients.query'
@@ -19,6 +19,8 @@ const INITIAL_PAGE_SIZE = 15
 function PatientTable() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
   const center = useAppSelector(selectSessionCenter)
+  const { hasPermission } = usePermissions()
+  const canManagePatients = hasPermission(APP_PERMISSION_CODES.PATIENTS_ADMIN)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
   const [page, setPage] = useState(INITIAL_PAGE)
@@ -77,8 +79,8 @@ function PatientTable() {
   }
 
   const patientTableColumns = useMemo(
-    () => getPatientTableColumns({ onEditPatient: openEditPatientDialog }),
-    [openEditPatientDialog],
+    () => getPatientTableColumns({ canEditPatient: canManagePatients, onEditPatient: openEditPatientDialog }),
+    [canManagePatients, openEditPatientDialog],
   )
 
   const handleSearchChange = (nextSearchTerm: string) => {
@@ -99,11 +101,11 @@ function PatientTable() {
   return (
     <>
       <BaseTable
-        actions={
+        actions={canManagePatients ? (
           <Button Icon={Plus} onClick={openCreatePatientDialog} size="sm">
             Crear paciente
           </Button>
-        }
+        ) : undefined}
         columns={patientTableColumns}
         emptyMessage={patientsQuery.isError ? 'No se pudieron cargar los pacientes' : 'No hay pacientes para mostrar'}
         loading={patientsQuery.isLoading}

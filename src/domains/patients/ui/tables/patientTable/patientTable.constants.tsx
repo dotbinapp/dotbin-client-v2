@@ -14,11 +14,12 @@ export const PATIENT_TABLE_FILTERS: BaseTableFilterOption<PatientTableFilter>[] 
 ]
 
 interface PatientTableColumnsParams {
+  canEditPatient: boolean
   onEditPatient: (patient: PatientSummary) => void
 }
 
-export function getPatientTableColumns({ onEditPatient }: PatientTableColumnsParams): BaseTableColumn<PatientSummary, PatientTableSortField>[] {
-  return [
+export function getPatientTableColumns({ canEditPatient, onEditPatient }: PatientTableColumnsParams): BaseTableColumn<PatientSummary, PatientTableSortField>[] {
+  const columns: BaseTableColumn<PatientSummary, PatientTableSortField>[] = [
     {
       HeaderIcon: UserRound,
       id: 'patient',
@@ -86,6 +87,13 @@ export function getPatientTableColumns({ onEditPatient }: PatientTableColumnsPar
         </span>
       ),
     },
+
+  ]
+
+  if (!canEditPatient) return columns
+
+  return [
+    ...columns,
     {
       align: 'center',
       HeaderIcon: SquaresSubtract,
