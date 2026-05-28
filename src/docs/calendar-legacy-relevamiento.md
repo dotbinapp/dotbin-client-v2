@@ -66,7 +66,7 @@ Regla práctica:
 
 3. **Contexto real del calendario — bloqueante para API**
    - Obtener `centerId`, `token`, `timezone`, permisos y schedule desde fronteras públicas existentes o bootstrap de app.
-   - Definir frontera pública para datos auxiliares: doctores, pacientes y tratamientos. No importar deep internals de esos dominios.
+   - Definir frontera pública para datos auxiliares: doctores, pacientes y servicios. No importar deep internals de esos dominios.
    - Mientras esos dominios no tengan APIs públicas reales, usar contratos explícitos en `scheduling/application`, no mocks desperdigados en UI.
 
 4. **Estado base del calendario — rediseñar según AGENTS.md**
@@ -83,7 +83,7 @@ Regla práctica:
    - Falta mobile parity: scroll horizontal sincronizado, header mobile y línea de hora actual. Decidir si entra en el primer corte o queda explícitamente fuera.
 
 6. **Modal de creación/edición — scaffold hecho, funcionalidad pendiente**
-   - Ya existe `AppointmentCreate.dialog.tsx` y `AppointmentCreate.form.tsx`, pero hoy son UI sin submit real, sin schema, sin carga de pacientes/doctores/tratamientos y sin distinguir de verdad turno vs bloqueo.
+   - Ya existe `AppointmentCreate.dialog.tsx` y `AppointmentCreate.form.tsx`, pero hoy son UI sin submit real, sin schema, sin carga de pacientes/doctores/servicios y sin distinguir de verdad turno vs bloqueo.
    - Renombrar/evolucionar hacia `CalendarAppointment.dialog.tsx`, `Appointment.form.tsx` y `Block.form.tsx` cuando se implemente edición real. No hacerlo antes solo para “parecer prolijo”.
    - Mantener precarga desde slot: fecha + hora + intención.
 
@@ -145,7 +145,7 @@ WeekView
 - No hay mapper API ↔ dominio. La UI depende de tipos internos inventados para la migración, no del contrato real del backend.
 - No hay schema Zod para creación/edición.
 - El form no envía nada: el botón `Confirmar` está fuera del submit real y no dispara mutation.
-- No hay carga real de pacientes, doctores ni tratamientos para selects.
+- No hay carga real de pacientes, doctores ni servicios para selects.
 - No hay filtro por doctor ni regla legacy aplicada antes de renderizar items.
 - No hay schedule real del centro conectado; por eso los slots usan fallback.
 - No hay detalle operativo de card.
@@ -197,7 +197,7 @@ Estado: primer corte implementado parcialmente. Ya se configuró TanStack Query,
 - **Turnos y bloqueos** pertenecen a `scheduling`.
 - **Doctores** pertenecen a `doctors`; `scheduling` solo consume una frontera pública para listar/select de profesionales y disponibilidad necesaria.
 - **Pacientes** pertenecen a `patients`; `scheduling` no debe importar componentes ni services internos para crear el selector.
-- **Tratamientos** pertenecen a `clinical-services`; costo/duración se puede consumir por frontera pública, no duplicar reglas en scheduling.
+- **Servicios** pertenecen a `services`; costo/duración se puede consumir por frontera pública, no duplicar reglas en scheduling.
 - **Pagos** pertenecen a `billing-payments`; registrar pago desde calendario debe abrir una integración pública o quedar fuera del primer corte.
 - **Stock/cierre clínico** cruza `inventory` y `patients`; no meterlo en la card. Ese flujo necesita caso de uso propio.
 
@@ -306,7 +306,7 @@ Services:
 - `updateAppointment`
 - `getPatientsByCenter`
 - `getDoctorsByCenter` vía selects y bootstrap.
-- `getTreatmentsByCenter` vía selects y carga previa del modal.
+- `getServicesByCenter` vía selects y carga previa del modal.
 
 Utils/schemas:
 
@@ -330,7 +330,7 @@ Estado:
 - `appointmentsSlice.addAppointment`
 - `appointmentsSlice.updateAppointment`
 - `doctorsSlice.setDoctors`
-- `treatmentsSlice.setTreatments`
+- `servicesSlice.setServices`
 - `appointmentsSlice.setDoctorFilter`
 
 ### Operación de card y completado
@@ -408,7 +408,7 @@ Estado:
 3. **Slots desde schedule**: la semana usa el rango más amplio de días abiertos del centro.
 4. **Permiso único de edición**: `CALENDAR_EDIT` controla crear, editar, cancelar, bloquear y completar desde calendario.
 5. **Modal único de booking**: crear/editar turno o bloqueo pasa por el dialog equivalente a `CalendarAppointmentModal`.
-6. **No deep imports entre dominios**: `scheduling` no debe importar internos de `patients`, `doctors`, `clinical-services`, `billing-payments` ni `inventory`.
+6. **No deep imports entre dominios**: `scheduling` no debe importar internos de `patients`, `doctors`, `services`, `billing-payments` ni `inventory`.
 7. **Card no orquesta todo**: la card puede abrir acciones, pero servicios complejos van a hooks/casos de uso.
 8. **Utils puras testeables**: posicionamiento, slots, filtros, rangos y disponibilidad no deben vivir enterrados en JSX.
 9. **Estado filtrado consistente**: mantener reglas legacy de filtro por doctor, cancelados y bloqueos generales.
@@ -453,7 +453,7 @@ Crear solo lo que se implemente. Carpetas vacías para “parecer prolijo” son
 2. **Pagos**: `RegisterPaymentDrawer` depende de `billing-payments`; hay que definir frontera pública antes de migrarlo.
 3. **Stock al completar**: `TurnCompletion` toca inventory/stock; puede inflar muchísimo el alcance.
 4. **Pacientes mínimos/prospectos**: completar turno puede requerir `ConvertProspectModal`; esto cruza `patients`.
-5. **Tratamientos y planes**: el form calcula duración, costo y planes vinculados; no meter esto en `shared` por ansiedad.
+5. **Servicios y planes**: el form calcula duración, costo y planes vinculados; no meter esto en `shared` por ansiedad.
 6. **WhatsApp**: recordatorios y resumen dependen de permisos/admin y `whatsapp.status`.
 7. **AppointmentCard legacy**: hoy mezcla UI, pagos, status, recordatorios, cierre y eliminación. Hay que partirla antes de migrar.
 8. **Estado global**: decidir qué queda en Redux y qué se resuelve con hooks del dominio.

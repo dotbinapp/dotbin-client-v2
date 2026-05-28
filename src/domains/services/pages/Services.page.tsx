@@ -1,17 +1,17 @@
 import { Text } from '@shared/ui/atoms'
 import { BaseContainer } from '@shared/ui/layout'
 
-function TreatmentsPage() {
+function ServicesPage() {
   return (
     <BaseContainer as="main" padding="none" surface="transparent" fullHeight>
       <Text as="h1" variant="title">
-        Tratamientos
+        Servicios
       </Text>
       <Text className="mt-2" tone="muted">
-        Página de tratamientos y servicios clínicos.
+        Página de servicios disponibles para el centro.
       </Text>
     </BaseContainer>
   )
 }
 
-export default TreatmentsPage
+export default ServicesPage

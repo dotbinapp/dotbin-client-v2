@@ -1,4 +1,4 @@
-import { CalendarDays, LayoutDashboard, Package, Stethoscope, Users, VenusAndMars } from 'lucide-react'
+import { Award, CalendarDays, LayoutDashboard, Package, Stethoscope, Users, VenusAndMars } from 'lucide-react'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import type { AppSidebarNavigationGroup } from './sidebarNavigation.types'
 
@@ -36,10 +36,10 @@ export const APP_SIDEBAR_NAVIGATION_GROUPS: readonly AppSidebarNavigationGroup[]
         requiredPermissions: [APP_PERMISSION_CODES.DOCTORS_LIST_READ],
       },
       {
-        path: '/treatments',
-        label: 'Tratamientos',
-        Icon: Stethoscope,
-        requiredPermissions: [APP_PERMISSION_CODES.TREATMENTS_LIST_READ],
+        path: '/services',
+        label: 'Servicios',
+        Icon: Award,
+        requiredPermissions: [APP_PERMISSION_CODES.SERVICES_LIST_READ, APP_PERMISSION_CODES.TREATMENTS_LIST_READ],
       },
     ],
   },

@@ -4,12 +4,12 @@ import { PageLoader, ProtectedRoute, RootRedirect } from '@app/components/routin
 import { DEFAULT_ROUTE } from '@app/router/route.constants'
 import { ANALYTICS_DASHBOARD_ROUTE_PATH, AnalyticsDashboardPage } from '@domains/analytics'
 import { CENTER_MANAGEMENT_PROFILE_ROUTE_PATH, CenterManagementProfilePage } from '@domains/center-management'
-import { CLINICAL_SERVICES_TREATMENTS_ROUTE_PATH, ClinicalServicesTreatmentsPage } from '@domains/clinical-services'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import { STOCKS_ROUTE_PATH, StocksPage } from '@domains/inventory'
 import { PATIENTS_ROUTE_PATH, PatientsPage } from '@domains/patients'
 import { PROFESSIONALS_ROUTE_PATH, ProfessionalsPage } from '@domains/professionals'
 import { SCHEDULING_CALENDAR_ROUTE_PATH, SchedulingCalendarPage } from '@domains/scheduling'
+import { LEGACY_TREATMENTS_ROUTE_PATH, SERVICES_ROUTE_PATH, ServicesPage } from '@domains/services'
 
 function AppRouter() {
   return (
@@ -49,13 +49,16 @@ function AppRouter() {
           }
         />
         <Route
-          path={CLINICAL_SERVICES_TREATMENTS_ROUTE_PATH}
+          path={SERVICES_ROUTE_PATH}
           element={
-            <ProtectedRoute requiredPermission={APP_PERMISSION_CODES.TREATMENTS_LIST_READ}>
-              <ClinicalServicesTreatmentsPage />
+            <ProtectedRoute
+              requiredPermissions={[APP_PERMISSION_CODES.SERVICES_LIST_READ, APP_PERMISSION_CODES.TREATMENTS_LIST_READ]}
+            >
+              <ServicesPage />
             </ProtectedRoute>
           }
         />
+        <Route path={LEGACY_TREATMENTS_ROUTE_PATH} element={<Navigate to={SERVICES_ROUTE_PATH} replace />} />
         <Route
           path={CENTER_MANAGEMENT_PROFILE_ROUTE_PATH}
           element={

@@ -152,7 +152,7 @@ Ejemplos válidos:
 ```txt
 pacientes
 turnos
-tratamientos
+servicios
 profesionales
 disponibilidad
 historial clínico
@@ -269,7 +269,7 @@ src/
 │   ├── center-management/
 │   ├── patients/
 │   ├── scheduling/
-│   ├── clinical-services/
+│   ├── services/
 │   ├── professionals/
 │   ├── inventory/
 │   ├── catalog/
@@ -317,7 +317,7 @@ identity-access     # sesión, usuario, permisos, Auth0, perfil
 center-management   # centro, configuración, integraciones del centro
 patients            # pacientes, detalle, documentos, historia clínica, consultas
 scheduling          # agenda, turnos, bloqueos, disponibilidad, cierre de turno
-clinical-services   # tratamientos, categorías de tratamiento, servicios clínicos
+services            # servicios del centro, categorías de servicio, prestaciones configurables
 professionals       # staff/profesionales, agenda profesional, disponibilidad profesional
 inventory           # stock, movimientos, recepción, órdenes de compra
 catalog             # productos y proveedores
@@ -536,7 +536,7 @@ Cada dominio puede publicar rutas desde `routes/routes.tsx` y exponerlas por `ro
 ```txt
 domains/patients/routes/routes.tsx
 domains/scheduling/routes/routes.tsx
-domains/clinical-services/routes/routes.tsx
+domains/services/routes/routes.tsx
 ```
 
 El router global compone esas rutas en `app/router`.
@@ -547,7 +547,7 @@ Los slices viven cerca del dominio, no en una carpeta global de slices.
 
 TanStack Query se configura a nivel app desde `app/providers` o `app/bootstrap`, pero las queries/mutations viven cerca del dominio que las usa.
 
-## 14. Profesionales, tratamientos y categorías de tratamiento
+## 14. Profesionales, servicios y categorías de servicio
 
 La gestión de profesionales/staff pertenece a `professionals`.
 
@@ -564,18 +564,18 @@ domains/professionals/
 └── ui/
 ```
 
-La gestión de tratamientos pertenece a `clinical-services`.
+La gestión de servicios pertenece a `services`.
 
 ```txt
-domains/clinical-services/
+domains/services/
 ├── model/
-│   ├── treatment.types.ts
-│   ├── treatment.schema.ts
-│   ├── treatmentCategory.types.ts
-│   └── treatmentCategory.schema.ts
+│   ├── service.types.ts
+│   ├── service.schema.ts
+│   ├── serviceCategory.types.ts
+│   └── serviceCategory.schema.ts
 ├── api/
-│   ├── treatments.api.ts
-│   └── treatmentCategories.api.ts
+│   ├── services.api.ts
+│   └── serviceCategories.api.ts
 ├── state/
 ├── queries/
 ├── application/

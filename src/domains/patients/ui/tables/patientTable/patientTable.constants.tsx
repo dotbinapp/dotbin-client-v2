@@ -2,7 +2,6 @@ import { AtSign, CalendarClock, Hash, IdCard, SquaresSubtract, MoreVertical, Pen
 import type { PatientSummary } from '@domains/patients/model/patient.types'
 import { MenuButton } from '@shared/ui/molecules'
 import type { BaseTableColumn, BaseTableFilterOption } from '@shared/ui/organisms'
-import PatientIdentityCell from './PatientIdentityCell.component'
 import type { PatientTableFilter, PatientTableSortField } from './patientTable.types'
 import { formatPatientVisitDate, getInstagramProfileUrl, getWhatsAppUrl } from './patientTable.utils'
 
@@ -24,7 +23,7 @@ export function getPatientTableColumns({ canEditPatient, onEditPatient }: Patien
       HeaderIcon: UserRound,
       id: 'patient',
       label: 'Nombre',
-      renderCell: (patient) => <PatientIdentityCell patient={patient} />,
+      renderCell: (patient) => <span className="font-bold text-ui-text-default">{patient.fullName}</span>,
       sortField: 'fullName',
       widthClassName: 'min-w-72',
     },
@@ -74,7 +73,7 @@ export function getPatientTableColumns({ canEditPatient, onEditPatient }: Patien
       HeaderIcon: CalendarClock,
       id: 'lastVisitAt',
       label: 'Última visita',
-      renderCell: (patient) => <span className="font-mono text-ui-text-muted">{formatPatientVisitDate(patient.lastVisitAt)}</span>,
+      renderCell: (patient) => <span className="text-ui-text-muted">{formatPatientVisitDate(patient.lastVisitAt)}</span>,
     },
     {
       HeaderIcon: Hash,

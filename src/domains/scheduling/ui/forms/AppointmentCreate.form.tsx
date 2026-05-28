@@ -30,8 +30,8 @@ function AppointmentCreateForm({ initialValues }: Readonly<AppointmentCreateForm
         <option value="">Seleccionar profesional</option>
       </Select>
 
-      <Select label="Tratamientos" name="treatmentIds" size="compact">
-        <option value="">Seleccionar tratamientos</option>
+      <Select label="Servicios" name="treatmentIds" size="compact">
+        <option value="">Seleccionar servicios</option>
       </Select>
 
       <label className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${themeClass.surface.muted} ${themeClass.text.default}`}>

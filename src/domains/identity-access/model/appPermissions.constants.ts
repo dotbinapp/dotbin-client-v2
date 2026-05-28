@@ -10,7 +10,8 @@ export const APP_PERMISSIONS = {
   PATIENTS_LIST_READ: 'Permite acceder al listado de pacientes y consultar información resumida.',
   PATIENTS_READ: 'Permite acceder al detalle de un paciente.',
   PATIENTS_PAYMENT_HISTORY_READ: 'Permite acceder al historial de pagos de un paciente.',
-  TREATMENTS_LIST_READ: 'Permite acceder a la gestión y consulta de tratamientos y servicios clínicos.',
+  SERVICES_LIST_READ: 'Permite acceder a la gestión y consulta de servicios del centro.',
+  TREATMENTS_LIST_READ: 'Permite acceder a la gestión y consulta de servicios del centro.',
   STOCK_READ: 'Permite acceder al inventario, catálogo y movimientos de stock.',
   SETTINGS_READ: 'Permite acceder a la configuración del centro y perfil operativo.',
 } as const
