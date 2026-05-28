@@ -1,10 +1,12 @@
-import type { ComponentProps } from 'react'
+import type { ChangeEvent, ComponentProps } from 'react'
 import type { Control, FieldPath, FieldValues } from 'react-hook-form'
 import { useController } from 'react-hook-form'
+import { formatCostInputWhileTyping, normalizeCostInput } from '@shared/utils'
 import { Input } from '../atoms'
 
 type InputProps = ComponentProps<typeof Input>
 type HtmlFieldValue = string | number | readonly string[]
+type ControlledInputFormat = 'cost'
 
 interface ControlledInputProps<
   TFieldValues extends FieldValues,
@@ -13,6 +15,7 @@ interface ControlledInputProps<
 >
   extends Omit<InputProps, 'defaultValue' | 'error' | 'name' | 'onBlur' | 'onChange' | 'ref' | 'value'> {
   control: Control<TFieldValues, unknown, TTransformedValues>
+  format?: ControlledInputFormat
   name: TName
 }
 
@@ -30,6 +33,7 @@ function ControlledInput<
   TTransformedValues = TFieldValues,
 >({
   control,
+  format,
   name,
   ...inputProps
 }: Readonly<ControlledInputProps<TFieldValues, TName, TTransformedValues>>) {
@@ -37,15 +41,35 @@ function ControlledInput<
     field: { name: fieldName, onBlur, onChange, ref: inputRef, value },
     fieldState,
   } = useController<TFieldValues, TName, TTransformedValues>({ control, name })
+  const isCostInput = format === 'cost'
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!isCostInput) {
+      onChange(event)
+      return
+    }
+
+    onChange(formatCostInputWhileTyping(event.target.value))
+  }
+
+  const handleBlur = () => {
+    if (isCostInput && typeof value === 'string') {
+      onChange(normalizeCostInput(value))
+    }
+
+    onBlur()
+  }
 
   return (
     <Input
       {...inputProps}
       error={fieldState.error?.message}
+      inputMode={isCostInput ? 'decimal' : inputProps.inputMode}
       name={fieldName}
-      onBlur={onBlur}
-      onChange={onChange}
+      onBlur={handleBlur}
+      onChange={handleChange}
       ref={inputRef}
+      type={isCostInput ? 'text' : inputProps.type}
       value={getHtmlFieldValue(value)}
     />
   )

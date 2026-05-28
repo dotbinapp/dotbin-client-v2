@@ -1,4 +1,4 @@
-import { Award, CalendarDays, LayoutDashboard, Package, Stethoscope, Users, VenusAndMars } from 'lucide-react'
+import { Award, CalendarDays, LayoutDashboard, Package, Users, VenusAndMars } from 'lucide-react'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import type { AppSidebarNavigationGroup } from './sidebarNavigation.types'
 

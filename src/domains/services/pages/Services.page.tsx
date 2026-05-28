@@ -1,15 +1,10 @@
-import { Text } from '@shared/ui/atoms'
+import { ServiceTable } from '@domains/services/ui/tables'
 import { BaseContainer } from '@shared/ui/layout'
 
 function ServicesPage() {
   return (
-    <BaseContainer as="main" padding="none" surface="transparent" fullHeight>
-      <Text as="h1" variant="title">
-        Servicios
-      </Text>
-      <Text className="mt-2" tone="muted">
-        Página de servicios disponibles para el centro.
-      </Text>
+    <BaseContainer as="main" className="flex min-h-0 flex-col gap-5" padding="none" surface="transparent" fullHeight>
+      <ServiceTable />
     </BaseContainer>
   )
 }

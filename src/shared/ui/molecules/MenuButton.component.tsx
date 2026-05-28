@@ -11,9 +11,10 @@ type MenuButtonPanelOffset = 'tight' | 'normal'
 type MenuButtonPanelPlacement = 'bottom-start' | 'bottom-center' | 'bottom-end'
 
 export interface MenuButtonOption {
+  disabled?: boolean
   Icon?: LucideIcon
   label: string
-  onSelect: () => void
+  onSelect?: () => void
 }
 
 interface MenuButtonProps extends Omit<ButtonProps, 'onClick' | 'size'> {
@@ -56,7 +57,7 @@ const MENU_PANEL_PLACEMENT_CLASS: Record<MenuButtonPanelPlacement, string> = {
 
 const MENU_PANEL_BASE_CLASS = `absolute z-[80] ${themeClass.surface.elevated}`
 const MENU_OPTION_BASE_CLASS =
-  `flex w-full cursor-pointer items-center text-left font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40`
+  `flex w-full cursor-pointer items-center text-left font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent disabled:hover:text-current`
 
 function MenuButton({
   children,
@@ -98,6 +99,8 @@ function MenuButton({
   }, [isOpen])
 
   const selectOption = (option: MenuButtonOption) => {
+    if (option.disabled || !option.onSelect) return
+
     option.onSelect()
     setIsOpen(false)
   }
@@ -128,6 +131,7 @@ function MenuButton({
               <li key={option.label}>
                 <button
                   className={`${MENU_OPTION_BASE_CLASS} ${MENU_OPTION_SIZE_CLASS[size]}`}
+                  disabled={option.disabled}
                   onClick={() => selectOption(option)}
                   type="button"
                 >
