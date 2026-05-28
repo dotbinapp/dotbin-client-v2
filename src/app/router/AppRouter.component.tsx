@@ -6,7 +6,7 @@ import { ANALYTICS_DASHBOARD_ROUTE_PATH, AnalyticsDashboardPage } from '@domains
 import { CENTER_MANAGEMENT_PROFILE_ROUTE_PATH, CenterManagementProfilePage } from '@domains/center-management'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import { STOCKS_ROUTE_PATH, StocksPage } from '@domains/inventory'
-import { PATIENTS_ROUTE_PATH, PatientsPage } from '@domains/patients'
+import { PATIENT_DETAIL_ROUTE_PATH, PATIENTS_ROUTE_PATH, PatientDetailPage, PatientsPage } from '@domains/patients'
 import { PROFESSIONALS_ROUTE_PATH, ProfessionalsPage } from '@domains/professionals'
 import { SCHEDULING_CALENDAR_ROUTE_PATH, SchedulingCalendarPage } from '@domains/scheduling'
 import { LEGACY_TREATMENTS_ROUTE_PATH, SERVICES_ROUTE_PATH, ServicesPage } from '@domains/services'
@@ -37,6 +37,14 @@ function AppRouter() {
           element={
             <ProtectedRoute requiredPermission={APP_PERMISSION_CODES.PATIENTS_LIST_READ}>
               <PatientsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={PATIENT_DETAIL_ROUTE_PATH}
+          element={
+            <ProtectedRoute requiredPermission={APP_PERMISSION_CODES.PATIENTS_READ}>
+              <PatientDetailPage />
             </ProtectedRoute>
           }
         />

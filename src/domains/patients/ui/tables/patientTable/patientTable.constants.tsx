@@ -1,6 +1,7 @@
-import { AtSign, CalendarClock, Hash, IdCard, SquaresSubtract, MoreVertical, Pencil, Phone, UserRound } from 'lucide-react'
+import { AtSign, CalendarClock, Eye, Hash, IdCard, SquaresSubtract, MoreVertical, Pencil, Phone, UserRound } from 'lucide-react'
 import type { PatientSummary } from '@domains/patients/model/patient.types'
 import { MenuButton } from '@shared/ui/molecules'
+import type { MenuButtonOption } from '@shared/ui/molecules'
 import type { BaseTableColumn, BaseTableFilterOption } from '@shared/ui/organisms'
 import type { PatientTableFilter, PatientTableSortField } from './patientTable.types'
 import { formatPatientVisitDate, getInstagramProfileUrl, getWhatsAppUrl } from './patientTable.utils'
@@ -14,10 +15,27 @@ export const PATIENT_TABLE_FILTERS: BaseTableFilterOption<PatientTableFilter>[] 
 
 interface PatientTableColumnsParams {
   canEditPatient: boolean
+  canViewPatient: boolean
   onEditPatient: (patient: PatientSummary) => void
+  onViewPatient: (patient: PatientSummary) => void
 }
 
-export function getPatientTableColumns({ canEditPatient, onEditPatient }: PatientTableColumnsParams): BaseTableColumn<PatientSummary, PatientTableSortField>[] {
+function getPatientActions({ canEditPatient, canViewPatient, onEditPatient, onViewPatient }: PatientTableColumnsParams, patient: PatientSummary) {
+  const actions: MenuButtonOption[] = []
+
+  if (canViewPatient) {
+    actions.push({ Icon: Eye, label: 'Ver detalle', onSelect: () => onViewPatient(patient) })
+  }
+
+  if (canEditPatient) {
+    actions.push({ Icon: Pencil, label: 'Editar paciente', onSelect: () => onEditPatient(patient) })
+  }
+
+  return actions
+}
+
+export function getPatientTableColumns(params: PatientTableColumnsParams): BaseTableColumn<PatientSummary, PatientTableSortField>[] {
+  const { canEditPatient, canViewPatient } = params
   const columns: BaseTableColumn<PatientSummary, PatientTableSortField>[] = [
     {
       HeaderIcon: UserRound,
@@ -89,7 +107,7 @@ export function getPatientTableColumns({ canEditPatient, onEditPatient }: Patien
 
   ]
 
-  if (!canEditPatient) return columns
+  if (!canEditPatient && !canViewPatient) return columns
 
   return [
     ...columns,
@@ -104,7 +122,7 @@ export function getPatientTableColumns({ canEditPatient, onEditPatient }: Patien
             aria-label={`Acciones de ${patient.fullName}`}
             Icon={MoreVertical}
             iconOnly
-            options={[{ Icon: Pencil, label: 'Editar paciente', onSelect: () => onEditPatient(patient) }]}
+            options={getPatientActions(params, patient)}
             panelOffset="tight"
             panelPlacement="bottom-end"
             size="sm"

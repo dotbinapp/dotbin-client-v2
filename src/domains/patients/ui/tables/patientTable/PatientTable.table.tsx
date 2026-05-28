@@ -1,11 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Plus } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@app/store/hooks'
 import { APP_PERMISSION_CODES, selectSessionCenter, usePermissions } from '@domains/identity-access'
 import { usePatientSaveFlow } from '@domains/patients/application'
 import type { PatientSummary } from '@domains/patients/model'
 import { usePatientsQuery } from '@domains/patients/queries/patients.query'
+import { PATIENTS_ROUTE_PATH } from '@domains/patients/routes'
 import { PatientCreateDialog } from '@domains/patients/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { BaseTable } from '@shared/ui/organisms'
@@ -17,10 +19,12 @@ const INITIAL_PAGE = 1
 const INITIAL_PAGE_SIZE = 15
 
 function PatientTable() {
+  const navigate = useNavigate()
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
   const center = useAppSelector(selectSessionCenter)
   const { hasPermission } = usePermissions()
   const canManagePatients = hasPermission(APP_PERMISSION_CODES.PATIENTS_ADMIN)
+  const canViewPatient = hasPermission(APP_PERMISSION_CODES.PATIENTS_READ)
   
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
@@ -74,14 +78,18 @@ function PatientTable() {
     setIsPatientDialogOpen(true)
   }, [])
 
+  const openPatientDetail = useCallback((patient: PatientSummary) => {
+    navigate(`${PATIENTS_ROUTE_PATH}/${patient.id}`)
+  }, [navigate])
+
   const closePatientDialog = () => {
     setActivePatient(null)
     setIsPatientDialogOpen(false)
   }
 
   const patientTableColumns = useMemo(
-    () => getPatientTableColumns({ canEditPatient: canManagePatients, onEditPatient: openEditPatientDialog }),
-    [canManagePatients, openEditPatientDialog],
+    () => getPatientTableColumns({ canEditPatient: canManagePatients, canViewPatient, onEditPatient: openEditPatientDialog, onViewPatient: openPatientDetail }),
+    [canManagePatients, canViewPatient, openEditPatientDialog, openPatientDetail],
   )
 
   const handleSearchChange = (nextSearchTerm: string) => {

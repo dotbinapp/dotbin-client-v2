@@ -1,55 +1,12 @@
 import { BadgeDollarSign, ClipboardList, Clock, HandCoins, MoreVertical, Pencil, Sparkles, SquaresSubtract, Tags, Trash2 } from 'lucide-react'
-import type { ServiceSummary } from '@domains/services/model'
+import type { ServiceListSortField, ServiceSummary } from '@domains/services/model'
 import { formatCostInput } from '@shared/utils'
 import { MenuButton } from '@shared/ui/molecules'
 import type { BaseTableColumn } from '@shared/ui/organisms'
 
-export const SERVICE_TABLE_PREVIEW_ROWS: ServiceSummary[] = [
-  {
-    category: 'Facial',
-    cost: 28000,
-    depositAmount: 10000,
-    description: 'Limpieza facial profunda con extracción y máscara calmante.',
-    durationMinutes: 60,
-    hasPostServiceInstructions: true,
-    id: 'service-preview-1',
-    name: 'Limpieza facial profunda',
-    requiresDeposit: true,
-  },
-  {
-    category: 'Dermocosmética',
-    cost: 45000,
-    depositAmount: null,
-    description: 'Peeling químico superficial para renovación de piel.',
-    durationMinutes: 45,
-    hasPostServiceInstructions: true,
-    id: 'service-preview-2',
-    name: 'Peeling químico',
-    requiresDeposit: false,
-  },
-  {
-    category: 'Aparatología',
-    cost: 52000,
-    depositAmount: 15000,
-    description: 'Sesión de radiofrecuencia para tonificación y firmeza.',
-    durationMinutes: 50,
-    hasPostServiceInstructions: false,
-    id: 'service-preview-3',
-    name: 'Radiofrecuencia facial',
-    requiresDeposit: true,
-  },
-  {
-    category: 'Láser',
-    cost: 36000,
-    depositAmount: null,
-    description: null,
-    durationMinutes: 40,
-    hasPostServiceInstructions: false,
-    id: 'service-preview-4',
-    name: 'Depilación láser axilas',
-    requiresDeposit: false,
-  },
-]
+interface ServiceTableColumnsParams {
+  onEditService: (service: ServiceSummary) => void
+}
 
 function formatServiceDuration(durationMinutes: number) {
   return `${durationMinutes} min`
@@ -79,8 +36,8 @@ function getServiceConditionBadges(service: ServiceSummary) {
   return conditionBadges
 }
 
-export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
-  {
+export function getServiceTableColumns({ onEditService }: ServiceTableColumnsParams): BaseTableColumn<ServiceSummary, ServiceListSortField>[] {
+  return [{
     HeaderIcon: Sparkles,
     id: 'service',
     label: 'Servicio',
@@ -92,6 +49,7 @@ export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
         </span>
       </div>
     ),
+    sortField: 'name',
     widthClassName: 'w-72 max-w-72',
   },
   {
@@ -99,12 +57,14 @@ export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
     id: 'cost',
     label: 'Costo',
     renderCell: (service) => <span className="font-bold text-ui-text-default">$ {formatCostInput(service.cost)}</span>,
+    sortField: 'price',
   },
   {
     HeaderIcon: Clock,
     id: 'duration',
     label: 'Duración',
     renderCell: (service) => <span className="text-ui-text-muted">{formatServiceDuration(service.durationMinutes)}</span>,
+    sortField: 'durationMinutes',
   },
   {
     HeaderIcon: Tags,
@@ -112,7 +72,7 @@ export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
     label: 'Categoría',
     renderCell: (service) => (
       <span className="inline-flex rounded-full bg-ui-surface-muted px-3 py-1 text-xs font-black text-ui-text-muted">
-        {service.category}
+        {service.category ?? '-'}
       </span>
     ),
   },
@@ -143,7 +103,7 @@ export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
           Icon={MoreVertical}
           iconOnly
           options={[
-            { Icon: Pencil, label: 'Editar servicio', onSelect: () => undefined },
+            { Icon: Pencil, label: 'Editar servicio', onSelect: () => onEditService(service) },
             { Icon: Trash2, label: 'Eliminar servicio', onSelect: () => undefined },
           ]}
           panelOffset="tight"
@@ -155,4 +115,5 @@ export const SERVICE_TABLE_COLUMNS: BaseTableColumn<ServiceSummary>[] = [
       </div>
     ),
   },
-]
+  ]
+}

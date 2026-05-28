@@ -12,8 +12,7 @@ interface BreadcrumbItem {
 
 function AppBreadcrumb() {
   const { pathname } = useLocation()
-  const currentItem = resolveCurrentBreadcrumbItem(pathname)
-  const items = [currentItem]
+  const items = resolveBreadcrumbItems(pathname)
 
   return (
     <nav aria-label="Ubicación actual" className={`flex items-center text-sm ${themeClass.text.muted}`}>
@@ -64,28 +63,42 @@ function BreadcrumbSegment({ item, isCurrent }: Readonly<{ item: BreadcrumbItem;
   )
 }
 
-function resolveCurrentBreadcrumbItem(pathname: string): BreadcrumbItem {
-  const activeNavigationItem = APP_SIDEBAR_NAVIGATION_ITEMS.find((item) => item.path === pathname)
+function resolveBreadcrumbItems(pathname: string): BreadcrumbItem[] {
+  const pathSegments = pathname.split('/').filter(Boolean)
 
-  if (activeNavigationItem) {
-    return { label: activeNavigationItem.label }
+  if (pathSegments.length === 0) {
+    return [{ label: 'Inicio' }]
   }
 
-  return { label: humanizePathname(pathname) }
+  return pathSegments.map((pathSegment, index) => {
+    const path = `/${pathSegments.slice(0, index + 1).join('/')}`
+    const activeNavigationItem = APP_SIDEBAR_NAVIGATION_ITEMS.find((item) => item.path === path)
+
+    if (activeNavigationItem) {
+      return {
+        label: activeNavigationItem.label,
+        path: index === pathSegments.length - 1 ? undefined : activeNavigationItem.path,
+      }
+    }
+
+    return { label: humanizePathSegment(pathSegment) }
+  })
 }
 
-function humanizePathname(pathname: string) {
-  const lastPathSegment = pathname.split('/').filter(Boolean).at(-1)
-
-  if (!lastPathSegment) {
-    return 'Inicio'
+function humanizePathSegment(pathSegment: string) {
+  if (isInternalIdPathSegment(pathSegment)) {
+    return 'Detalle'
   }
 
-  return lastPathSegment
+  return pathSegment
     .split('-')
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(' ')
+}
+
+function isInternalIdPathSegment(pathSegment: string) {
+  return /\d/.test(pathSegment) && pathSegment.length > 12
 }
 
 export default AppBreadcrumb

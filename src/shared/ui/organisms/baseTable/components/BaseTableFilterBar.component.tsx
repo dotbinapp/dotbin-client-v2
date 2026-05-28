@@ -19,8 +19,13 @@ function BaseTableFilterBar<TFilter extends string>({
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false)
   const selectedFilterOptions = filterOptions.filter((filterOption) => activeFilterValues.includes(filterOption.value))
   const availableFilterOptions = filterOptions.filter((filterOption) => !activeFilterValues.includes(filterOption.value))
+  const canAddFilter = availableFilterOptions.length > 0 && Boolean(onFilterToggle)
 
-  if (filterOptions.length === 0) return null
+  const toggleFilterMenu = () => {
+    if (!canAddFilter) return
+
+    setIsFilterMenuOpen((isOpen) => !isOpen)
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -34,12 +39,14 @@ function BaseTableFilterBar<TFilter extends string>({
 
       <div className="relative">
         <button
-          aria-expanded={isFilterMenuOpen}
+          aria-disabled={!canAddFilter || undefined}
+          aria-expanded={canAddFilter ? isFilterMenuOpen : undefined}
           className={composeClassName(
-            'inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-ui-border bg-ui-surface px-3 text-sm font-semibold text-ui-text-muted shadow-sm transition-colors hover:border-ui-border-strong hover:text-ui-text',
+            'inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-ui-border bg-ui-surface px-3 text-sm font-semibold text-ui-text-muted shadow-sm transition-colors hover:border-ui-border-strong hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-ui-border disabled:hover:text-ui-text-muted',
             themeClass.focus,
           )}
-          onClick={() => setIsFilterMenuOpen((isOpen) => !isOpen)}
+          disabled={!canAddFilter}
+          onClick={toggleFilterMenu}
           type="button"
         >
           <Plus aria-hidden="true" size={15} />
