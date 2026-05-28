@@ -6,7 +6,7 @@ import type { SubmitHandler } from 'react-hook-form'
 import { serviceCreateSchema } from '@domains/services/model'
 import type { ServiceCreateFormInputValues, ServiceCreateFormValues } from '@domains/services/model'
 import { themeClass } from '@shared/styles/theme.styles'
-import { ControlledInput, ControlledTextArea } from '@shared/ui/molecules'
+import { ControlledInput, ControlledTextArea, ToggleFieldPanel } from '@shared/ui/molecules'
 
 interface ServiceCreateFormProps {
   disabled?: boolean
@@ -29,7 +29,7 @@ const SERVICE_CREATE_DEFAULT_VALUES: ServiceCreateFormInputValues = {
 }
 
 function ServiceCreateForm({ disabled = false, formId, initialValues, isOpen, onMinimumDataChange, onValidSubmit }: Readonly<ServiceCreateFormProps>) {
-  const { control, handleSubmit, reset, setValue } = useForm<ServiceCreateFormInputValues, unknown, ServiceCreateFormValues>({
+  const { clearErrors, control, handleSubmit, reset, setValue } = useForm<ServiceCreateFormInputValues, unknown, ServiceCreateFormValues>({
     defaultValues: SERVICE_CREATE_DEFAULT_VALUES,
     mode: 'onBlur',
     reValidateMode: 'onChange',
@@ -40,19 +40,15 @@ function ServiceCreateForm({ disabled = false, formId, initialValues, isOpen, on
   const serviceDuration = useWatch({ control, name: 'durationMinutes' })
   const {
     field: {
-      name: requiresDepositFieldName,
       onBlur: onRequiresDepositBlur,
       onChange: onRequiresDepositChange,
-      ref: requiresDepositRef,
       value: requiresDepositValue,
     },
   } = useController<ServiceCreateFormInputValues, 'requiresDeposit', ServiceCreateFormValues>({ control, name: 'requiresDeposit' })
   const {
     field: {
-      name: postServiceInstructionsFieldName,
       onBlur: onPostServiceInstructionsBlur,
       onChange: onPostServiceInstructionsChange,
-      ref: postServiceInstructionsRef,
       value: hasPostServiceInstructionsValue,
     },
   } = useController<ServiceCreateFormInputValues, 'hasPostServiceInstructions', ServiceCreateFormValues>({ control, name: 'hasPostServiceInstructions' })
@@ -74,12 +70,18 @@ function ServiceCreateForm({ disabled = false, formId, initialValues, isOpen, on
   }, [isOpen, onMinimumDataChange])
 
   useEffect(() => {
-    if (!requiresDeposit) setValue('depositAmount', '')
-  }, [requiresDeposit, setValue])
+    if (requiresDeposit) return
+
+    setValue('depositAmount', '')
+    clearErrors('depositAmount')
+  }, [clearErrors, requiresDeposit, setValue])
 
   useEffect(() => {
-    if (!hasPostServiceInstructions) setValue('postServiceInstructions', '')
-  }, [hasPostServiceInstructions, setValue])
+    if (hasPostServiceInstructions) return
+
+    setValue('postServiceInstructions', '')
+    clearErrors('postServiceInstructions')
+  }, [clearErrors, hasPostServiceInstructions, setValue])
 
   const submitServiceDraft: SubmitHandler<ServiceCreateFormValues> = (serviceDraft) => {
     onValidSubmit?.(serviceDraft)
@@ -103,53 +105,39 @@ function ServiceCreateForm({ disabled = false, formId, initialValues, isOpen, on
       <fieldset className="space-y-3">
         <legend className={`w-full border-b pb-2 text-xs font-bold uppercase tracking-[0.18em] ${themeClass.border.default} ${themeClass.text.muted}`}>Configuración avanzada</legend>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="flex cursor-pointer items-start gap-2 text-sm font-medium text-ui-text-muted">
-            <input
-              checked={requiresDeposit}
-              className="mt-1 size-4 accent-primary-600"
-              disabled={disabled}
-              name={requiresDepositFieldName}
-              onBlur={onRequiresDepositBlur}
-              onChange={(event) => onRequiresDepositChange(event.target.checked)}
-              ref={requiresDepositRef}
-              type="checkbox"
-            />
-            <span>
-              <span className="block font-bold text-ui-text-default">Requiere seña</span>
-              <span className="block text-xs text-ui-text-muted">Habilita monto de seña para reservar el servicio.</span>
-            </span>
-          </label>
-
+        <ToggleFieldPanel
+          checked={requiresDeposit}
+          description="Habilita monto de seña para reservar el servicio."
+          disabled={disabled}
+          onCheckedChange={(nextChecked) => {
+            onRequiresDepositChange(nextChecked)
+            onRequiresDepositBlur()
+          }}
+          title="Requiere seña"
+        >
           <ControlledInput Icon={DollarSign} control={control} disabled={disabled || !requiresDeposit} format="cost" label="Valor de la seña (ARS)" name="depositAmount" placeholder="Ej: 10.000,00" required={requiresDeposit} size="compact" />
-        </div>
+        </ToggleFieldPanel>
 
-        <label className="flex cursor-pointer items-start gap-2 text-sm font-medium text-ui-text-muted">
-          <input
-            checked={hasPostServiceInstructions}
-            className="mt-1 size-4 accent-primary-600"
-            disabled={disabled}
-            name={postServiceInstructionsFieldName}
-            onBlur={onPostServiceInstructionsBlur}
-            onChange={(event) => onPostServiceInstructionsChange(event.target.checked)}
-            ref={postServiceInstructionsRef}
-            type="checkbox"
+        <ToggleFieldPanel
+          checked={hasPostServiceInstructions}
+          description="Habilita indicaciones visibles para el post-servicio."
+          disabled={disabled}
+          onCheckedChange={(nextChecked) => {
+            onPostServiceInstructionsChange(nextChecked)
+            onPostServiceInstructionsBlur()
+          }}
+          title="Indicaciones post-servicio"
+        >
+          <ControlledTextArea
+            control={control}
+            disabled={disabled || !hasPostServiceInstructions}
+            label="Indicaciones post-servicio"
+            name="postServiceInstructions"
+            placeholder="Ej: Evitar maquillaje por 24 horas. Usar protector solar factor 50+."
+            required={hasPostServiceInstructions}
+            size="compact"
           />
-          <span>
-            <span className="block font-bold text-ui-text-default">Indicaciones post-servicio</span>
-            <span className="block text-xs text-ui-text-muted">Habilita indicaciones visibles para el post-servicio.</span>
-          </span>
-        </label>
-
-        <ControlledTextArea
-          control={control}
-          disabled={disabled || !hasPostServiceInstructions}
-          label="Indicaciones post-servicio"
-          name="postServiceInstructions"
-          placeholder="Ej: Evitar maquillaje por 24 horas. Usar protector solar factor 50+."
-          required={hasPostServiceInstructions}
-          size="compact"
-        />
+        </ToggleFieldPanel>
       </fieldset>
     </form>
   )

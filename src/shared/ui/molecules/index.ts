@@ -4,4 +4,5 @@ export { default as ControlledPhoneInput } from './ControlledPhoneInput.componen
 export { default as ControlledSelect } from './ControlledSelect.component'
 export { default as ControlledTextArea } from './ControlledTextArea.component'
 export { default as MenuButton } from './MenuButton.component'
+export { default as ToggleFieldPanel } from './ToggleFieldPanel.component'
 export type { MenuButtonOption } from './MenuButton.component'

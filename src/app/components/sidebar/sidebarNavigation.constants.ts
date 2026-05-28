@@ -1,4 +1,4 @@
-import { Award, CalendarDays, LayoutDashboard, Package, Users, VenusAndMars } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, Package, Sparkles, Users, VenusAndMars } from 'lucide-react'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import type { AppSidebarNavigationGroup } from './sidebarNavigation.types'
 
@@ -38,7 +38,7 @@ export const APP_SIDEBAR_NAVIGATION_GROUPS: readonly AppSidebarNavigationGroup[]
       {
         path: '/services',
         label: 'Servicios',
-        Icon: Award,
+        Icon: Sparkles,
         requiredPermissions: [APP_PERMISSION_CODES.SERVICES_LIST_READ, APP_PERMISSION_CODES.TREATMENTS_LIST_READ],
       },
     ],
