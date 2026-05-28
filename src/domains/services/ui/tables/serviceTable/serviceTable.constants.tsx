@@ -5,6 +5,7 @@ import { MenuButton } from '@shared/ui/molecules'
 import type { BaseTableColumn } from '@shared/ui/organisms'
 
 interface ServiceTableColumnsParams {
+  onDeleteService: (service: ServiceSummary) => void
   onEditService: (service: ServiceSummary) => void
 }
 
@@ -36,7 +37,7 @@ function getServiceConditionBadges(service: ServiceSummary) {
   return conditionBadges
 }
 
-export function getServiceTableColumns({ onEditService }: ServiceTableColumnsParams): BaseTableColumn<ServiceSummary, ServiceListSortField>[] {
+export function getServiceTableColumns({ onDeleteService, onEditService }: ServiceTableColumnsParams): BaseTableColumn<ServiceSummary, ServiceListSortField>[] {
   return [{
     HeaderIcon: Sparkles,
     id: 'service',
@@ -104,7 +105,7 @@ export function getServiceTableColumns({ onEditService }: ServiceTableColumnsPar
           iconOnly
           options={[
             { Icon: Pencil, label: 'Editar servicio', onSelect: () => onEditService(service) },
-            { Icon: Trash2, label: 'Eliminar servicio', onSelect: () => undefined },
+            { Icon: Trash2, label: 'Eliminar servicio', onSelect: () => onDeleteService(service), tone: 'danger' },
           ]}
           panelOffset="tight"
           panelPlacement="bottom-end"

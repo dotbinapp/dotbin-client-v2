@@ -19,6 +19,16 @@ interface UpdateServiceParams extends CreateServiceParams {
   serviceId: string
 }
 
+interface DeleteServiceParams {
+  serviceId: string
+  token: string
+}
+
+interface DeleteServiceResponseDto {
+  ok: boolean
+  message?: string
+}
+
 function authHeaders(token: string) {
   return {
     Authorization: `Bearer ${token}`,
@@ -64,4 +74,15 @@ export async function updateService({ centerId, service, serviceId, token }: Upd
   })
 
   return mapServiceDtoToSummary(response.treatment)
+}
+
+export async function deleteService({ serviceId, token }: DeleteServiceParams): Promise<void> {
+  const response = await apiClient.delete<DeleteServiceResponseDto>(SERVICES_ENDPOINT, {
+    body: { force: true, treatmentId: serviceId },
+    headers: authHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error(response.message || 'No se pudo eliminar el servicio')
+  }
 }

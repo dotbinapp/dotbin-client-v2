@@ -1,4 +1,4 @@
-import { AtSign, CalendarClock, Eye, Hash, IdCard, SquaresSubtract, MoreVertical, Pencil, Phone, UserRound } from 'lucide-react'
+import { AtSign, CalendarClock, Eye, Hash, IdCard, SquaresSubtract, MoreVertical, Pencil, Phone, Trash2, UserRound } from 'lucide-react'
 import type { PatientSummary } from '@domains/patients/model/patient.types'
 import { MenuButton } from '@shared/ui/molecules'
 import type { MenuButtonOption } from '@shared/ui/molecules'
@@ -16,19 +16,21 @@ export const PATIENT_TABLE_FILTERS: BaseTableFilterOption<PatientTableFilter>[] 
 interface PatientTableColumnsParams {
   canEditPatient: boolean
   canViewPatient: boolean
+  onDeletePatient: (patient: PatientSummary) => void
   onEditPatient: (patient: PatientSummary) => void
   onViewPatient: (patient: PatientSummary) => void
 }
 
-function getPatientActions({ canEditPatient, canViewPatient, onEditPatient, onViewPatient }: PatientTableColumnsParams, patient: PatientSummary) {
+function getPatientActions({ canEditPatient, canViewPatient, onDeletePatient, onEditPatient, onViewPatient }: PatientTableColumnsParams, patient: PatientSummary) {
   const actions: MenuButtonOption[] = []
 
   if (canViewPatient) {
-    actions.push({ Icon: Eye, label: 'Ver detalle', onSelect: () => onViewPatient(patient) })
+    actions.push({ Icon: Eye, label: 'Ver perfil', onSelect: () => onViewPatient(patient) })
   }
 
   if (canEditPatient) {
     actions.push({ Icon: Pencil, label: 'Editar paciente', onSelect: () => onEditPatient(patient) })
+    actions.push({ Icon: Trash2, label: 'Eliminar paciente', onSelect: () => onDeletePatient(patient), tone: 'danger' })
   }
 
   return actions

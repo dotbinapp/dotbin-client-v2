@@ -15,6 +15,7 @@ export interface MenuButtonOption {
   Icon?: LucideIcon
   label: string
   onSelect?: () => void
+  tone?: 'default' | 'danger'
 }
 
 interface MenuButtonProps extends Omit<ButtonProps, 'onClick' | 'size'> {
@@ -58,6 +59,11 @@ const MENU_PANEL_PLACEMENT_CLASS: Record<MenuButtonPanelPlacement, string> = {
 const MENU_PANEL_BASE_CLASS = `absolute z-[80] ${themeClass.surface.elevated}`
 const MENU_OPTION_BASE_CLASS =
   `flex w-full cursor-pointer items-center text-left font-medium transition-colors ${themeClass.interactive.ghost} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent disabled:hover:text-current`
+const MENU_OPTION_DANGER_CLASS = 'text-red-600 hover:bg-red-50 hover:text-red-700 focus-visible:ring-red-500/40'
+const MENU_OPTION_ICON_TONE_CLASS = {
+  danger: 'text-red-600',
+  default: themeClass.text.primary,
+} as const
 
 function MenuButton({
   children,
@@ -130,12 +136,16 @@ function MenuButton({
             {options.map((option) => (
               <li key={option.label}>
                 <button
-                  className={`${MENU_OPTION_BASE_CLASS} ${MENU_OPTION_SIZE_CLASS[size]}`}
+                  className={composeClassName(
+                    MENU_OPTION_BASE_CLASS,
+                    MENU_OPTION_SIZE_CLASS[size],
+                    option.tone === 'danger' && MENU_OPTION_DANGER_CLASS,
+                  )}
                   disabled={option.disabled}
                   onClick={() => selectOption(option)}
                   type="button"
                 >
-                  {option.Icon ? <option.Icon aria-hidden="true" className={`shrink-0 ${themeClass.text.primary}`} size={MENU_OPTION_ICON_SIZE[size]} /> : null}
+                  {option.Icon ? <option.Icon aria-hidden="true" className={`shrink-0 ${MENU_OPTION_ICON_TONE_CLASS[option.tone ?? 'default']}`} size={MENU_OPTION_ICON_SIZE[size]} /> : null}
                   <span className="whitespace-nowrap">{option.label}</span>
                 </button>
               </li>

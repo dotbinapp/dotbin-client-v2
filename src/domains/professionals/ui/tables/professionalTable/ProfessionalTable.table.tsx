@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useAppSelector } from '@app/store/hooks'
 import { APP_PERMISSION_CODES, selectSessionCenter, usePermissions } from '@domains/identity-access'
-import { useProfessionalSaveFlow } from '@domains/professionals/application'
+import { useProfessionalDeleteFlow, useProfessionalSaveFlow } from '@domains/professionals/application'
 import type { ProfessionalSummary } from '@domains/professionals/model'
 import { useProfessionalsQuery } from '@domains/professionals/queries/professionals.query'
 import { ProfessionalCreateDialog } from '@domains/professionals/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
+import { ConfirmModal } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
 import { getProfessionalTableColumns } from './professionalTable.constants'
@@ -31,6 +32,7 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isProfessionalDialogOpen, setIsProfessionalDialogOpen] = useState(false)
   const [activeProfessional, setActiveProfessional] = useState<ProfessionalSummary | null>(null)
+  const [professionalToDelete, setProfessionalToDelete] = useState<ProfessionalSummary | null>(null)
 
   const openEditProfessionalDialog = useCallback((professional: ProfessionalSummary) => {
     setActiveProfessional(professional)
@@ -38,9 +40,13 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
     onEditProfessional?.(professional)
   }, [onEditProfessional])
 
+  const openProfessionalDeleteConfirmation = useCallback((professional: ProfessionalSummary) => {
+    setProfessionalToDelete(professional)
+  }, [])
+
   const professionalTableColumns = useMemo(
-    () => getProfessionalTableColumns({ canEditProfessional: canManageProfessionals, onEditProfessional: openEditProfessionalDialog }),
-    [canManageProfessionals, openEditProfessionalDialog],
+    () => getProfessionalTableColumns({ canEditProfessional: canManageProfessionals, onDeleteProfessional: openProfessionalDeleteConfirmation, onEditProfessional: openEditProfessionalDialog }),
+    [canManageProfessionals, openEditProfessionalDialog, openProfessionalDeleteConfirmation],
   )
 
   const professionalListParams = useMemo(
@@ -67,6 +73,10 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
     getAccessToken: getAccessTokenSilently,
     listParams: firstPageProfessionalListParams,
     onCreated: () => setPage(INITIAL_PAGE),
+  })
+  const { deleteProfessional, isDeletingProfessional } = useProfessionalDeleteFlow({
+    centerId: center?.id,
+    getAccessToken: getAccessTokenSilently,
   })
 
   const professionalsQuery = useProfessionalsQuery({
@@ -101,6 +111,22 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
   const closeProfessionalDialog = () => {
     setActiveProfessional(null)
     setIsProfessionalDialogOpen(false)
+  }
+
+  const closeProfessionalDeleteConfirmation = () => {
+    if (isDeletingProfessional) return
+
+    setProfessionalToDelete(null)
+  }
+
+  const confirmProfessionalDelete = async () => {
+    if (!professionalToDelete) return
+
+    const wasDeleted = await deleteProfessional(professionalToDelete)
+
+    if (wasDeleted) {
+      setProfessionalToDelete(null)
+    }
   }
 
   return (
@@ -138,6 +164,18 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
         onCreateProfessional={createProfessional}
         onUpdateProfessional={updateProfessional}
       />
+
+      {professionalToDelete ? (
+        <ConfirmModal
+          description={`Se desactivará a ${professionalToDelete.fullName} y dejará de mostrarse en el listado.`}
+          Icon={Trash2}
+          loading={isDeletingProfessional}
+          onClose={closeProfessionalDeleteConfirmation}
+          onConfirm={() => void confirmProfessionalDelete()}
+          primaryAction="danger"
+          title="Eliminar profesional"
+        />
+      ) : null}
     </>
   )
 }

@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { FolderPlus, Plus, Sparkles } from 'lucide-react'
+import { FolderPlus, Plus, Sparkles, Trash2 } from 'lucide-react'
 import { useAppSelector } from '@app/store/hooks'
 import { selectSessionCenter } from '@domains/identity-access'
-import { useServiceSaveFlow } from '@domains/services/application'
+import { useServiceDeleteFlow, useServiceSaveFlow } from '@domains/services/application'
 import type { ServiceListSortField, ServiceSummary } from '@domains/services/model'
 import { useServicesQuery } from '@domains/services/queries/services.query'
 import { ServiceCreateDialog } from '@domains/services/ui/dialogs'
-import { MenuButton } from '@shared/ui/molecules'
+import { ConfirmModal, MenuButton } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
 import { getServiceTableColumns } from './serviceTable.constants'
@@ -24,15 +24,20 @@ function ServiceTable() {
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false)
   const [activeService, setActiveService] = useState<ServiceSummary | null>(null)
+  const [serviceToDelete, setServiceToDelete] = useState<ServiceSummary | null>(null)
 
   const openEditServiceDialog = useCallback((service: ServiceSummary) => {
     setActiveService(service)
     setIsServiceDialogOpen(true)
   }, [])
 
+  const openServiceDeleteConfirmation = useCallback((service: ServiceSummary) => {
+    setServiceToDelete(service)
+  }, [])
+
   const serviceTableColumns = useMemo(
-    () => getServiceTableColumns({ onEditService: openEditServiceDialog }),
-    [openEditServiceDialog],
+    () => getServiceTableColumns({ onDeleteService: openServiceDeleteConfirmation, onEditService: openEditServiceDialog }),
+    [openEditServiceDialog, openServiceDeleteConfirmation],
   )
 
   const serviceListParams = useMemo(
@@ -59,6 +64,10 @@ function ServiceTable() {
     getAccessToken: getAccessTokenSilently,
     listParams: firstPageServiceListParams,
     onCreated: () => setPage(INITIAL_PAGE),
+  })
+  const { deleteService, isDeletingService } = useServiceDeleteFlow({
+    centerId: center?.id,
+    getAccessToken: getAccessTokenSilently,
   })
 
   const servicesQuery = useServicesQuery({
@@ -93,6 +102,22 @@ function ServiceTable() {
   const closeServiceDialog = () => {
     setActiveService(null)
     setIsServiceDialogOpen(false)
+  }
+
+  const closeServiceDeleteConfirmation = () => {
+    if (isDeletingService) return
+
+    setServiceToDelete(null)
+  }
+
+  const confirmServiceDelete = async () => {
+    if (!serviceToDelete) return
+
+    const wasDeleted = await deleteService(serviceToDelete)
+
+    if (wasDeleted) {
+      setServiceToDelete(null)
+    }
   }
 
   return (
@@ -139,6 +164,18 @@ function ServiceTable() {
         onCreateService={createService}
         onUpdateService={updateService}
       />
+
+      {serviceToDelete ? (
+        <ConfirmModal
+          description={`Se desactivará ${serviceToDelete.name} y dejará de mostrarse en el listado.`}
+          Icon={Trash2}
+          loading={isDeletingService}
+          onClose={closeServiceDeleteConfirmation}
+          onConfirm={() => void confirmServiceDelete()}
+          primaryAction="danger"
+          title="Eliminar servicio"
+        />
+      ) : null}
     </>
   )
 }

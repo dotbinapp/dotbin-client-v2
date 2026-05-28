@@ -18,6 +18,16 @@ interface UpdatePatientParams extends CreatePatientParams {
   patientId: string
 }
 
+interface DeletePatientParams {
+  patientId: string
+  token: string
+}
+
+interface DeletePatientResponseDto {
+  ok: boolean
+  message?: string
+}
+
 function authHeaders(token: string) {
   return {
     Authorization: `Bearer ${token}`,
@@ -66,4 +76,15 @@ export async function updatePatient({ patient, patientId, token }: UpdatePatient
   })
 
   return mapPatientDtoToSummary(response.patient)
+}
+
+export async function deletePatient({ patientId, token }: DeletePatientParams): Promise<void> {
+  const response = await apiClient.delete<DeletePatientResponseDto>(PATIENTS_ENDPOINT, {
+    body: { force: true, patientId },
+    headers: authHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error(response.message || 'No se pudo eliminar el paciente')
+  }
 }

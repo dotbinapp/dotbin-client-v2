@@ -19,6 +19,16 @@ interface UpdateProfessionalParams extends CreateProfessionalParams {
   professionalId: string
 }
 
+interface DeleteProfessionalParams {
+  professionalId: string
+  token: string
+}
+
+interface DeleteProfessionalResponseDto {
+  ok: boolean
+  message?: string
+}
+
 function authHeaders(token: string) {
   return {
     Authorization: `Bearer ${token}`,
@@ -72,4 +82,15 @@ export async function updateProfessional({ centerId, professional, professionalI
   })
 
   return mapProfessionalDtoToSummary(response.doctor)
+}
+
+export async function deleteProfessional({ professionalId, token }: DeleteProfessionalParams): Promise<void> {
+  const response = await apiClient.delete<DeleteProfessionalResponseDto>(PROFESSIONALS_ENDPOINT, {
+    body: { doctorId: professionalId, force: true },
+    headers: authHeaders(token),
+  })
+
+  if (!response.ok) {
+    throw new Error(response.message || 'No se pudo eliminar el profesional')
+  }
 }

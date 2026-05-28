@@ -1,14 +1,25 @@
-import { Copy, Mail, MoreVertical, Pencil, Phone, SquaresSubtract, Stethoscope, UserRound } from 'lucide-react'
+import { Copy, Mail, MoreVertical, Pencil, Phone, SquaresSubtract, Stethoscope, Trash2, UserRound } from 'lucide-react'
 import type { ProfessionalSummary } from '@domains/professionals/model'
 import { toast } from '@shared/ui/feedback'
 import { MenuButton } from '@shared/ui/molecules'
+import type { MenuButtonOption } from '@shared/ui/molecules'
 import type { BaseTableColumn } from '@shared/ui/organisms'
 import type { ProfessionalTableSortField } from './professionalTable.types'
 import { getProfessionalWhatsAppUrl } from './professionalTable.utils'
 
 interface ProfessionalTableColumnsParams {
   canEditProfessional: boolean
+  onDeleteProfessional: (professional: ProfessionalSummary) => void
   onEditProfessional: (professional: ProfessionalSummary) => void
+}
+
+function getProfessionalActions({ onDeleteProfessional, onEditProfessional }: ProfessionalTableColumnsParams, professional: ProfessionalSummary) {
+  const actions: MenuButtonOption[] = [
+    { Icon: Pencil, label: 'Editar profesional', onSelect: () => onEditProfessional(professional) },
+    { Icon: Trash2, label: 'Eliminar profesional', onSelect: () => onDeleteProfessional(professional), tone: 'danger' },
+  ]
+
+  return actions
 }
 
 async function copyProfessionalEmail(email: string) {
@@ -22,7 +33,8 @@ async function copyProfessionalEmail(email: string) {
   }
 }
 
-export function getProfessionalTableColumns({ canEditProfessional, onEditProfessional }: ProfessionalTableColumnsParams): BaseTableColumn<ProfessionalSummary, ProfessionalTableSortField>[] {
+export function getProfessionalTableColumns(params: ProfessionalTableColumnsParams): BaseTableColumn<ProfessionalSummary, ProfessionalTableSortField>[] {
+  const { canEditProfessional } = params
   const columns: BaseTableColumn<ProfessionalSummary, ProfessionalTableSortField>[] = [
     {
       HeaderIcon: UserRound,
@@ -97,7 +109,7 @@ export function getProfessionalTableColumns({ canEditProfessional, onEditProfess
             aria-label={`Acciones de ${professional.fullName}`}
             Icon={MoreVertical}
             iconOnly
-            options={[{ Icon: Pencil, label: 'Editar profesional', onSelect: () => onEditProfessional(professional) }]}
+            options={getProfessionalActions(params, professional)}
             panelOffset="tight"
             panelPlacement="bottom-end"
             size="sm"

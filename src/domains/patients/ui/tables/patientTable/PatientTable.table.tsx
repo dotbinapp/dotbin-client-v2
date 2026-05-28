@@ -1,15 +1,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@app/store/hooks'
 import { APP_PERMISSION_CODES, selectSessionCenter, usePermissions } from '@domains/identity-access'
-import { usePatientSaveFlow } from '@domains/patients/application'
+import { usePatientDeleteFlow, usePatientSaveFlow } from '@domains/patients/application'
 import type { PatientSummary } from '@domains/patients/model'
 import { usePatientsQuery } from '@domains/patients/queries/patients.query'
 import { PATIENTS_ROUTE_PATH } from '@domains/patients/routes'
 import { PatientCreateDialog } from '@domains/patients/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
+import { ConfirmModal } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
 import type { BaseTableSortState } from '@shared/ui/organisms'
 import { getPatientTableColumns } from './patientTable.constants'
@@ -32,6 +33,7 @@ function PatientTable() {
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isPatientDialogOpen, setIsPatientDialogOpen] = useState(false)
   const [activePatient, setActivePatient] = useState<PatientSummary | null>(null)
+  const [patientToDelete, setPatientToDelete] = useState<PatientSummary | null>(null)
 
   const patientListParams = useMemo(
     () => ({
@@ -58,6 +60,10 @@ function PatientTable() {
     listParams: firstPagePatientListParams,
     onCreated: () => setPage(INITIAL_PAGE),
   })
+  const { deletePatient, isDeletingPatient } = usePatientDeleteFlow({
+    centerId: center?.id,
+    getAccessToken: getAccessTokenSilently,
+  })
 
   const patientsQuery = usePatientsQuery({
     centerId: isAuthenticated ? center?.id : undefined,
@@ -82,14 +88,34 @@ function PatientTable() {
     navigate(`${PATIENTS_ROUTE_PATH}/${patient.id}`)
   }, [navigate])
 
+  const openPatientDeleteConfirmation = useCallback((patient: PatientSummary) => {
+    setPatientToDelete(patient)
+  }, [])
+
   const closePatientDialog = () => {
     setActivePatient(null)
     setIsPatientDialogOpen(false)
   }
 
+  const closePatientDeleteConfirmation = () => {
+    if (isDeletingPatient) return
+
+    setPatientToDelete(null)
+  }
+
+  const confirmPatientDelete = async () => {
+    if (!patientToDelete) return
+
+    const wasDeleted = await deletePatient(patientToDelete)
+
+    if (wasDeleted) {
+      setPatientToDelete(null)
+    }
+  }
+
   const patientTableColumns = useMemo(
-    () => getPatientTableColumns({ canEditPatient: canManagePatients, canViewPatient, onEditPatient: openEditPatientDialog, onViewPatient: openPatientDetail }),
-    [canManagePatients, canViewPatient, openEditPatientDialog, openPatientDetail],
+    () => getPatientTableColumns({ canEditPatient: canManagePatients, canViewPatient, onDeletePatient: openPatientDeleteConfirmation, onEditPatient: openEditPatientDialog, onViewPatient: openPatientDetail }),
+    [canManagePatients, canViewPatient, openEditPatientDialog, openPatientDeleteConfirmation, openPatientDetail],
   )
 
   const handleSearchChange = (nextSearchTerm: string) => {
@@ -142,6 +168,18 @@ function PatientTable() {
         onCreatePatient={createPatient}
         onUpdatePatient={updatePatient}
       />
+
+      {patientToDelete ? (
+        <ConfirmModal
+          description={`Se desactivará a ${patientToDelete.fullName} y dejará de mostrarse en el listado.`}
+          Icon={Trash2}
+          loading={isDeletingPatient}
+          onClose={closePatientDeleteConfirmation}
+          onConfirm={() => void confirmPatientDelete()}
+          primaryAction="danger"
+          title="Eliminar paciente"
+        />
+      ) : null}
     </>
   )
 }
