@@ -45,11 +45,11 @@ export function getProfessionalTableColumns({ canEditProfessional, onEditProfess
       label: 'Email',
       renderCell: (professional) =>
         professional.email ? (
-          <div className="flex items-center gap-2">
-            <span className="text-ui-text-muted">{professional.email}</span>
+          <div className="flex w-72 max-w-72 items-center gap-2">
+            <span className="min-w-0 flex-1 truncate text-ui-text-muted" title={professional.email}>{professional.email}</span>
             <button
               aria-label={`Copiar email de ${professional.fullName}`}
-              className="inline-flex size-7 cursor-pointer items-center justify-center rounded-lg text-ui-text-subtle transition-colors hover:bg-ui-surface-hover hover:text-ui-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+              className="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-ui-text-subtle transition-colors hover:bg-ui-surface-hover hover:text-ui-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
               onClick={() => void copyProfessionalEmail(professional.email as string)}
               type="button"
             >
@@ -60,6 +60,7 @@ export function getProfessionalTableColumns({ canEditProfessional, onEditProfess
           <span className="text-ui-text-subtle">—</span>
         ),
       sortField: 'email',
+      widthClassName: 'w-72 max-w-72',
     },
     {
       HeaderIcon: Phone,

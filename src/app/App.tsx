@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom'
 import { AppSessionBootstrap } from '@app/bootstrap'
 import { AppLayout } from '@app/components/layout'
-import { Auth0ProviderWithNavigate, QueryProvider, StoreProvider, ThemeModeProvider } from '@app/providers'
+import { Auth0ProviderWithNavigate, QueryProvider, StoreProvider, ThemeModeProvider, useThemeMode } from '@app/providers'
 import { AppRouter } from '@app/router'
 import { Toast } from '@shared/ui/atoms'
 
@@ -16,7 +16,7 @@ function App() {
                 <AppLayout>
                   <AppRouter />
                 </AppLayout>
-                <Toast />
+                <AppToast />
               </AppSessionBootstrap>
             </QueryProvider>
           </Auth0ProviderWithNavigate>
@@ -24,6 +24,12 @@ function App() {
       </ThemeModeProvider>
     </StoreProvider>
   )
+}
+
+function AppToast() {
+  const { themeMode } = useThemeMode()
+
+  return <Toast theme={themeMode} />
 }
 
 export default App

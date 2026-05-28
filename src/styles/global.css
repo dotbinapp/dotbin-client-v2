@@ -38,6 +38,8 @@
     --color-ui-text-subtle: var(--theme-ui-text-subtle);
     --color-ui-primary-soft: var(--theme-ui-primary-soft);
     --color-ui-primary-text: var(--theme-ui-primary-text);
+    --color-ui-skeleton-from: var(--theme-ui-skeleton-from);
+    --color-ui-skeleton-via: var(--theme-ui-skeleton-via);
     --color-status-pending-surface: var(--theme-status-pending-surface);
     --color-status-pending-border: var(--theme-status-pending-border);
     --color-status-pending-text: var(--theme-status-pending-text);
@@ -73,6 +75,8 @@
     --theme-ui-text-subtle: #94a3b8;
     --theme-ui-primary-soft: rgba(243, 232, 255, 0.8);
     --theme-ui-primary-text: #7e22ce;
+    --theme-ui-skeleton-from: rgba(226, 232, 240, 0.85);
+    --theme-ui-skeleton-via: rgba(203, 213, 225, 0.95);
     --theme-status-pending-surface: rgba(254, 243, 199, 0.8);
     --theme-status-pending-border: #fde68a;
     --theme-status-pending-text: #b45309;
@@ -107,6 +111,8 @@
     --theme-ui-text-subtle: #64748b;
     --theme-ui-primary-soft: rgba(168, 85, 247, 0.14);
     --theme-ui-primary-text: #d8b4fe;
+    --theme-ui-skeleton-from: rgba(30, 41, 59, 0.85);
+    --theme-ui-skeleton-via: rgba(71, 85, 105, 0.65);
     --theme-status-pending-surface: rgba(245, 158, 11, 0.15);
     --theme-status-pending-border: rgba(251, 191, 36, 0.45);
     --theme-status-pending-text: #fde68a;

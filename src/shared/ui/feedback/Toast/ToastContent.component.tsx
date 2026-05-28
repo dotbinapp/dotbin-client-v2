@@ -12,18 +12,18 @@ interface ToastContentProps {
 }
 
 const TOAST_BASE_CLASS =
-  'pointer-events-auto flex w-full min-w-80 max-w-md items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-xl shadow-slate-950/10 backdrop-blur-xl'
+  'pointer-events-auto flex w-full min-w-80 max-w-md items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-xl shadow-slate-950/10 backdrop-blur-xl dark:shadow-black/45'
 
 const TOAST_TYPE_CLASS: Record<ToastType, string> = {
-  error: 'border-red-200/80 bg-red-50/90 text-red-950',
-  success: 'border-emerald-200/80 bg-emerald-50/90 text-emerald-950',
-  warning: 'border-amber-200/80 bg-amber-50/90 text-amber-950',
+  error: 'border-red-200/80 bg-red-50/90 text-red-950 dark:border-red-500/35 dark:bg-red-950/80 dark:text-red-100',
+  success: 'border-emerald-200/80 bg-emerald-50/90 text-emerald-950 dark:border-emerald-500/35 dark:bg-emerald-950/80 dark:text-emerald-100',
+  warning: 'border-amber-200/80 bg-amber-50/90 text-amber-950 dark:border-amber-500/35 dark:bg-amber-950/80 dark:text-amber-100',
 }
 
 const TOAST_ICON_CLASS: Record<ToastType, string> = {
-  error: 'bg-red-100 text-red-600',
-  success: 'bg-emerald-100 text-emerald-700',
-  warning: 'bg-amber-100 text-amber-700',
+  error: 'bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-200',
+  success: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200',
+  warning: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200',
 }
 
 const TOAST_ICON_BY_TYPE = {
@@ -48,7 +48,7 @@ function ToastContent({ description, onDismiss, title, type }: Readonly<ToastCon
 
       <button
         aria-label="Cerrar notificación"
-        className="-mr-1 flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full opacity-60 transition hover:bg-white/60 hover:opacity-100"
+        className="-mr-1 flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full opacity-60 transition hover:bg-white/60 hover:opacity-100 dark:hover:bg-white/10"
         onClick={onDismiss}
         type="button"
       >

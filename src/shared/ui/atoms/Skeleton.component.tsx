@@ -16,7 +16,7 @@ function Skeleton({ size = 'sm', fullHeight = false, className = '', ...props }:
 
   return (
     <div
-      className={`w-full ${heightClass} rounded-[2rem] bg-gradient-to-r from-primary-100 via-primary-200 to-primary-100 bg-[length:200%_100%] animate-shimmer ${className}`}
+      className={`w-full ${heightClass} rounded-[2rem] bg-gradient-to-r from-ui-skeleton-from via-ui-skeleton-via to-ui-skeleton-from bg-[length:200%_100%] animate-shimmer ${className}`}
       {...props}
     />
   )

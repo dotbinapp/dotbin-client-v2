@@ -21,6 +21,7 @@ function PatientTable() {
   const center = useAppSelector(selectSessionCenter)
   const { hasPermission } = usePermissions()
   const canManagePatients = hasPermission(APP_PERMISSION_CODES.PATIENTS_ADMIN)
+  
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
   const [page, setPage] = useState(INITIAL_PAGE)

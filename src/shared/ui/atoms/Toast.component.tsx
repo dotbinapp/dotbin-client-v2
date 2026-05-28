@@ -1,7 +1,7 @@
 import { Toaster as SonnerToaster } from 'sonner'
 import type { ToasterProps } from 'sonner'
 
-function Toast({ position = 'top-right', visibleToasts = 4, ...props }: Readonly<ToasterProps>) {
+function Toast({ position = 'top-right', theme = 'system', visibleToasts = 4, ...props }: Readonly<ToasterProps>) {
   return (
     <SonnerToaster
       className="!z-[2147483647]"
@@ -10,7 +10,7 @@ function Toast({ position = 'top-right', visibleToasts = 4, ...props }: Readonly
       mobileOffset={16}
       offset={24}
       position={position}
-      theme="light"
+      theme={theme}
       toastOptions={{
         classNames: {
           toast: '!z-[2147483647] !bg-transparent !border-0 !shadow-none !p-0',
