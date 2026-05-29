@@ -25,6 +25,7 @@ export interface ServiceSummary {
 }
 
 export interface ServiceListParams {
+  isActive?: boolean
   limit: number
   offset: number
   searchTerm?: string

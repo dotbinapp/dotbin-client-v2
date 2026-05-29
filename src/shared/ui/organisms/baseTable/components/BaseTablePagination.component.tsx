@@ -18,7 +18,7 @@ function BaseTablePagination({ pagination }: Readonly<BaseTablePaginationProps>)
   const canGoNext = pagination.page < totalPages
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-ui-border bg-ui-surface px-3 py-2 text-sm font-medium text-ui-text-muted md:flex-row md:items-center md:justify-between">
+    <div className="flex shrink-0 flex-col gap-3 border-t border-ui-border bg-ui-surface px-4 py-3 text-sm font-medium text-ui-text-muted md:flex-row md:items-center md:justify-between">
       <div className="flex flex-wrap items-center gap-3">
         <span>Rows per page</span>
         <label className="sr-only" htmlFor="base-table-page-size">

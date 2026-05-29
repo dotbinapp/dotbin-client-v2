@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useDebounce } from '@shared/hooks'
 import { themeClass } from '@shared/styles/theme.styles'
-import { Input, Text } from '@shared/ui/atoms'
+import { Input, Select, Text } from '@shared/ui/atoms'
 import { composeClassName } from '@shared/ui/utils/className.utils'
-import { CELL_ALIGN_CLASS, DEFAULT_SKELETON_ROWS } from './baseTable.constants'
-import type { BaseTableProps } from './baseTable.types'
+import { BASE_TABLE_STATUS_FILTER_OPTIONS, CELL_ALIGN_CLASS, DEFAULT_SKELETON_ROWS } from './baseTable.constants'
+import type { BaseTableProps, BaseTableStatusFilterValue } from './baseTable.types'
 import { getAriaSort } from './baseTable.utils'
 import BaseTableFilterBar from './components/BaseTableFilterBar.component'
 import BaseTableHeaderLabel from './components/BaseTableHeaderLabel.component'
@@ -32,9 +32,14 @@ function BaseTable<TRow, TSortField extends string = string, TFilter extends str
   initialSearchValue = '',
   skeletonRows = DEFAULT_SKELETON_ROWS,
   sortState = null,
+  statusFilter,
+  title,
 }: Readonly<BaseTableProps<TRow, TSortField, TFilter>>) {
   const [searchTerm, setSearchTerm] = useState(initialSearchValue)
   const debouncedSearchTerm = useDebounce(searchTerm)
+  const hasFilterBar = filterOptions.length > 0
+  const hasTableHeader = Boolean(title || onSearchChange || hasFilterBar || statusFilter || actions)
+  const statusFilterOptions = statusFilter?.options ?? BASE_TABLE_STATUS_FILTER_OPTIONS
 
   useEffect(() => {
     onSearchChange?.(debouncedSearchTerm)
@@ -57,36 +62,68 @@ function BaseTable<TRow, TSortField extends string = string, TFilter extends str
   }
 
   return (
-    <section className={composeClassName('flex h-full min-h-0 flex-col gap-4', themeClass.text.default)}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex min-w-0 flex-1 flex-col gap-3 md:flex-row md:items-center">
-          {onSearchChange ? (
-            <div className="w-full md:max-w-md">
-              <Input
-                Icon={Search}
-                aria-label="Buscar registros"
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder={searchPlaceholder}
-                size="compact"
-                type="search"
-                value={searchTerm}
-              />
-            </div>
+    <section className={composeClassName('flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-ui-border bg-ui-surface shadow-[var(--theme-shadow-surface)]', themeClass.text.default)}>
+      {hasTableHeader ? (
+        <header className="shrink-0 p-4 pb-6">
+          {title ? (
+            <Text as="h2" className="text-base font-black tracking-tight sm:text-lg" variant="label">
+              {title}
+            </Text>
           ) : null}
 
-          <BaseTableFilterBar
-            activeFilterValues={activeFilterValues}
-            filterOptions={filterOptions}
-            onFilterToggle={onFilterToggle}
-          />
-        </div>
+          <div className={composeClassName('flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between', title ? 'mt-6' : '')}>
+            <div className="min-w-0 flex-1">
+              {onSearchChange ? (
+                <div className="w-full sm:max-w-sm">
+                  <Input
+                    Icon={Search}
+                    aria-label="Buscar registros"
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder={searchPlaceholder}
+                    size="compact"
+                    type="search"
+                    value={searchTerm}
+                  />
+                </div>
+              ) : null}
+            </div>
 
-        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
-      </div>
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              {hasFilterBar ? (
+                <BaseTableFilterBar
+                  activeFilterValues={activeFilterValues}
+                  filterOptions={filterOptions}
+                  onFilterToggle={onFilterToggle}
+                />
+              ) : null}
 
-      <div className="min-h-0 flex-1 overflow-auto rounded-xl border border-ui-border bg-ui-surface shadow-[var(--theme-shadow-surface)]">
+              {statusFilter ? (
+                <div className="w-full sm:w-40">
+                  <Select
+                    aria-label={statusFilter.ariaLabel ?? 'Filtrar por estado'}
+                    className="rounded-xl border-ui-border bg-ui-surface font-semibold shadow-sm"
+                    onChange={(event) => statusFilter.onChange(event.target.value as BaseTableStatusFilterValue)}
+                    size="compact"
+                    value={statusFilter.value}
+                  >
+                    {statusFilterOptions.map((statusFilterOption) => (
+                      <option key={statusFilterOption.value} value={statusFilterOption.value}>
+                        {statusFilterOption.label}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              ) : null}
+
+              {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+            </div>
+          </div>
+        </header>
+      ) : null}
+
+      <div className="min-h-0 flex-1 overflow-auto bg-ui-surface px-1">
         <table className="w-full min-w-max border-collapse text-left">
-          <thead className="sticky top-0 z-10 bg-ui-surface-elevated/95 backdrop-blur-md">
+          <thead className="sticky top-0 z-10 bg-ui-surface-muted/95 backdrop-blur-md">
             <tr className="border-b border-ui-border">
               {columns.map((column) => (
                 <th

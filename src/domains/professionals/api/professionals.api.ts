@@ -35,11 +35,15 @@ function authHeaders(token: string) {
   }
 }
 
-export async function getProfessionals({ limit, offset, searchTerm, sortDirection, sortField, token }: GetProfessionalsParams): Promise<ProfessionalListResult> {
+export async function getProfessionals({ isActive, limit, offset, searchTerm, sortDirection, sortField, token }: GetProfessionalsParams): Promise<ProfessionalListResult> {
   const query = new URLSearchParams({
     limit: String(limit),
     skip: String(offset),
   })
+
+  if (typeof isActive === 'boolean') {
+    query.set('isActive', String(isActive))
+  }
 
   if (searchTerm?.trim()) {
     query.set('filter', searchTerm.trim())

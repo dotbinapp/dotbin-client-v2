@@ -18,6 +18,11 @@ export interface PatientSummary {
   visits: number
 }
 
+export interface PatientDetail extends PatientSummary {
+  lastServiceName: string | null
+  nextVisitAt: string | null
+}
+
 export interface PatientCreatePayload {
   dateOfBirth?: string
   documentNumber?: number
@@ -30,6 +35,7 @@ export interface PatientCreatePayload {
 }
 
 export interface PatientListParams {
+  isActive?: boolean
   limit: number
   offset: number
   searchTerm?: string

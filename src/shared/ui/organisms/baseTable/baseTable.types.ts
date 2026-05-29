@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
 export type BaseTableSortDirection = 'asc' | 'desc'
+export type BaseTableStatusFilterValue = 'active' | 'inactive' | 'all'
 
 export type BaseTableSortState<TSortField extends string> = {
   direction: BaseTableSortDirection
@@ -23,6 +24,18 @@ export interface BaseTableFilterOption<TFilter extends string = string> {
   apiField?: string
   label: string
   value: TFilter
+}
+
+export interface BaseTableStatusFilterOption {
+  label: string
+  value: BaseTableStatusFilterValue
+}
+
+export interface BaseTableStatusFilterConfig {
+  ariaLabel?: string
+  onChange: (value: BaseTableStatusFilterValue) => void
+  options?: BaseTableStatusFilterOption[]
+  value: BaseTableStatusFilterValue
 }
 
 export interface BaseTablePaginationConfig {
@@ -53,4 +66,6 @@ export interface BaseTableProps<TRow, TSortField extends string = string, TFilte
   initialSearchValue?: string
   skeletonRows?: number
   sortState?: BaseTableSortState<TSortField>
+  statusFilter?: BaseTableStatusFilterConfig
+  title?: ReactNode
 }

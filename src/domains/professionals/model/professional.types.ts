@@ -20,6 +20,7 @@ export interface ProfessionalSummary {
 }
 
 export interface ProfessionalListParams {
+  isActive?: boolean
   limit: number
   offset: number
   searchTerm?: string

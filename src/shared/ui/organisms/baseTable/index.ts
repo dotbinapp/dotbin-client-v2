@@ -4,4 +4,7 @@ export type {
   BaseTableFilterOption,
   BaseTablePaginationConfig as BaseTablePagination,
   BaseTableSortState,
+  BaseTableStatusFilterConfig,
+  BaseTableStatusFilterOption,
+  BaseTableStatusFilterValue,
 } from './baseTable.types'

@@ -32,7 +32,7 @@ export function usePatientUpdateMutation({ centerId, getAccessToken }: UsePatien
       const token = await getAccessToken()
       return updatePatient({ patient: patientDraft, patientId, token })
     },
-    onSuccess: (updatedPatient) => {
+    onSuccess: (updatedPatient, { patientId }) => {
       if (!centerId) return
 
       queryClient.setQueriesData<PatientListResult>({ queryKey: patientQueryKeys.lists(centerId) }, (currentList) =>
@@ -40,6 +40,7 @@ export function usePatientUpdateMutation({ centerId, getAccessToken }: UsePatien
       )
 
       queryClient.invalidateQueries({ queryKey: patientQueryKeys.lists(centerId) })
+      queryClient.invalidateQueries({ queryKey: patientQueryKeys.detail(centerId, patientId) })
     },
   })
 }

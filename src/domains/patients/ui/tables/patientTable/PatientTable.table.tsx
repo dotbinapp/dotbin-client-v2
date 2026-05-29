@@ -12,12 +12,18 @@ import { PatientCreateDialog } from '@domains/patients/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { ConfirmModal } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
-import type { BaseTableSortState } from '@shared/ui/organisms'
+import type { BaseTableSortState, BaseTableStatusFilterValue } from '@shared/ui/organisms'
 import { getPatientTableColumns } from './patientTable.constants'
 import type { PatientTableSortField } from './patientTable.types'
 
 const INITIAL_PAGE = 1
 const INITIAL_PAGE_SIZE = 15
+
+function getIsActiveParam(statusFilter: BaseTableStatusFilterValue) {
+  if (statusFilter === 'all') return undefined
+
+  return statusFilter === 'active'
+}
 
 function PatientTable() {
   const navigate = useNavigate()
@@ -29,6 +35,7 @@ function PatientTable() {
   
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<PatientTableSortField>>(null)
+  const [statusFilter, setStatusFilter] = useState<BaseTableStatusFilterValue>('active')
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isPatientDialogOpen, setIsPatientDialogOpen] = useState(false)
@@ -37,13 +44,14 @@ function PatientTable() {
 
   const patientListParams = useMemo(
     () => ({
+      isActive: getIsActiveParam(statusFilter),
       limit: pageSize,
       offset: (page - 1) * pageSize,
       searchTerm: searchTerm || undefined,
       sortDirection: sortState?.direction,
       sortField: sortState?.field,
     }),
-    [page, pageSize, searchTerm, sortState],
+    [page, pageSize, searchTerm, sortState, statusFilter],
   )
 
   const firstPagePatientListParams = useMemo(
@@ -133,11 +141,16 @@ function PatientTable() {
     setSortState(nextSortState)
   }
 
+  const handleStatusFilterChange = (nextStatusFilter: BaseTableStatusFilterValue) => {
+    setPage(INITIAL_PAGE)
+    setStatusFilter(nextStatusFilter)
+  }
+
   return (
     <>
       <BaseTable
         actions={canManagePatients ? (
-          <Button Icon={Plus} onClick={openCreatePatientDialog} size="sm">
+          <Button Icon={Plus} onClick={openCreatePatientDialog}>
             Crear paciente
           </Button>
         ) : undefined}
@@ -157,6 +170,8 @@ function PatientTable() {
         rows={patients}
         searchPlaceholder="Buscar por nombre"
         sortState={sortState}
+        statusFilter={{ onChange: handleStatusFilterChange, value: statusFilter }}
+        title="Lista de pacientes"
       />
 
       <PatientCreateDialog

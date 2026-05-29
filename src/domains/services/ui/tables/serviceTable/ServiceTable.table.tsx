@@ -9,17 +9,24 @@ import { useServicesQuery } from '@domains/services/queries/services.query'
 import { ServiceCreateDialog } from '@domains/services/ui/dialogs'
 import { ConfirmModal, MenuButton } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
-import type { BaseTableSortState } from '@shared/ui/organisms'
+import type { BaseTableSortState, BaseTableStatusFilterValue } from '@shared/ui/organisms'
 import { getServiceTableColumns } from './serviceTable.constants'
 
 const INITIAL_PAGE = 1
 const INITIAL_PAGE_SIZE = 15
+
+function getIsActiveParam(statusFilter: BaseTableStatusFilterValue) {
+  if (statusFilter === 'all') return undefined
+
+  return statusFilter === 'active'
+}
 
 function ServiceTable() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
   const center = useAppSelector(selectSessionCenter)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<ServiceListSortField>>(null)
+  const [statusFilter, setStatusFilter] = useState<BaseTableStatusFilterValue>('active')
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false)
@@ -42,13 +49,14 @@ function ServiceTable() {
 
   const serviceListParams = useMemo(
     () => ({
+      isActive: getIsActiveParam(statusFilter),
       limit: pageSize,
       offset: (page - 1) * pageSize,
       searchTerm: searchTerm || undefined,
       sortDirection: sortState?.direction,
       sortField: sortState?.field,
     }),
-    [page, pageSize, searchTerm, sortState],
+    [page, pageSize, searchTerm, sortState, statusFilter],
   )
 
   const firstPageServiceListParams = useMemo(
@@ -94,6 +102,11 @@ function ServiceTable() {
     setSortState(nextSortState)
   }, [])
 
+  const handleStatusFilterChange = useCallback((nextStatusFilter: BaseTableStatusFilterValue) => {
+    setPage(INITIAL_PAGE)
+    setStatusFilter(nextStatusFilter)
+  }, [])
+
   const openCreateServiceDialog = () => {
     setActiveService(null)
     setIsServiceDialogOpen(true)
@@ -132,7 +145,6 @@ function ServiceTable() {
             ]}
             panelPlacement="bottom-end"
             size="md"
-            triggerSize="sm"
           >
             Nuevo
           </MenuButton>
@@ -153,6 +165,8 @@ function ServiceTable() {
         rows={services}
         searchPlaceholder="Buscar por tratamiento"
         sortState={sortState}
+        statusFilter={{ onChange: handleStatusFilterChange, value: statusFilter }}
+        title="Lista de servicios"
       />
 
       <ServiceCreateDialog

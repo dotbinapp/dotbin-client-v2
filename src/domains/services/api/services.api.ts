@@ -35,11 +35,15 @@ function authHeaders(token: string) {
   }
 }
 
-export async function getServices({ limit, offset, searchTerm, sortDirection, sortField, token }: GetServicesParams): Promise<ServiceListResult> {
+export async function getServices({ isActive, limit, offset, searchTerm, sortDirection, sortField, token }: GetServicesParams): Promise<ServiceListResult> {
   const query = new URLSearchParams({
     limit: String(limit),
     skip: String(offset),
   })
+
+  if (typeof isActive === 'boolean') {
+    query.set('isActive', String(isActive))
+  }
 
   if (searchTerm?.trim()) {
     query.set('filter', searchTerm.trim())

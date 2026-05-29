@@ -10,12 +10,18 @@ import { ProfessionalCreateDialog } from '@domains/professionals/ui/dialogs'
 import { Button } from '@shared/ui/atoms'
 import { ConfirmModal } from '@shared/ui/molecules'
 import { BaseTable } from '@shared/ui/organisms'
-import type { BaseTableSortState } from '@shared/ui/organisms'
+import type { BaseTableSortState, BaseTableStatusFilterValue } from '@shared/ui/organisms'
 import { getProfessionalTableColumns } from './professionalTable.constants'
 import type { ProfessionalTableSortField } from './professionalTable.types'
 
 const INITIAL_PAGE = 1
 const INITIAL_PAGE_SIZE = 15
+
+function getIsActiveParam(statusFilter: BaseTableStatusFilterValue) {
+  if (statusFilter === 'all') return undefined
+
+  return statusFilter === 'active'
+}
 
 interface ProfessionalTableProps {
   onEditProfessional?: (professional: ProfessionalSummary) => void
@@ -28,6 +34,7 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
   const canManageProfessionals = hasPermission(APP_PERMISSION_CODES.DOCTORS_ADMIN)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortState, setSortState] = useState<BaseTableSortState<ProfessionalTableSortField>>(null)
+  const [statusFilter, setStatusFilter] = useState<BaseTableStatusFilterValue>('active')
   const [page, setPage] = useState(INITIAL_PAGE)
   const [pageSize, setPageSize] = useState(INITIAL_PAGE_SIZE)
   const [isProfessionalDialogOpen, setIsProfessionalDialogOpen] = useState(false)
@@ -51,13 +58,14 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
 
   const professionalListParams = useMemo(
     () => ({
+      isActive: getIsActiveParam(statusFilter),
       limit: pageSize,
       offset: (page - 1) * pageSize,
       searchTerm: searchTerm || undefined,
       sortDirection: sortState?.direction,
       sortField: sortState?.field,
     }),
-    [page, pageSize, searchTerm, sortState],
+    [page, pageSize, searchTerm, sortState, statusFilter],
   )
 
   const firstPageProfessionalListParams = useMemo(
@@ -103,6 +111,11 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
     setSortState(nextSortState)
   }
 
+  const handleStatusFilterChange = (nextStatusFilter: BaseTableStatusFilterValue) => {
+    setPage(INITIAL_PAGE)
+    setStatusFilter(nextStatusFilter)
+  }
+
   const openCreateProfessionalDialog = () => {
     setActiveProfessional(null)
     setIsProfessionalDialogOpen(true)
@@ -133,7 +146,7 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
     <>
       <BaseTable
         actions={canManageProfessionals ? (
-          <Button Icon={Plus} onClick={openCreateProfessionalDialog} size="sm">
+          <Button Icon={Plus} onClick={openCreateProfessionalDialog}>
             Crear profesional
           </Button>
         ) : undefined}
@@ -153,6 +166,8 @@ function ProfessionalTable({ onEditProfessional }: Readonly<ProfessionalTablePro
         rows={professionals}
         searchPlaceholder="Buscar por nombre"
         sortState={sortState}
+        statusFilter={{ onChange: handleStatusFilterChange, value: statusFilter }}
+        title="Lista de profesionales"
       />
 
       <ProfessionalCreateDialog

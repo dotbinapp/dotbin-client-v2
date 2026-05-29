@@ -1,7 +1,7 @@
 import { apiClient } from '@shared/api'
-import type { PatientCreatePayload, PatientListParams, PatientListResult, PatientSummary } from '../model/patient.types'
-import type { PatientCreateResponseDto, PatientListResponseDto } from './patients.mapper'
-import { mapPatientCreatePayloadToDto, mapPatientDtoToSummary, mapPatientListResponseDto } from './patients.mapper'
+import type { PatientCreatePayload, PatientDetail, PatientListParams, PatientListResult, PatientSummary } from '../model/patient.types'
+import type { PatientCreateResponseDto, PatientDetailResponseDto, PatientListResponseDto } from './patients.mapper'
+import { mapPatientCreatePayloadToDto, mapPatientDtoToDetail, mapPatientDtoToSummary, mapPatientListResponseDto } from './patients.mapper'
 
 const PATIENTS_ENDPOINT = '/v1/patient'
 
@@ -11,6 +11,11 @@ interface GetPatientsParams extends PatientListParams {
 
 interface CreatePatientParams {
   patient: PatientCreatePayload
+  token: string
+}
+
+interface GetPatientDetailParams {
+  patientId: string
   token: string
 }
 
@@ -34,11 +39,15 @@ function authHeaders(token: string) {
   }
 }
 
-export async function getPatients({ limit, offset, searchTerm, sortDirection, sortField, token }: GetPatientsParams): Promise<PatientListResult> {
+export async function getPatients({ isActive, limit, offset, searchTerm, sortDirection, sortField, token }: GetPatientsParams): Promise<PatientListResult> {
   const query = new URLSearchParams({
     limit: String(limit),
     offset: String(offset),
   })
+
+  if (typeof isActive === 'boolean') {
+    query.set('isActive', String(isActive))
+  }
 
   if (searchTerm?.trim()) {
     query.set('filter', searchTerm.trim())
@@ -55,6 +64,14 @@ export async function getPatients({ limit, offset, searchTerm, sortDirection, so
   })
 
   return mapPatientListResponseDto(response)
+}
+
+export async function getPatientDetail({ patientId, token }: GetPatientDetailParams): Promise<PatientDetail> {
+  const response = await apiClient.get<PatientDetailResponseDto>(`${PATIENTS_ENDPOINT}/${patientId}`, {
+    headers: authHeaders(token),
+  })
+
+  return mapPatientDtoToDetail(response.patient)
 }
 
 export async function createPatient({ patient, token }: CreatePatientParams): Promise<PatientSummary> {

@@ -10,7 +10,7 @@ interface UsePatientSaveFlowParams {
   onCreated?: () => void
 }
 
-function getPatientSaveErrorMessage(error: unknown) {
+export function getPatientSaveErrorMessage(error: unknown) {
   if (error instanceof Error && error.message.trim()) return error.message
 
   return 'Revisá los datos e intentá de nuevo.'

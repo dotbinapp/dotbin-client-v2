@@ -7,8 +7,6 @@ import type { PatientTableFilter, PatientTableSortField } from './patientTable.t
 import { formatPatientVisitDate, getInstagramProfileUrl, getWhatsAppUrl } from './patientTable.utils'
 
 export const PATIENT_TABLE_FILTERS: BaseTableFilterOption<PatientTableFilter>[] = [
-  { Icon: UserRound, apiField: 'isActive', label: 'Activos', value: 'active' },
-  { Icon: UserRound, apiField: 'isActive', label: 'Inactivos', value: 'inactive' },
   { Icon: AtSign, apiField: 'instagramAccount', label: 'Con Instagram', value: 'withInstagram' },
   { Icon: Phone, apiField: 'phone', label: 'Con teléfono', value: 'withPhone' },
 ]

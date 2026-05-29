@@ -1,4 +1,4 @@
-import type { PatientCreatePayload, PatientListResult, PatientSummary } from '../model/patient.types'
+import type { PatientCreatePayload, PatientDetail, PatientListResult, PatientSummary } from '../model/patient.types'
 
 export interface PatientCreateRequestDto {
   dateOfBirth?: string
@@ -21,8 +21,10 @@ export interface PatientDto {
   id: string
   instagramAccount?: string | null
   isActive?: boolean | null
+  lastServiceName?: string | null
   lastVisitDate?: string | null
   lastName?: string | null
+  nextVisitDate?: string | null
   phone?: string | null
   visits?: number | null
 }
@@ -34,6 +36,11 @@ export interface PatientListResponseDto {
 }
 
 export interface PatientCreateResponseDto {
+  ok: boolean
+  patient: PatientDto
+}
+
+export interface PatientDetailResponseDto {
   ok: boolean
   patient: PatientDto
 }
@@ -78,6 +85,14 @@ export function mapPatientDtoToSummary(patientDto: PatientDto): PatientSummary {
     lastName,
     phone: patientDto.phone?.trim() || null,
     visits: patientDto.visits ?? 0,
+  }
+}
+
+export function mapPatientDtoToDetail(patientDto: PatientDto): PatientDetail {
+  return {
+    ...mapPatientDtoToSummary(patientDto),
+    lastServiceName: patientDto.lastServiceName?.trim() || null,
+    nextVisitAt: patientDto.nextVisitDate ?? null,
   }
 }
 
