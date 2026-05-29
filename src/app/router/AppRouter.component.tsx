@@ -6,7 +6,16 @@ import { ANALYTICS_DASHBOARD_ROUTE_PATH, AnalyticsDashboardPage } from '@domains
 import { CENTER_MANAGEMENT_PROFILE_ROUTE_PATH, CenterManagementProfilePage } from '@domains/center-management'
 import { APP_PERMISSION_CODES } from '@domains/identity-access'
 import { STOCKS_ROUTE_PATH, StocksPage } from '@domains/inventory'
-import { PATIENT_DETAIL_ROUTE_PATH, PATIENTS_ROUTE_PATH, PatientDetailPage, PatientsPage } from '@domains/patients'
+import {
+  PATIENT_DETAIL_ROUTE_PATH,
+  PATIENTS_ROUTE_PATH,
+  PatientDetailPage,
+  PatientEvolutionPage,
+  PatientPlansPage,
+  PatientResumePage,
+  PatientServiceHistoryPage,
+  PatientsPage,
+} from '@domains/patients'
 import { PROFESSIONALS_ROUTE_PATH, ProfessionalsPage } from '@domains/professionals'
 import { SCHEDULING_CALENDAR_ROUTE_PATH, SchedulingCalendarPage } from '@domains/scheduling'
 import { LEGACY_TREATMENTS_ROUTE_PATH, SERVICES_ROUTE_PATH, ServicesPage } from '@domains/services'
@@ -47,7 +56,12 @@ function AppRouter() {
               <PatientDetailPage />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<PatientResumePage />} />
+          <Route path="plans" element={<PatientPlansPage />} />
+          <Route path="evolution" element={<PatientEvolutionPage />} />
+          <Route path="history" element={<PatientServiceHistoryPage />} />
+        </Route>
         <Route
           path={PROFESSIONALS_ROUTE_PATH}
           element={

@@ -1,7 +1,7 @@
 import { apiClient } from '@shared/api'
-import type { PatientCreatePayload, PatientDetail, PatientListParams, PatientListResult, PatientSummary } from '../model/patient.types'
+import type { PatientCreatePayload, PatientDetail, PatientListParams, PatientListResult, PatientSummary, PatientTreatmentPlan } from '../model/patient.types'
 import type { PatientCreateResponseDto, PatientDetailResponseDto, PatientListResponseDto } from './patients.mapper'
-import { mapPatientCreatePayloadToDto, mapPatientDtoToDetail, mapPatientDtoToSummary, mapPatientListResponseDto } from './patients.mapper'
+import { mapPatientCreatePayloadToDto, mapPatientDtoToDetail, mapPatientDtoToSummary, mapPatientListResponseDto, mapPatientTreatmentPlansResponseDto } from './patients.mapper'
 
 const PATIENTS_ENDPOINT = '/v1/patient'
 
@@ -18,6 +18,8 @@ interface GetPatientDetailParams {
   patientId: string
   token: string
 }
+
+type GetPatientTreatmentPlansParams = GetPatientDetailParams
 
 interface UpdatePatientParams extends CreatePatientParams {
   patientId: string
@@ -72,6 +74,21 @@ export async function getPatientDetail({ patientId, token }: GetPatientDetailPar
   })
 
   return mapPatientDtoToDetail(response.patient)
+}
+
+export async function getPatientTreatmentPlans({ patientId, token }: GetPatientTreatmentPlansParams): Promise<PatientTreatmentPlan[]> {
+  const query = new URLSearchParams({
+    field: 'id',
+    filter: patientId,
+    includeInactive: 'true',
+    limit: '1',
+  })
+
+  const response = await apiClient.get<PatientListResponseDto>(`${PATIENTS_ENDPOINT}?${query.toString()}`, {
+    headers: authHeaders(token),
+  })
+
+  return mapPatientTreatmentPlansResponseDto(response)
 }
 
 export async function createPatient({ patient, token }: CreatePatientParams): Promise<PatientSummary> {

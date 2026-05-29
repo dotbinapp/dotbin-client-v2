@@ -1,12 +1,21 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 import { useAppSelector } from '@app/store/hooks'
 import { APP_PERMISSION_CODES, selectSessionCenter, usePermissions } from '@domains/identity-access'
+import type { PatientDetail } from '@domains/patients/model'
 import { usePatientEditFlow } from '../application'
 import { usePatientDetailQuery } from '../queries/patientDetail.query'
 import { PatientCreateDialog } from '../ui/dialogs'
-import { PatientDetailHeader, PatientDetailStats } from '../ui/sections'
+import { PatientDetailHeader } from '../ui/sections'
+
+export interface PatientDetailOutletContext {
+  canViewPatient: boolean
+  centerId?: string
+  getAccessToken: () => Promise<string>
+  patient?: PatientDetail
+  patientId?: string
+}
 
 async function createPatientFromDetailPage() {
   return false
@@ -24,13 +33,15 @@ function PatientDetailPage() {
     centerId: center?.id,
     getAccessToken: getAccessTokenSilently,
   })
+  const canFetchPatient = Boolean(isAuthenticated && canViewPatient && center?.id && patientId)
 
   const patientDetailQuery = usePatientDetailQuery({
-    canViewPatient: isAuthenticated && canViewPatient,
+    canViewPatient: canFetchPatient,
     centerId: center?.id,
     getAccessToken: getAccessTokenSilently,
     patientId,
   })
+  const patient = patientDetailQuery.data
 
   return (
     <section className="flex flex-col gap-4">
@@ -40,11 +51,23 @@ function PatientDetailPage() {
         isError={patientDetailQuery.isError}
         isLoading={patientDetailQuery.isLoading}
         onEditProfile={() => setIsPatientDialogOpen(true)}
-        patient={patientDetailQuery.data}
+        patient={patient}
       />
-      <PatientDetailStats patient={patientDetailQuery.data} />
+
+      {canFetchPatient && !patientDetailQuery.isError ? (
+        <Outlet
+          context={{
+            canViewPatient: canFetchPatient,
+            centerId: center?.id,
+            getAccessToken: getAccessTokenSilently,
+            patient,
+            patientId,
+          } satisfies PatientDetailOutletContext}
+        />
+      ) : null}
+
       <PatientCreateDialog
-        activePatient={patientDetailQuery.data ?? null}
+        activePatient={patient ?? null}
         isCreating={false}
         isOpen={isPatientDialogOpen}
         isUpdating={isUpdatingPatient}

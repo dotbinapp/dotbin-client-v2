@@ -52,13 +52,14 @@ function PatientDetailHeader({ canEditPatient = false, canViewPatient, isError, 
     { Icon: ClipboardList, label: 'Total visitas', title: patient.visits },
   ]
   const patientDetailTabs = [
-    { Icon: UserRound, label: 'Resumen', path: `/patients/${patient.id}#resumen` },
-    { Icon: Activity, label: 'Evolución', path: `/patients/${patient.id}#evolucion` },
-    { Icon: History, label: 'Historial de servicios', path: `/patients/${patient.id}#historial-servicios` },
+    { Icon: UserRound, label: 'Resumen', path: `/patients/${patient.id}` },
+    { Icon: ClipboardList, label: 'Planes', path: `/patients/${patient.id}/plans` },
+    { Icon: Activity, label: 'Evolución', path: `/patients/${patient.id}/evolution` },
+    { Icon: History, label: 'Historial de servicios', path: `/patients/${patient.id}/history` },
   ]
 
   return (
-    <BaseContainer surface="subtle" radius="lg" className="relative py-4!">
+    <BaseContainer surface="solid" radius="lg" className="relative py-4!">
       {canEditPatient ? (
         <div className="mb-4 flex justify-end md:absolute md:right-4 md:top-4 md:mb-0">
           <Button Icon={Pencil} onClick={onEditProfile} size="sm" variant="secondary">

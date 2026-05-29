@@ -1,4 +1,4 @@
-import type { PatientCreatePayload, PatientDetail, PatientListResult, PatientSummary } from '../model/patient.types'
+import type { PatientCreatePayload, PatientDetail, PatientListResult, PatientSummary, PatientTreatmentPlan, PatientTreatmentPlanFrequency, PatientTreatmentPlanStatus } from '../model/patient.types'
 
 export interface PatientCreateRequestDto {
   dateOfBirth?: string
@@ -26,7 +26,28 @@ export interface PatientDto {
   lastName?: string | null
   nextVisitDate?: string | null
   phone?: string | null
+  treatmentPlans?: PatientTreatmentPlanDto[] | null
   visits?: number | null
+}
+
+export interface PatientTreatmentPlanTreatmentDto {
+  id?: string | null
+  name?: string | null
+}
+
+export interface PatientTreatmentPlanDto {
+  completedSessions?: number | null
+  frequency?: PatientTreatmentPlanFrequency | null
+  id?: string | null
+  itsPaid?: boolean | null
+  notes?: string | null
+  paidAmount?: number | null
+  startDate?: string | null
+  status?: PatientTreatmentPlanStatus | null
+  totalCost?: number | null
+  totalSessions?: number | null
+  treatment?: PatientTreatmentPlanTreatmentDto | null
+  treatmentId?: string | null
 }
 
 export interface PatientListResponseDto {
@@ -101,4 +122,43 @@ export function mapPatientListResponseDto(responseDto: PatientListResponseDto): 
     patients: responseDto.patients?.map(mapPatientDtoToSummary) ?? [],
     total: responseDto.total ?? responseDto.patients?.length ?? 0,
   }
+}
+
+function getNumberOrNull(value?: number | string | null) {
+  if (value === null || value === undefined) return null
+
+  const numericValue = Number(value)
+  return Number.isFinite(numericValue) ? numericValue : null
+}
+
+function getPlanStatus(planDto: PatientTreatmentPlanDto): PatientTreatmentPlanStatus {
+  if (planDto.status) return planDto.status
+
+  const completedSessions = planDto.completedSessions ?? 0
+  const totalSessions = planDto.totalSessions ?? 0
+
+  return totalSessions > 0 && completedSessions >= totalSessions ? 'COMPLETED' : 'ACTIVE'
+}
+
+export function mapPatientTreatmentPlanDtoToPlan(planDto: PatientTreatmentPlanDto): PatientTreatmentPlan {
+  const serviceId = planDto.treatmentId?.trim() || planDto.treatment?.id?.trim() || 'sin-servicio'
+
+  return {
+    completedSessions: planDto.completedSessions ?? 0,
+    frequency: planDto.frequency ?? null,
+    id: planDto.id?.trim() || `${serviceId}-${planDto.startDate ?? 'sin-fecha'}`,
+    isPaid: typeof planDto.itsPaid === 'boolean' ? planDto.itsPaid : null,
+    notes: planDto.notes?.trim() || null,
+    paidAmount: getNumberOrNull(planDto.paidAmount),
+    serviceId,
+    serviceName: planDto.treatment?.name?.trim() || 'Servicio sin nombre',
+    startDate: planDto.startDate ?? null,
+    status: getPlanStatus(planDto),
+    totalCost: getNumberOrNull(planDto.totalCost),
+    totalSessions: planDto.totalSessions ?? 0,
+  }
+}
+
+export function mapPatientTreatmentPlansResponseDto(responseDto: PatientListResponseDto): PatientTreatmentPlan[] {
+  return responseDto.patients?.[0]?.treatmentPlans?.map(mapPatientTreatmentPlanDtoToPlan) ?? []
 }

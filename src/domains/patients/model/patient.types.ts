@@ -1,6 +1,8 @@
 export type PatientListSortField = 'fullName'
 export type PatientListSortDirection = 'asc' | 'desc'
 export type PatientGender = 'female' | 'male'
+export type PatientTreatmentPlanFrequency = 'ANNUAL' | 'BIWEEKLY' | 'DAILY' | 'MONTHLY' | 'WEEKLY'
+export type PatientTreatmentPlanStatus = 'ACTIVE' | 'COMPLETED'
 
 export interface PatientSummary {
   dateOfBirth: string | null
@@ -21,6 +23,21 @@ export interface PatientSummary {
 export interface PatientDetail extends PatientSummary {
   lastServiceName: string | null
   nextVisitAt: string | null
+}
+
+export interface PatientTreatmentPlan {
+  completedSessions: number
+  frequency: PatientTreatmentPlanFrequency | null
+  id: string
+  isPaid: boolean | null
+  notes: string | null
+  paidAmount: number | null
+  serviceId: string
+  serviceName: string
+  startDate: string | null
+  status: PatientTreatmentPlanStatus
+  totalCost: number | null
+  totalSessions: number
 }
 
 export interface PatientCreatePayload {
