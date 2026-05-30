@@ -4,7 +4,7 @@ import { CalendarDays, ClipboardList, DollarSign } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import { patientTreatmentPlanCreateSchema } from '@domains/patients/model'
-import type { PatientTreatmentPlanCreateFormInputValues, PatientTreatmentPlanCreateFormValues, PatientTreatmentPlanLookupOption } from '@domains/patients/model'
+import type { PatientTreatmentPlan, PatientTreatmentPlanCreateFormInputValues, PatientTreatmentPlanCreateFormValues, PatientTreatmentPlanLookupOption } from '@domains/patients/model'
 import { ControlledInput, ControlledSelect, ControlledTextArea } from '@shared/ui/molecules'
 import TreatmentPlanFormSection from './TreatmentPlanFormSection.component'
 import TreatmentPlanPaymentStatusField from './TreatmentPlanPaymentStatusField.component'
@@ -22,6 +22,7 @@ interface PatientTreatmentPlanLookupState {
 interface PatientTreatmentPlanCreateFormProps {
   disabled?: boolean
   formId: string
+  initialPlan?: PatientTreatmentPlan | null
   isOpen: boolean
   minSearchLength: number
   onMinimumDataChange: (hasMinimumData: boolean) => void
@@ -44,9 +45,52 @@ const TREATMENT_PLAN_DEFAULT_VALUES: PatientTreatmentPlanCreateFormInputValues =
   treatmentIds: [],
 }
 
+function getDateInputValue(dateValue?: string | null) {
+  if (!dateValue) return getTodayInputValue()
+
+  return dateValue.split('T')[0]
+}
+
+function getPaymentStatus(plan: PatientTreatmentPlan): PatientTreatmentPlanCreateFormInputValues['paymentStatus'] {
+  if (plan.isPaid) return 'paid'
+  if ((plan.paidAmount ?? 0) > 0) return 'partial'
+
+  return 'unpaid'
+}
+
+function getInitialPaidAmountInputValue(initialPlan: PatientTreatmentPlan) {
+  if (initialPlan.isPaid) return initialPlan.totalCost === null ? '' : String(initialPlan.totalCost)
+
+  return initialPlan.paidAmount === null ? '' : String(initialPlan.paidAmount)
+}
+
+function getInitialFormValues(initialPlan?: PatientTreatmentPlan | null): PatientTreatmentPlanCreateFormInputValues {
+  if (!initialPlan) return TREATMENT_PLAN_DEFAULT_VALUES
+
+  return {
+    frequency: initialPlan.frequency ?? 'WEEKLY',
+    generateSessions: true,
+    notes: initialPlan.notes ?? '',
+    paidAmount: getInitialPaidAmountInputValue(initialPlan),
+    paymentStatus: getPaymentStatus(initialPlan),
+    professionalId: initialPlan.professional?.id ?? '',
+    startDate: getDateInputValue(initialPlan.startDate),
+    totalCost: initialPlan.totalCost === null ? '' : String(initialPlan.totalCost),
+    totalSessions: String(initialPlan.totalSessions),
+    treatmentIds: initialPlan.treatments.length ? initialPlan.treatments.map((treatment) => treatment.id) : [initialPlan.serviceId],
+  }
+}
+
+function getInitialSelectedServices(initialPlan?: PatientTreatmentPlan | null): PatientTreatmentPlanLookupOption[] {
+  if (!initialPlan) return []
+
+  return initialPlan.treatments.length ? initialPlan.treatments : [{ id: initialPlan.serviceId, name: initialPlan.serviceName }]
+}
+
 function PatientTreatmentPlanCreateForm({
   disabled = false,
   formId,
+  initialPlan,
   isOpen,
   minSearchLength,
   onMinimumDataChange,
@@ -55,10 +99,10 @@ function PatientTreatmentPlanCreateForm({
   professionalLookup,
   serviceLookup,
 }: Readonly<PatientTreatmentPlanCreateFormProps>) {
-  const [selectedServices, setSelectedServices] = useState<PatientTreatmentPlanLookupOption[]>([])
-  const [selectedProfessional, setSelectedProfessional] = useState<PatientTreatmentPlanLookupOption | null>(null)
-  const { control, formState: { errors }, handleSubmit, reset, setValue } = useForm<PatientTreatmentPlanCreateFormInputValues, unknown, PatientTreatmentPlanCreateFormValues>({
-    defaultValues: TREATMENT_PLAN_DEFAULT_VALUES,
+  const [selectedServices, setSelectedServices] = useState<PatientTreatmentPlanLookupOption[]>(() => getInitialSelectedServices(initialPlan))
+  const [selectedProfessional, setSelectedProfessional] = useState<PatientTreatmentPlanLookupOption | null>(() => initialPlan?.professional ?? null)
+  const { clearErrors, control, formState: { errors }, handleSubmit, reset, setValue } = useForm<PatientTreatmentPlanCreateFormInputValues, unknown, PatientTreatmentPlanCreateFormValues>({
+    defaultValues: getInitialFormValues(initialPlan),
     mode: 'onBlur',
     reValidateMode: 'onChange',
     resolver: zodResolver(patientTreatmentPlanCreateSchema),
@@ -75,12 +119,19 @@ function PatientTreatmentPlanCreateForm({
   useEffect(() => {
     if (!isOpen) return
 
-    reset(TREATMENT_PLAN_DEFAULT_VALUES)
-  }, [isOpen, reset])
+    reset(getInitialFormValues(initialPlan))
+  }, [initialPlan, isOpen, reset])
 
   useEffect(() => {
-    onMinimumDataChange(Boolean(treatmentIds.length > 0 && totalSessions && startDate && totalCost))
-  }, [onMinimumDataChange, startDate, totalCost, totalSessions, treatmentIds.length])
+    onMinimumDataChange(Boolean(treatmentIds?.length && totalSessions && startDate && totalCost))
+  }, [onMinimumDataChange, startDate, totalCost, totalSessions, treatmentIds?.length])
+
+  useEffect(() => {
+    if (!isOpen || paymentStatus !== 'paid') return
+
+    setValue('paidAmount', totalCost || '', { shouldDirty: true, shouldValidate: false })
+    clearErrors('paidAmount')
+  }, [clearErrors, isOpen, paymentStatus, setValue, totalCost])
 
   useEffect(() => {
     if (!isOpen) onMinimumDataChange(false)
@@ -108,6 +159,19 @@ function PatientTreatmentPlanCreateForm({
   const clearProfessional = () => {
     setSelectedProfessional(null)
     setValue('professionalId', '', { shouldDirty: true, shouldValidate: true })
+  }
+
+  const syncPaidAmountWithPaymentStatus = (nextPaymentStatus: PatientTreatmentPlanCreateFormInputValues['paymentStatus']) => {
+    if (nextPaymentStatus === 'paid') {
+      setValue('paidAmount', totalCost || '', { shouldDirty: true, shouldValidate: false })
+      clearErrors('paidAmount')
+      return
+    }
+
+    if (nextPaymentStatus === 'unpaid') {
+      setValue('paidAmount', '', { shouldDirty: true, shouldValidate: false })
+      clearErrors('paidAmount')
+    }
   }
 
   const submitPlanDraft: SubmitHandler<PatientTreatmentPlanCreateFormValues> = (planDraft) => {
@@ -159,7 +223,7 @@ function PatientTreatmentPlanCreateForm({
         <TreatmentPlanFormSection title="3. Costos y pago">
           <div className="grid gap-3 sm:grid-cols-2">
             <ControlledInput Icon={DollarSign} control={control} disabled={disabled} format="cost" label="Costo total" name="totalCost" placeholder="Ej: 180.000,00" required size="compact" />
-            <TreatmentPlanPaymentStatusField control={control} disabled={disabled} />
+            <TreatmentPlanPaymentStatusField control={control} disabled={disabled} onStatusChange={syncPaidAmountWithPaymentStatus} />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <ControlledInput Icon={DollarSign} control={control} disabled={paidAmountDisabled} format="cost" label="Monto abonado" name="paidAmount" placeholder="Ej: 60.000,00" required={paymentStatus === 'partial'} size="compact" />

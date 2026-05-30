@@ -67,7 +67,7 @@ export const patientCreateSchema = z.object({
 
 const patientMedicalInfoSectionSchema = z.object({
   information: z.string().trim().min(1, 'Ingresá la información médica').max(1500, 'La información no puede superar 1500 caracteres'),
-  title: z.string().trim().min(1, 'Ingresá el título').max(80, 'El título no puede superar 80 caracteres'),
+  title: z.string().trim().min(1, 'Seleccioná o ingresá un tipo').max(80, 'El tipo no puede superar 80 caracteres'),
 })
 
 export const patientMedicalInformationSchema = z.object({
@@ -91,7 +91,7 @@ export const patientTreatmentPlanCreateSchema = z
     const totalCost = parseCostInput(planDraft.totalCost)
     const paidAmount = parseCostInput(planDraft.paidAmount)
 
-    if (planDraft.paymentStatus !== 'unpaid' && paidAmount === null) {
+    if (planDraft.paymentStatus === 'partial' && paidAmount === null) {
       context.addIssue({
         code: 'custom',
         message: 'Ingresá un monto abonado válido',
@@ -107,7 +107,7 @@ export const patientTreatmentPlanCreateSchema = z
       })
     }
 
-    if (planDraft.paymentStatus !== 'unpaid' && paidAmount !== null && totalCost !== null && paidAmount > totalCost) {
+    if (planDraft.paymentStatus === 'partial' && paidAmount !== null && totalCost !== null && paidAmount > totalCost) {
       context.addIssue({
         code: 'custom',
         message: 'El monto abonado no puede superar el costo total',

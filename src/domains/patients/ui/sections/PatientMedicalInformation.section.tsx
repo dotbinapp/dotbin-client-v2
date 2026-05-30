@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Pencil } from 'lucide-react'
+import { isPatientMedicalInfoType } from '@domains/patients/model'
 import type { PatientMedicalInfo } from '@domains/patients/model'
 import { Button, Text } from '@shared/ui/atoms'
 import { AsyncSectionContainer } from '@shared/ui/layout'
 import { PatientMedicalInformationEditor } from '../components'
+import { PATIENT_MEDICAL_INFO_CUSTOM_TYPE_ICON, PATIENT_MEDICAL_INFO_TYPE_ICON } from '../components/patientMedicalInformationIcon.constants'
 
 interface PatientMedicalInformationProps {
   canEditPatient?: boolean
@@ -65,12 +67,23 @@ function PatientMedicalInformation({ canEditPatient = false, isLoading = false, 
 
         {!isEditingMedicalInfo && medicalInfo.length > 0 ? (
           <div className="flex flex-col gap-2">
-            {medicalInfo.map((medicalInfoSection, medicalInfoIndex) => (
-              <article className="rounded-2xl border border-ui-border bg-ui-surface px-4 py-3" key={`${medicalInfoSection.title}-${medicalInfoIndex}`}>
-                <Text as="h3" variant="label" className="text-sm">{medicalInfoSection.title}</Text>
-                <Text variant="body" className="mt-1 whitespace-pre-line">{medicalInfoSection.information}</Text>
-              </article>
-            ))}
+            {medicalInfo.map((medicalInfoSection, medicalInfoIndex) => {
+              const Icon = isPatientMedicalInfoType(medicalInfoSection.title)
+                ? PATIENT_MEDICAL_INFO_TYPE_ICON[medicalInfoSection.title]
+                : PATIENT_MEDICAL_INFO_CUSTOM_TYPE_ICON
+
+              return (
+                <article className="flex gap-3 rounded-2xl border border-ui-border bg-ui-surface px-4 py-3" key={`${medicalInfoSection.title}-${medicalInfoIndex}`}>
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-ui-primary-soft text-ui-primary-text">
+                    <Icon aria-hidden="true" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <Text as="h3" variant="label" className="text-sm">{medicalInfoSection.title}</Text>
+                    <Text variant="body" className="mt-1 whitespace-pre-line">{medicalInfoSection.information}</Text>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         ) : null}
       </div>

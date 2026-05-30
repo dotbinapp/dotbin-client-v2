@@ -8,6 +8,7 @@ import type {
   PatientTreatmentPlanCreatePayload,
   PatientTreatmentPlanFrequency,
   PatientTreatmentPlanStatus,
+  PatientTreatmentPlanUpdatePayload,
   PatientUpdatePayload,
 } from '../model/patient.types'
 
@@ -29,6 +30,7 @@ export interface PatientMedicalInfoDto {
 
 export interface PatientUpdateRequestDto extends Partial<PatientCreateRequestDto> {
   patientMedicalInfo?: PatientMedicalInfoDto[]
+  treatmentPlans?: PatientTreatmentPlanUpdateRequestDto[]
 }
 
 export interface PatientTreatmentPlanCreateRequestDto {
@@ -41,6 +43,12 @@ export interface PatientTreatmentPlanCreateRequestDto {
   totalCost: number
   totalSessions: number
   treatmentIds: string[]
+}
+
+export interface PatientTreatmentPlanUpdateRequestDto extends Partial<PatientTreatmentPlanCreateRequestDto> {
+  completedSessions?: number
+  id: string
+  status?: PatientTreatmentPlanStatus
 }
 
 export interface PatientDto {
@@ -155,6 +163,7 @@ export function mapPatientUpdatePayloadToDto(patient: PatientUpdatePayload): Pat
   if (patient.lastName !== undefined) patientDto.lastName = patient.lastName.trim()
   if (patient.phone !== undefined) patientDto.phone = getOptionalText(patient.phone)
   if (patient.patientMedicalInfo !== undefined) patientDto.patientMedicalInfo = patient.patientMedicalInfo.map(mapPatientMedicalInfoToDto)
+  if (patient.treatmentPlans !== undefined) patientDto.treatmentPlans = patient.treatmentPlans.map(mapPatientTreatmentPlanUpdatePayloadToDto)
 
   return patientDto
 }
@@ -168,6 +177,23 @@ export function mapPatientTreatmentPlanCreatePayloadToDto(plan: PatientTreatment
     paidAmount: plan.paidAmount,
     startDate: plan.startDate,
     totalCost: plan.totalCost,
+    totalSessions: plan.totalSessions,
+    treatmentIds: plan.treatmentIds,
+  }
+}
+
+export function mapPatientTreatmentPlanUpdatePayloadToDto(plan: PatientTreatmentPlanUpdatePayload): PatientTreatmentPlanUpdateRequestDto {
+  return {
+    completedSessions: plan.completedSessions,
+    doctorId: plan.professionalId ?? null,
+    frequency: plan.frequency ?? undefined,
+    id: plan.id,
+    itsPaid: plan.paymentStatus ? plan.paymentStatus === 'paid' : undefined,
+    notes: plan.notes?.trim() || null,
+    paidAmount: plan.paidAmount ?? undefined,
+    startDate: plan.startDate ?? undefined,
+    status: plan.status,
+    totalCost: plan.totalCost ?? undefined,
     totalSessions: plan.totalSessions,
     treatmentIds: plan.treatmentIds,
   }

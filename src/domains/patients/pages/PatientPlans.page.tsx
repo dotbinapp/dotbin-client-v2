@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { ClipboardList, CheckCircle2, Plus, Sparkles } from 'lucide-react'
-import type { PatientTreatmentPlan, PatientTreatmentPlanCreatePayload } from '@domains/patients/model'
+import { ClipboardList, CheckCircle2, Plus, ReceiptText, Sparkles, Trash2 } from 'lucide-react'
+import type { PatientTreatmentPlan, PatientTreatmentPlanCreatePayload, PatientTreatmentPlanPaymentStatus, PatientTreatmentPlanUpdatePayload } from '@domains/patients/model'
 import { Button, StatCard, Text } from '@shared/ui/atoms'
 import { toast } from '@shared/ui/feedback'
 import { AsyncSectionContainer } from '@shared/ui/layout'
+import { ConfirmModal } from '@shared/ui/molecules'
 import { usePatientTreatmentPlansQuery } from '../queries/patientTreatmentPlans.query'
 import { usePatientTreatmentPlanCreateMutation } from '../queries/patientTreatmentPlanCreate.mutation'
+import { usePatientTreatmentPlansUpdateMutation } from '../queries/patientTreatmentPlansUpdate.mutation'
 import { PatientTreatmentPlanCreateDialog } from '../ui/dialogs'
 import { PatientTreatmentPlanCard } from '../ui/components'
 import type { PatientDetailOutletContext } from './PatientDetail.page'
@@ -33,9 +35,62 @@ function getTreatmentPlanCreateErrorMessage(error: unknown) {
   return 'Revisá los datos e intentá de nuevo.'
 }
 
+function getTreatmentPlanPaymentStatus(plan: PatientTreatmentPlan): PatientTreatmentPlanPaymentStatus {
+  if (plan.isPaid) return 'paid'
+  if ((plan.paidAmount ?? 0) > 0) return 'partial'
+
+  return 'unpaid'
+}
+
+function getTreatmentPlanTreatmentIds(plan: PatientTreatmentPlan) {
+  return plan.treatments.length ? plan.treatments.map((treatment) => treatment.id) : [plan.serviceId]
+}
+
+function mapTreatmentPlanToUpdatePayload(plan: PatientTreatmentPlan): PatientTreatmentPlanUpdatePayload {
+  return {
+    completedSessions: plan.completedSessions,
+    frequency: plan.frequency,
+    id: plan.id,
+    notes: plan.notes,
+    paidAmount: plan.paidAmount,
+    paymentStatus: getTreatmentPlanPaymentStatus(plan),
+    professionalId: plan.professional?.id ?? null,
+    startDate: plan.startDate,
+    status: plan.status,
+    totalCost: plan.totalCost,
+    totalSessions: plan.totalSessions,
+    treatmentIds: getTreatmentPlanTreatmentIds(plan),
+  }
+}
+
+function mapPlanDraftToUpdatePayload(plan: PatientTreatmentPlan, planDraft: PatientTreatmentPlanCreatePayload): PatientTreatmentPlanUpdatePayload {
+  return {
+    completedSessions: plan.completedSessions,
+    frequency: planDraft.frequency,
+    id: plan.id,
+    notes: planDraft.notes ?? null,
+    paidAmount: planDraft.paidAmount,
+    paymentStatus: planDraft.paymentStatus,
+    professionalId: planDraft.professionalId ?? null,
+    startDate: planDraft.startDate,
+    status: plan.status,
+    totalCost: planDraft.totalCost,
+    totalSessions: planDraft.totalSessions,
+    treatmentIds: planDraft.treatmentIds,
+  }
+}
+
+function replaceTreatmentPlan(plans: PatientTreatmentPlan[], updatedPlan: PatientTreatmentPlanUpdatePayload) {
+  return plans.map((plan) => (plan.id === updatedPlan.id ? updatedPlan : mapTreatmentPlanToUpdatePayload(plan)))
+}
+
 function PatientPlansPage() {
   const { canViewPatient, centerId, getAccessToken, patient, patientId } = useOutletContext<PatientDetailOutletContext>()
   const [isNewPlanDialogOpen, setIsNewPlanDialogOpen] = useState(false)
+  const [planToEdit, setPlanToEdit] = useState<PatientTreatmentPlan | null>(null)
+  const [planToDelete, setPlanToDelete] = useState<PatientTreatmentPlan | null>(null)
+  const [planToMarkAsCompleted, setPlanToMarkAsCompleted] = useState<PatientTreatmentPlan | null>(null)
+  const [planToMarkAsPaid, setPlanToMarkAsPaid] = useState<PatientTreatmentPlan | null>(null)
   const treatmentPlansQuery = usePatientTreatmentPlansQuery({
     canViewPatient,
     centerId,
@@ -47,22 +102,98 @@ function PatientPlansPage() {
     getAccessToken,
     patientId,
   })
+  const updateTreatmentPlansMutation = usePatientTreatmentPlansUpdateMutation({
+    centerId,
+    getAccessToken,
+    patientId,
+  })
   const plans = sortPlansByCreationDate(treatmentPlansQuery.data)
   const activePlansCount = plans.filter(isActivePlan).length
   const completedPlansCount = plans.length - activePlansCount
   const patientName = patient?.fullName ?? 'Paciente'
-  const createPlan = async (planDraft: PatientTreatmentPlanCreatePayload) => {
-    try {
-      await createTreatmentPlanMutation.mutateAsync(planDraft)
-      toast.success('Plan creado', {
-        description: `El plan de ${patientName} se creó correctamente.`,
+  const closePlanDialog = () => {
+    setIsNewPlanDialogOpen(false)
+    setPlanToEdit(null)
+  }
+  const openCreatePlanDialog = () => {
+    setPlanToEdit(null)
+    setIsNewPlanDialogOpen(true)
+  }
+  const openEditPlanDialog = (plan: PatientTreatmentPlan) => {
+    if (plan.status === 'COMPLETED') {
+      toast.warning('No se puede editar el plan', {
+        description: 'Los planes finalizados no se pueden editar.',
       })
+      return
+    }
+
+    setPlanToEdit(plan)
+    setIsNewPlanDialogOpen(true)
+  }
+  const savePlan = async (planDraft: PatientTreatmentPlanCreatePayload) => {
+    try {
+      if (planToEdit) {
+        const updatedPlan = mapPlanDraftToUpdatePayload(planToEdit, planDraft)
+        await updateTreatmentPlansMutation.mutateAsync(replaceTreatmentPlan(plans, updatedPlan))
+        toast.success('Plan actualizado', {
+          description: 'Los cambios del plan se guardaron correctamente.',
+        })
+        return true
+      }
+
+      await createTreatmentPlanMutation.mutateAsync(planDraft)
+      toast.success('Plan creado', { description: `El plan de ${patientName} se creó correctamente.` })
       return true
     } catch (error) {
-      toast.error('No se pudo crear el plan', {
+      toast.error(planToEdit ? 'No se pudo editar el plan' : 'No se pudo crear el plan', {
         description: getTreatmentPlanCreateErrorMessage(error),
       })
       return false
+    }
+  }
+  const markPlanAsCompleted = async () => {
+    if (!planToMarkAsCompleted) return
+
+    try {
+      await updateTreatmentPlansMutation.mutateAsync(replaceTreatmentPlan(plans, {
+        ...mapTreatmentPlanToUpdatePayload(planToMarkAsCompleted),
+        status: 'COMPLETED',
+      }))
+      toast.success('Plan finalizado', { description: 'El plan se marcó como finalizado.' })
+      setPlanToMarkAsCompleted(null)
+    } catch (error) {
+      toast.error('No se pudo finalizar el plan', { description: getTreatmentPlanCreateErrorMessage(error) })
+    }
+  }
+  const markPlanAsPaid = async () => {
+    if (!planToMarkAsPaid) return
+
+    const totalCost = planToMarkAsPaid.totalCost ?? 0
+
+    try {
+      await updateTreatmentPlansMutation.mutateAsync(replaceTreatmentPlan(plans, {
+        ...mapTreatmentPlanToUpdatePayload(planToMarkAsPaid),
+        paidAmount: totalCost,
+        paymentStatus: 'paid',
+        totalCost,
+      }))
+      toast.success('Plan marcado como pagado', { description: 'El monto abonado se igualó al costo total.' })
+      setPlanToMarkAsPaid(null)
+    } catch (error) {
+      toast.error('No se pudo marcar como pagado', { description: getTreatmentPlanCreateErrorMessage(error) })
+    }
+  }
+  const deletePlan = async () => {
+    if (!planToDelete) return
+
+    try {
+      await updateTreatmentPlansMutation.mutateAsync(plans
+        .filter((plan) => plan.id !== planToDelete.id)
+        .map(mapTreatmentPlanToUpdatePayload))
+      toast.success('Plan eliminado', { description: 'El plan se eliminó correctamente.' })
+      setPlanToDelete(null)
+    } catch (error) {
+      toast.error('No se pudo eliminar el plan', { description: getTreatmentPlanCreateErrorMessage(error) })
     }
   }
 
@@ -82,7 +213,7 @@ function PatientPlansPage() {
             <Text variant="caption">Todos los planes creados para este paciente.</Text>
           </div>
 
-          <Button Icon={Plus} onClick={() => setIsNewPlanDialogOpen(true)} size="sm">
+          <Button Icon={Plus} onClick={openCreatePlanDialog} size="sm">
             Nuevo plan
           </Button>
         </div>
@@ -102,7 +233,15 @@ function PatientPlansPage() {
         {plans.length > 0 ? (
           <div className="grid gap-4">
             {plans.map((plan) => (
-              <PatientTreatmentPlanCard key={plan.id} plan={plan} variant="extended" />
+              <PatientTreatmentPlanCard
+                key={plan.id}
+                onDelete={setPlanToDelete}
+                onEdit={openEditPlanDialog}
+                onMarkAsCompleted={setPlanToMarkAsCompleted}
+                onMarkAsPaid={setPlanToMarkAsPaid}
+                plan={plan}
+                variant={plan.status === 'COMPLETED' ? 'collapsed' : 'extended'}
+              />
             ))}
           </div>
         ) : null}
@@ -111,12 +250,47 @@ function PatientPlansPage() {
       <PatientTreatmentPlanCreateDialog
         centerId={centerId}
         getAccessToken={getAccessToken}
+        initialPlan={planToEdit}
         isOpen={isNewPlanDialogOpen}
-        isSaving={createTreatmentPlanMutation.isPending}
-        onClose={() => setIsNewPlanDialogOpen(false)}
-        onCreatePlan={createPlan}
+        isSaving={createTreatmentPlanMutation.isPending || updateTreatmentPlansMutation.isPending}
+        onClose={closePlanDialog}
+        onSavePlan={savePlan}
         patientName={patientName}
       />
+
+      {planToMarkAsCompleted ? (
+        <ConfirmModal
+          Icon={CheckCircle2}
+          description="El plan pasará a estado finalizado. Esta acción no modifica las sesiones completadas."
+          loading={updateTreatmentPlansMutation.isPending}
+          onClose={() => setPlanToMarkAsCompleted(null)}
+          onConfirm={() => void markPlanAsCompleted()}
+          title="¿Finalizar plan?"
+        />
+      ) : null}
+
+      {planToMarkAsPaid ? (
+        <ConfirmModal
+          Icon={ReceiptText}
+          description="El monto abonado se igualará al costo total del plan."
+          loading={updateTreatmentPlansMutation.isPending}
+          onClose={() => setPlanToMarkAsPaid(null)}
+          onConfirm={() => void markPlanAsPaid()}
+          title="¿Marcar como pagado?"
+        />
+      ) : null}
+
+      {planToDelete ? (
+        <ConfirmModal
+          Icon={Trash2}
+          description="El plan se eliminará del historial del paciente. Esta acción no se puede deshacer."
+          loading={updateTreatmentPlansMutation.isPending}
+          onClose={() => setPlanToDelete(null)}
+          onConfirm={() => void deletePlan()}
+          primaryAction="danger"
+          title="¿Eliminar plan?"
+        />
+      ) : null}
     </>
   )
 }

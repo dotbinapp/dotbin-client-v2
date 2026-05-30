@@ -6,11 +6,12 @@ import { PAYMENT_STATUS_LABEL } from './treatmentPlanForm.utils'
 interface TreatmentPlanPaymentStatusFieldProps {
   control: Control<PatientTreatmentPlanCreateFormInputValues, unknown, PatientTreatmentPlanCreateFormValues>
   disabled?: boolean
+  onStatusChange?: (status: PatientTreatmentPlanPaymentStatus) => void
 }
 
 const PAYMENT_STATUS_OPTIONS: PatientTreatmentPlanPaymentStatus[] = ['unpaid', 'partial', 'paid']
 
-function TreatmentPlanPaymentStatusField({ control, disabled = false }: Readonly<TreatmentPlanPaymentStatusFieldProps>) {
+function TreatmentPlanPaymentStatusField({ control, disabled = false, onStatusChange }: Readonly<TreatmentPlanPaymentStatusFieldProps>) {
   const {
     field: { name, onBlur, onChange, value },
   } = useController<PatientTreatmentPlanCreateFormInputValues, 'paymentStatus', PatientTreatmentPlanCreateFormValues>({ control, name: 'paymentStatus' })
@@ -33,7 +34,10 @@ function TreatmentPlanPaymentStatusField({ control, disabled = false }: Readonly
                 disabled={disabled}
                 name={name}
                 onBlur={onBlur}
-                onChange={() => onChange(status)}
+                onChange={() => {
+                  onChange(status)
+                  onStatusChange?.(status)
+                }}
                 type="radio"
                 value={status}
               />

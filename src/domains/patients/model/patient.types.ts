@@ -73,6 +73,21 @@ export interface PatientTreatmentPlanCreatePayload {
   treatmentIds: string[]
 }
 
+export interface PatientTreatmentPlanUpdatePayload {
+  completedSessions?: number
+  frequency?: PatientTreatmentPlanFrequency | null
+  id: string
+  notes?: string | null
+  paidAmount?: number | null
+  paymentStatus?: PatientTreatmentPlanPaymentStatus
+  professionalId?: string | null
+  startDate?: string | null
+  status?: PatientTreatmentPlanStatus
+  totalCost?: number | null
+  totalSessions: number
+  treatmentIds: string[]
+}
+
 export interface PatientTreatmentPlanLookupOption {
   id: string
   name: string
@@ -91,6 +106,7 @@ export interface PatientCreatePayload {
 
 export interface PatientUpdatePayload extends Partial<PatientCreatePayload> {
   patientMedicalInfo?: PatientMedicalInfo[]
+  treatmentPlans?: PatientTreatmentPlanUpdatePayload[]
 }
 
 export interface PatientListParams {
