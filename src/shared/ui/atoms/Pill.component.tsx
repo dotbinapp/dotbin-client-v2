@@ -21,7 +21,7 @@ const PILL_BASE_CLASS =
 
 function Pill({
   active = false,
-  activeClassName = 'border-primary-300 bg-primary-100 text-primary-800 ring-primary-400/40',
+  activeClassName = 'border-primary-300 bg-primary-100 text-primary-800 ring-primary-400/40 dark:border-primary-400/40 dark:bg-primary-500/20 dark:text-primary-100',
   as = 'button',
   children,
   className = '',

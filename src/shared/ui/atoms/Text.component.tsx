@@ -25,8 +25,8 @@ const TEXT_TONE_CLASS: Record<TextTone, string> = {
   default: '',
   muted: themeClass.text.muted,
   primary: themeClass.text.primary,
-  danger: 'text-red-600',
-  success: 'text-emerald-700',
+  danger: 'text-red-600 dark:text-red-300',
+  success: 'text-emerald-700 dark:text-emerald-300',
 }
 
 function Text<TElement extends ElementType = 'p'>({

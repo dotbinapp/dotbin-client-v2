@@ -1,4 +1,15 @@
-import type { PatientCreatePayload, PatientDetail, PatientListResult, PatientSummary, PatientTreatmentPlan, PatientTreatmentPlanFrequency, PatientTreatmentPlanStatus } from '../model/patient.types'
+import type {
+  PatientCreatePayload,
+  PatientDetail,
+  PatientListResult,
+  PatientMedicalInfo,
+  PatientSummary,
+  PatientTreatmentPlan,
+  PatientTreatmentPlanCreatePayload,
+  PatientTreatmentPlanFrequency,
+  PatientTreatmentPlanStatus,
+  PatientUpdatePayload,
+} from '../model/patient.types'
 
 export interface PatientCreateRequestDto {
   dateOfBirth?: string
@@ -9,6 +20,27 @@ export interface PatientCreateRequestDto {
   instagramAccount?: string
   lastName: string
   phone?: string
+}
+
+export interface PatientMedicalInfoDto {
+  information?: string | null
+  title?: string | null
+}
+
+export interface PatientUpdateRequestDto extends Partial<PatientCreateRequestDto> {
+  patientMedicalInfo?: PatientMedicalInfoDto[]
+}
+
+export interface PatientTreatmentPlanCreateRequestDto {
+  doctorId?: string | null
+  frequency: PatientTreatmentPlanFrequency
+  itsPaid: boolean
+  notes?: string | null
+  paidAmount: number
+  startDate: string
+  totalCost: number
+  totalSessions: number
+  treatmentIds: string[]
 }
 
 export interface PatientDto {
@@ -25,6 +57,7 @@ export interface PatientDto {
   lastVisitDate?: string | null
   lastName?: string | null
   nextVisitDate?: string | null
+  patientMedicalInfo?: PatientMedicalInfoDto[] | null
   phone?: string | null
   treatmentPlans?: PatientTreatmentPlanDto[] | null
   visits?: number | null
@@ -37,17 +70,25 @@ export interface PatientTreatmentPlanTreatmentDto {
 
 export interface PatientTreatmentPlanDto {
   completedSessions?: number | null
+  createdAt?: string | null
   frequency?: PatientTreatmentPlanFrequency | null
   id?: string | null
   itsPaid?: boolean | null
   notes?: string | null
   paidAmount?: number | null
+  doctor?: { firstName?: string | null; id?: string | null; lastName?: string | null } | null
   startDate?: string | null
   status?: PatientTreatmentPlanStatus | null
   totalCost?: number | null
   totalSessions?: number | null
   treatment?: PatientTreatmentPlanTreatmentDto | null
   treatmentId?: string | null
+  treatments?: PatientTreatmentPlanTreatmentDto[] | null
+}
+
+export interface PatientTreatmentPlanCreateResponseDto {
+  ok: boolean
+  treatmentPlan: PatientTreatmentPlanDto
 }
 
 export interface PatientListResponseDto {
@@ -88,6 +129,50 @@ export function mapPatientCreatePayloadToDto(patient: PatientCreatePayload): Pat
   }
 }
 
+function mapPatientMedicalInfoToDto(medicalInfo: PatientMedicalInfo): PatientMedicalInfoDto {
+  return {
+    information: medicalInfo.information.trim(),
+    title: medicalInfo.title.trim(),
+  }
+}
+
+function mapPatientMedicalInfoDtoToInfo(medicalInfoDto: PatientMedicalInfoDto): PatientMedicalInfo {
+  return {
+    information: medicalInfoDto.information?.trim() || '',
+    title: medicalInfoDto.title?.trim() || '',
+  }
+}
+
+export function mapPatientUpdatePayloadToDto(patient: PatientUpdatePayload): PatientUpdateRequestDto {
+  const patientDto: PatientUpdateRequestDto = {}
+
+  if (patient.dateOfBirth !== undefined) patientDto.dateOfBirth = getOptionalText(patient.dateOfBirth)
+  if (patient.documentNumber !== undefined) patientDto.documentNumber = getOptionalNumericText(patient.documentNumber)
+  if (patient.email !== undefined) patientDto.email = getOptionalText(patient.email)
+  if (patient.firstName !== undefined) patientDto.firstName = patient.firstName.trim()
+  if (patient.gender !== undefined) patientDto.gender = patient.gender || undefined
+  if (patient.instagramAccount !== undefined) patientDto.instagramAccount = getOptionalText(patient.instagramAccount)
+  if (patient.lastName !== undefined) patientDto.lastName = patient.lastName.trim()
+  if (patient.phone !== undefined) patientDto.phone = getOptionalText(patient.phone)
+  if (patient.patientMedicalInfo !== undefined) patientDto.patientMedicalInfo = patient.patientMedicalInfo.map(mapPatientMedicalInfoToDto)
+
+  return patientDto
+}
+
+export function mapPatientTreatmentPlanCreatePayloadToDto(plan: PatientTreatmentPlanCreatePayload): PatientTreatmentPlanCreateRequestDto {
+  return {
+    doctorId: plan.professionalId ?? null,
+    frequency: plan.frequency,
+    itsPaid: plan.paymentStatus === 'paid',
+    notes: plan.notes?.trim() || null,
+    paidAmount: plan.paidAmount,
+    startDate: plan.startDate,
+    totalCost: plan.totalCost,
+    totalSessions: plan.totalSessions,
+    treatmentIds: plan.treatmentIds,
+  }
+}
+
 export function mapPatientDtoToSummary(patientDto: PatientDto): PatientSummary {
   const firstName = patientDto.firstName?.trim() || ''
   const lastName = patientDto.lastName?.trim() || ''
@@ -114,6 +199,7 @@ export function mapPatientDtoToDetail(patientDto: PatientDto): PatientDetail {
     ...mapPatientDtoToSummary(patientDto),
     lastServiceName: patientDto.lastServiceName?.trim() || null,
     nextVisitAt: patientDto.nextVisitDate ?? null,
+    patientMedicalInfo: patientDto.patientMedicalInfo?.map(mapPatientMedicalInfoDtoToInfo) ?? [],
   }
 }
 
@@ -141,21 +227,36 @@ function getPlanStatus(planDto: PatientTreatmentPlanDto): PatientTreatmentPlanSt
 }
 
 export function mapPatientTreatmentPlanDtoToPlan(planDto: PatientTreatmentPlanDto): PatientTreatmentPlan {
-  const serviceId = planDto.treatmentId?.trim() || planDto.treatment?.id?.trim() || 'sin-servicio'
+  const treatments = (planDto.treatments?.length ? planDto.treatments : planDto.treatment ? [planDto.treatment] : [])
+    .map((treatment) => ({
+      id: treatment.id?.trim() || 'sin-servicio',
+      name: treatment.name?.trim() || 'Servicio sin nombre',
+    }))
+  const firstTreatment = treatments[0]
+  const serviceId = planDto.treatmentId?.trim() || firstTreatment?.id || 'sin-servicio'
+  const professionalName = [planDto.doctor?.firstName, planDto.doctor?.lastName].filter(Boolean).join(' ').trim()
 
   return {
     completedSessions: planDto.completedSessions ?? 0,
+    createdAt: planDto.createdAt ?? null,
     frequency: planDto.frequency ?? null,
     id: planDto.id?.trim() || `${serviceId}-${planDto.startDate ?? 'sin-fecha'}`,
     isPaid: typeof planDto.itsPaid === 'boolean' ? planDto.itsPaid : null,
     notes: planDto.notes?.trim() || null,
     paidAmount: getNumberOrNull(planDto.paidAmount),
+    professional: planDto.doctor?.id
+      ? {
+        id: planDto.doctor.id,
+        name: professionalName || 'Profesional sin nombre',
+      }
+      : null,
     serviceId,
-    serviceName: planDto.treatment?.name?.trim() || 'Servicio sin nombre',
+    serviceName: firstTreatment?.name || 'Servicio sin nombre',
     startDate: planDto.startDate ?? null,
     status: getPlanStatus(planDto),
     totalCost: getNumberOrNull(planDto.totalCost),
     totalSessions: planDto.totalSessions ?? 0,
+    treatments,
   }
 }
 

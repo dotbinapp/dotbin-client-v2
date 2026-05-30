@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updatePatient } from '../api/patients.api'
-import type { PatientCreatePayload, PatientListResult, PatientSummary } from '../model'
+import type { PatientDetail, PatientListResult, PatientSummary, PatientUpdatePayload } from '../model'
 import { patientQueryKeys } from './patients.queryKeys'
 
 interface UsePatientUpdateMutationParams {
@@ -9,7 +9,7 @@ interface UsePatientUpdateMutationParams {
 }
 
 interface UpdatePatientMutationPayload {
-  patientDraft: PatientCreatePayload
+  patientDraft: PatientUpdatePayload
   patientId: string
 }
 
@@ -32,15 +32,24 @@ export function usePatientUpdateMutation({ centerId, getAccessToken }: UsePatien
       const token = await getAccessToken()
       return updatePatient({ patient: patientDraft, patientId, token })
     },
-    onSuccess: (updatedPatient, { patientId }) => {
+    onSuccess: (updatedPatient, { patientDraft, patientId }) => {
       if (!centerId) return
 
       queryClient.setQueriesData<PatientListResult>({ queryKey: patientQueryKeys.lists(centerId) }, (currentList) =>
         updatePatientInList(currentList, updatedPatient),
       )
 
+      queryClient.setQueryData<PatientDetail>(patientQueryKeys.detail(centerId, patientId), (currentPatient) => {
+        if (!currentPatient) return currentPatient
+
+        return {
+          ...currentPatient,
+          ...updatedPatient,
+          patientMedicalInfo: patientDraft.patientMedicalInfo ?? currentPatient.patientMedicalInfo,
+        }
+      })
+
       queryClient.invalidateQueries({ queryKey: patientQueryKeys.lists(centerId) })
-      queryClient.invalidateQueries({ queryKey: patientQueryKeys.detail(centerId, patientId) })
     },
   })
 }

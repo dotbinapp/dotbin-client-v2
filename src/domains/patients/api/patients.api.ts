@@ -1,7 +1,7 @@
 import { apiClient } from '@shared/api'
-import type { PatientCreatePayload, PatientDetail, PatientListParams, PatientListResult, PatientSummary, PatientTreatmentPlan } from '../model/patient.types'
-import type { PatientCreateResponseDto, PatientDetailResponseDto, PatientListResponseDto } from './patients.mapper'
-import { mapPatientCreatePayloadToDto, mapPatientDtoToDetail, mapPatientDtoToSummary, mapPatientListResponseDto, mapPatientTreatmentPlansResponseDto } from './patients.mapper'
+import type { PatientCreatePayload, PatientDetail, PatientListParams, PatientListResult, PatientSummary, PatientTreatmentPlan, PatientTreatmentPlanCreatePayload, PatientUpdatePayload } from '../model/patient.types'
+import type { PatientCreateResponseDto, PatientDetailResponseDto, PatientListResponseDto, PatientTreatmentPlanCreateResponseDto } from './patients.mapper'
+import { mapPatientCreatePayloadToDto, mapPatientDtoToDetail, mapPatientDtoToSummary, mapPatientListResponseDto, mapPatientTreatmentPlanCreatePayloadToDto, mapPatientTreatmentPlanDtoToPlan, mapPatientTreatmentPlansResponseDto, mapPatientUpdatePayloadToDto } from './patients.mapper'
 
 const PATIENTS_ENDPOINT = '/v1/patient'
 
@@ -21,8 +21,16 @@ interface GetPatientDetailParams {
 
 type GetPatientTreatmentPlansParams = GetPatientDetailParams
 
-interface UpdatePatientParams extends CreatePatientParams {
+interface CreatePatientTreatmentPlanParams {
   patientId: string
+  plan: PatientTreatmentPlanCreatePayload
+  token: string
+}
+
+interface UpdatePatientParams {
+  patient: PatientUpdatePayload
+  patientId: string
+  token: string
 }
 
 interface DeletePatientParams {
@@ -91,6 +99,15 @@ export async function getPatientTreatmentPlans({ patientId, token }: GetPatientT
   return mapPatientTreatmentPlansResponseDto(response)
 }
 
+export async function createPatientTreatmentPlan({ patientId, plan, token }: CreatePatientTreatmentPlanParams): Promise<PatientTreatmentPlan> {
+  const response = await apiClient.post<PatientTreatmentPlanCreateResponseDto>(`${PATIENTS_ENDPOINT}/${patientId}/treatment-plan`, {
+    body: mapPatientTreatmentPlanCreatePayloadToDto(plan),
+    headers: authHeaders(token),
+  })
+
+  return mapPatientTreatmentPlanDtoToPlan(response.treatmentPlan)
+}
+
 export async function createPatient({ patient, token }: CreatePatientParams): Promise<PatientSummary> {
   const response = await apiClient.post<PatientCreateResponseDto>(PATIENTS_ENDPOINT, {
     body: mapPatientCreatePayloadToDto(patient),
@@ -100,16 +117,16 @@ export async function createPatient({ patient, token }: CreatePatientParams): Pr
   return mapPatientDtoToSummary(response.patient)
 }
 
-export async function updatePatient({ patient, patientId, token }: UpdatePatientParams): Promise<PatientSummary> {
+export async function updatePatient({ patient, patientId, token }: UpdatePatientParams): Promise<PatientDetail> {
   const response = await apiClient.put<PatientCreateResponseDto>(PATIENTS_ENDPOINT, {
     body: {
       patientId,
-      ...mapPatientCreatePayloadToDto(patient),
+      ...mapPatientUpdatePayloadToDto(patient),
     },
     headers: authHeaders(token),
   })
 
-  return mapPatientDtoToSummary(response.patient)
+  return mapPatientDtoToDetail(response.patient)
 }
 
 export async function deletePatient({ patientId, token }: DeletePatientParams): Promise<void> {

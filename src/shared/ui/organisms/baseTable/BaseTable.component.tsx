@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
-import { useDebounce } from '@shared/hooks'
 import { themeClass } from '@shared/styles/theme.styles'
-import { Input, Select, Text } from '@shared/ui/atoms'
+import { Select, Text } from '@shared/ui/atoms'
+import { SearchBar } from '@shared/ui/molecules'
 import { composeClassName } from '@shared/ui/utils/className.utils'
 import { BASE_TABLE_STATUS_FILTER_OPTIONS, CELL_ALIGN_CLASS, DEFAULT_SKELETON_ROWS } from './baseTable.constants'
 import type { BaseTableProps, BaseTableStatusFilterValue } from './baseTable.types'
@@ -35,15 +33,9 @@ function BaseTable<TRow, TSortField extends string = string, TFilter extends str
   statusFilter,
   title,
 }: Readonly<BaseTableProps<TRow, TSortField, TFilter>>) {
-  const [searchTerm, setSearchTerm] = useState(initialSearchValue)
-  const debouncedSearchTerm = useDebounce(searchTerm)
   const hasFilterBar = filterOptions.length > 0
   const hasTableHeader = Boolean(title || onSearchChange || hasFilterBar || statusFilter || actions)
   const statusFilterOptions = statusFilter?.options ?? BASE_TABLE_STATUS_FILTER_OPTIONS
-
-  useEffect(() => {
-    onSearchChange?.(debouncedSearchTerm)
-  }, [debouncedSearchTerm, onSearchChange])
 
   const handleSort = (sortField: TSortField) => {
     if (!onSortChange) return
@@ -75,14 +67,13 @@ function BaseTable<TRow, TSortField extends string = string, TFilter extends str
             <div className="min-w-0 flex-1">
               {onSearchChange ? (
                 <div className="w-full sm:max-w-sm">
-                  <Input
-                    Icon={Search}
-                    aria-label="Buscar registros"
-                    onChange={(event) => setSearchTerm(event.target.value)}
+                  <SearchBar
+                    ariaLabel="Buscar registros"
+                    initialValue={initialSearchValue}
+                    loading={loading}
+                    onSearch={onSearchChange}
                     placeholder={searchPlaceholder}
                     size="compact"
-                    type="search"
-                    value={searchTerm}
                   />
                 </div>
               ) : null}

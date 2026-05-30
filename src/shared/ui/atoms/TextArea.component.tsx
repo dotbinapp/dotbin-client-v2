@@ -34,7 +34,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {label ? (
           <label className={`mb-1.5 block text-sm font-bold ${themeClass.text.default}`} htmlFor={textareaId}>
             {label}
-            {required ? <span className="ml-1 text-primary-600">*</span> : null}
+            {required ? <span className="ml-1 text-primary-600 dark:text-primary-300">*</span> : null}
           </label>
         ) : null}
 
@@ -44,7 +44,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           className={composeClassName(
             TEXTAREA_BASE_CLASS,
             TEXTAREA_SIZE_CLASS[size],
-            error ? 'border-red-300 bg-red-50/30 focus:border-red-400' : 'border-ui-border-strong',
+            error ? 'border-red-300 bg-red-50/30 focus:border-red-400 dark:border-red-400/45 dark:bg-red-500/10 dark:focus:border-red-300' : 'border-ui-border-strong',
             className,
           )}
           disabled={disabled}
@@ -60,7 +60,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           </p>
         ) : null}
         {error ? (
-          <p className={composeClassName(SUPPORT_TEXT_CLASS, 'text-red-600')} id={errorId}>
+          <p className={composeClassName(SUPPORT_TEXT_CLASS, 'text-red-600 dark:text-red-300')} id={errorId}>
             {error}
           </p>
         ) : null}

@@ -5,13 +5,14 @@ import { serviceQueryKeys } from './services.queryKeys'
 
 interface UseServicesQueryParams {
   centerId?: string
+  enabled?: boolean
   getAccessToken: () => Promise<string>
   params: ServiceListParams
 }
 
-export function useServicesQuery({ centerId, getAccessToken, params }: UseServicesQueryParams) {
+export function useServicesQuery({ centerId, enabled = true, getAccessToken, params }: UseServicesQueryParams) {
   return useQuery({
-    enabled: Boolean(centerId),
+    enabled: Boolean(enabled && centerId),
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const token = await getAccessToken()

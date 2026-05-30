@@ -36,7 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label ? (
           <label className={`mb-1.5 block text-sm font-bold ${themeClass.text.default}`} htmlFor={inputId}>
             {label}
-            {required ? <span className="ml-1 text-primary-600">*</span> : null}
+            {required ? <span className="ml-1 text-primary-600 dark:text-primary-300">*</span> : null}
           </label>
         ) : null}
 
@@ -46,7 +46,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               aria-hidden="true"
               className={composeClassName(
                 'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2',
-                disabled ? themeClass.text.subtle : error ? 'text-red-400' : themeClass.text.muted,
+                disabled ? themeClass.text.subtle : error ? 'text-red-400 dark:text-red-300' : themeClass.text.muted,
               )}
               size={size === 'compact' ? 16 : 18}
             />
@@ -59,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               FIELD_BASE_CLASS,
               FIELD_SIZE_CLASS[size],
               Icon && (size === 'compact' ? 'pl-9' : 'pl-10'),
-              error ? 'border-red-300 bg-red-50/30 focus:border-red-400' : 'border-ui-border-strong',
+              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 dark:border-red-400/45 dark:bg-red-500/10 dark:focus:border-red-300' : 'border-ui-border-strong',
               className,
             )}
             disabled={disabled}
@@ -76,7 +76,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         ) : null}
         {error ? (
-          <p className={composeClassName(SUPPORT_TEXT_CLASS, 'text-red-600')} id={errorId}>
+          <p className={composeClassName(SUPPORT_TEXT_CLASS, 'text-red-600 dark:text-red-300')} id={errorId}>
             {error}
           </p>
         ) : null}

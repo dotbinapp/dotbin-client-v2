@@ -1,15 +1,18 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, MouseEvent, ReactNode } from 'react'
 import { LoaderCircle } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import type { LinkProps } from 'react-router-dom'
 import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'link'
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonOwnProps {
   children?: ReactNode
   fullWidth?: boolean
+  href?: LinkProps['to']
   iconOnly?: boolean
   Icon?: LucideIcon
   loading?: boolean
@@ -18,8 +21,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
 }
 
+type ButtonProps = ButtonOwnProps & Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof ButtonOwnProps>
+
 const BUTTON_BASE_CLASS =
-  `cursor-pointer inline-flex items-center justify-center gap-2 font-bold transition-all duration-200 ${themeClass.focus} disabled:cursor-not-allowed disabled:opacity-50`
+  `cursor-pointer inline-flex items-center justify-center gap-2 font-bold transition-all duration-200 ${themeClass.focus} disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50`
 
 const BUTTON_VARIANT_CLASS: Record<ButtonVariant, string> = {
   primary: 'bg-primary-600 text-white shadow-lg shadow-primary-900/20 hover:bg-primary-700 active:scale-[0.98]',
@@ -42,6 +47,7 @@ function Button({
   className = '',
   disabled,
   fullWidth = false,
+  href,
   iconOnly = false,
   Icon,
   loading = false,
@@ -52,24 +58,54 @@ function Button({
   ...props
 }: Readonly<ButtonProps>) {
   const isLoading = loading || onLoading
+  const buttonClassName = composeClassName(
+    BUTTON_BASE_CLASS,
+    BUTTON_VARIANT_CLASS[variant],
+    BUTTON_SIZE_CLASS[size],
+    fullWidth && 'w-full',
+    className,
+  )
+  const buttonContent = (
+    <>
+      {isLoading ? <LoaderCircle aria-hidden="true" className="shrink-0 animate-spin motion-reduce:animate-none" size={size === 'sm' ? 16 : 18} /> : null}
+      {!isLoading && Icon ? <Icon aria-hidden="true" className="shrink-0" size={size === 'sm' ? 16 : 18} /> : null}
+      {iconOnly ? <span className="sr-only">{props['aria-label']}</span> : children}
+    </>
+  )
+
+  if (variant === 'link' && href) {
+    const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+      if (disabled || isLoading) {
+        event.preventDefault()
+        return
+      }
+
+      props.onClick?.(event as unknown as MouseEvent<HTMLButtonElement>)
+    }
+
+    return (
+      <Link
+        aria-busy={isLoading || undefined}
+        aria-disabled={disabled || isLoading || undefined}
+        className={buttonClassName}
+        onClick={handleLinkClick}
+        tabIndex={disabled || isLoading ? -1 : props.tabIndex}
+        to={href}
+      >
+        {buttonContent}
+      </Link>
+    )
+  }
 
   return (
     <button
       aria-busy={isLoading || undefined}
-      className={composeClassName(
-        BUTTON_BASE_CLASS,
-        BUTTON_VARIANT_CLASS[variant],
-        BUTTON_SIZE_CLASS[size],
-        fullWidth && 'w-full',
-        className,
-      )}
+      className={buttonClassName}
       disabled={disabled || isLoading}
       type={type}
       {...props}
     >
-      {isLoading ? <LoaderCircle aria-hidden="true" className="shrink-0 animate-spin motion-reduce:animate-none" size={size === 'sm' ? 16 : 18} /> : null}
-      {!isLoading && Icon ? <Icon aria-hidden="true" className="shrink-0" size={size === 'sm' ? 16 : 18} /> : null}
-      {iconOnly ? <span className="sr-only">{props['aria-label']}</span> : children}
+      {buttonContent}
     </button>
   )
 }

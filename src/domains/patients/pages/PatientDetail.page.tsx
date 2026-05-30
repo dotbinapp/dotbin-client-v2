@@ -10,9 +10,11 @@ import { PatientCreateDialog } from '../ui/dialogs'
 import { PatientDetailHeader } from '../ui/sections'
 
 export interface PatientDetailOutletContext {
+  canEditPatient: boolean
   canViewPatient: boolean
   centerId?: string
   getAccessToken: () => Promise<string>
+  isPatientLoading: boolean
   patient?: PatientDetail
   patientId?: string
 }
@@ -25,9 +27,9 @@ function PatientDetailPage() {
   const { patientId } = useParams<{ patientId: string }>()
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
   const center = useAppSelector(selectSessionCenter)
-  const { hasPermission } = usePermissions()
+  const { hasAnyPermission, hasPermission } = usePermissions()
   const canViewPatient = hasPermission(APP_PERMISSION_CODES.PATIENTS_READ)
-  const canEditPatient = hasPermission(APP_PERMISSION_CODES.PATIENTS_ADMIN)
+  const canEditPatient = hasAnyPermission([APP_PERMISSION_CODES.PATIENTS_ADMIN, APP_PERMISSION_CODES.PATIENTS_EDIT])
   const [isPatientDialogOpen, setIsPatientDialogOpen] = useState(false)
   const { isUpdatingPatient, updatePatient } = usePatientEditFlow({
     centerId: center?.id,
@@ -57,9 +59,11 @@ function PatientDetailPage() {
       {canFetchPatient && !patientDetailQuery.isError ? (
         <Outlet
           context={{
+            canEditPatient,
             canViewPatient: canFetchPatient,
             centerId: center?.id,
             getAccessToken: getAccessTokenSilently,
+            isPatientLoading: patientDetailQuery.isLoading,
             patient,
             patientId,
           } satisfies PatientDetailOutletContext}

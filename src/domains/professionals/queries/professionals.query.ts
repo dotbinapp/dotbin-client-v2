@@ -5,13 +5,14 @@ import { professionalQueryKeys } from './professionals.queryKeys'
 
 interface UseProfessionalsQueryParams {
   centerId?: string
+  enabled?: boolean
   getAccessToken: () => Promise<string>
   params: ProfessionalListParams
 }
 
-export function useProfessionalsQuery({ centerId, getAccessToken, params }: UseProfessionalsQueryParams) {
+export function useProfessionalsQuery({ centerId, enabled = true, getAccessToken, params }: UseProfessionalsQueryParams) {
   return useQuery({
-    enabled: Boolean(centerId),
+    enabled: Boolean(enabled && centerId),
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const token = await getAccessToken()

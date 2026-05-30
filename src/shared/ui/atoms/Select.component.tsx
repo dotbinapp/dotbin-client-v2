@@ -30,7 +30,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label ? (
           <label className={`mb-1.5 block text-sm font-bold ${themeClass.text.default}`} htmlFor={selectId}>
             {label}
-            {required ? <span className="ml-1 text-primary-600">*</span> : null}
+            {required ? <span className="ml-1 text-primary-600 dark:text-primary-300">*</span> : null}
           </label>
         ) : null}
 
@@ -41,7 +41,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className={composeClassName(
               'w-full appearance-none border bg-ui-surface text-ui-text shadow-[var(--theme-shadow-surface)] outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:border-ui-border disabled:bg-ui-surface-muted disabled:text-ui-text-subtle disabled:ring-0',
               SELECT_SIZE_CLASS[size],
-              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-500/25' : 'border-ui-border-strong',
+              error ? 'border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-500/25 dark:border-red-400/45 dark:bg-red-500/10 dark:focus:border-red-300' : 'border-ui-border-strong',
               className,
             )}
             disabled={disabled}
@@ -69,7 +69,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </p>
         ) : null}
         {error ? (
-          <p className="mt-1.5 text-xs font-medium text-red-600" id={errorId}>
+          <p className="mt-1.5 text-xs font-medium text-red-600 dark:text-red-300" id={errorId}>
             {error}
           </p>
         ) : null}

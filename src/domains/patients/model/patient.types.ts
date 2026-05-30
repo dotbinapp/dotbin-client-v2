@@ -2,7 +2,18 @@ export type PatientListSortField = 'fullName'
 export type PatientListSortDirection = 'asc' | 'desc'
 export type PatientGender = 'female' | 'male'
 export type PatientTreatmentPlanFrequency = 'ANNUAL' | 'BIWEEKLY' | 'DAILY' | 'MONTHLY' | 'WEEKLY'
+export type PatientTreatmentPlanPaymentStatus = 'paid' | 'partial' | 'unpaid'
 export type PatientTreatmentPlanStatus = 'ACTIVE' | 'COMPLETED'
+
+export interface PatientTreatmentPlanTreatmentSummary {
+  id: string
+  name: string
+}
+
+export interface PatientTreatmentPlanProfessionalSummary {
+  id: string
+  name: string
+}
 
 export interface PatientSummary {
   dateOfBirth: string | null
@@ -20,24 +31,51 @@ export interface PatientSummary {
   visits: number
 }
 
+export interface PatientMedicalInfo {
+  information: string
+  title: string
+}
+
 export interface PatientDetail extends PatientSummary {
   lastServiceName: string | null
   nextVisitAt: string | null
+  patientMedicalInfo: PatientMedicalInfo[]
 }
 
 export interface PatientTreatmentPlan {
   completedSessions: number
+  createdAt: string | null
   frequency: PatientTreatmentPlanFrequency | null
   id: string
   isPaid: boolean | null
   notes: string | null
   paidAmount: number | null
+  professional: PatientTreatmentPlanProfessionalSummary | null
   serviceId: string
   serviceName: string
   startDate: string | null
   status: PatientTreatmentPlanStatus
   totalCost: number | null
   totalSessions: number
+  treatments: PatientTreatmentPlanTreatmentSummary[]
+}
+
+export interface PatientTreatmentPlanCreatePayload {
+  frequency: PatientTreatmentPlanFrequency
+  generateSessions: boolean
+  notes?: string
+  paidAmount: number
+  paymentStatus: PatientTreatmentPlanPaymentStatus
+  professionalId?: string
+  startDate: string
+  totalCost: number
+  totalSessions: number
+  treatmentIds: string[]
+}
+
+export interface PatientTreatmentPlanLookupOption {
+  id: string
+  name: string
 }
 
 export interface PatientCreatePayload {
@@ -49,6 +87,10 @@ export interface PatientCreatePayload {
   instagramAccount?: string
   lastName: string
   phone?: string
+}
+
+export interface PatientUpdatePayload extends Partial<PatientCreatePayload> {
+  patientMedicalInfo?: PatientMedicalInfo[]
 }
 
 export interface PatientListParams {

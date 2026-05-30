@@ -1,12 +1,18 @@
 import type { PatientTreatmentPlan } from '@domains/patients/model'
 import { Pill, Text } from '@shared/ui/atoms'
-import { composeClassName } from '@shared/ui/utils/className.utils'
+import { MenuButton } from '@shared/ui/molecules'
+import type { MenuButtonOption } from '@shared/ui/molecules'
 import { formatCostInput } from '@shared/utils'
-import { CalendarDays, CheckCircle2, ChevronRight, Clock, FileText, ReceiptText, Sparkles, XCircle } from 'lucide-react'
+import { CalendarDays, CheckCircle2, ChevronRight, Clock, FileText, MoreVertical, Pencil, ReceiptText, Sparkles, Trash2, UserRound, XCircle } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 type PatientTreatmentPlanCardVariant = 'compact' | 'extended'
 
 interface PatientTreatmentPlanCardProps {
+  onDelete?: (plan: PatientTreatmentPlan) => void
+  onEdit?: (plan: PatientTreatmentPlan) => void
+  onMarkAsPaid?: (plan: PatientTreatmentPlan) => void
   onSelect?: (plan: PatientTreatmentPlan) => void
   plan: PatientTreatmentPlan
   variant?: PatientTreatmentPlanCardVariant
@@ -33,9 +39,9 @@ function getPlanStatusLabel(plan: PatientTreatmentPlan) {
 }
 
 function getPlanStatusClass(plan: PatientTreatmentPlan) {
-  if (plan.status === 'COMPLETED' || plan.completedSessions >= plan.totalSessions) return 'border-slate-200 bg-slate-100 text-slate-700'
+  if (plan.status === 'COMPLETED' || plan.completedSessions >= plan.totalSessions) return 'border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-400/35 dark:bg-slate-500/15 dark:text-slate-200'
 
-  return plan.completedSessions > 0 ? 'border-sky-200 bg-sky-100 text-sky-700' : 'border-emerald-200 bg-emerald-100 text-emerald-700'
+  return plan.completedSessions > 0 ? 'border-sky-200 bg-sky-100 text-sky-700 dark:border-sky-400/35 dark:bg-sky-500/15 dark:text-sky-200' : 'border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-400/35 dark:bg-emerald-500/15 dark:text-emerald-200'
 }
 
 function PlanStatusPill({ className = '', plan }: Readonly<{ className?: string; plan: PatientTreatmentPlan }>) {
@@ -50,6 +56,70 @@ function PlanStatusPill({ className = '', plan }: Readonly<{ className?: string;
   )
 }
 
+function PaymentStatusPill({ isPaid }: Readonly<{ isPaid: boolean | null }>) {
+  if (isPaid === null) return <Text variant="caption">Sin estado de pago</Text>
+
+  return (
+    <Pill
+      as="span"
+      dotClassName={isPaid ? 'bg-emerald-600 dark:bg-emerald-300' : 'bg-red-600 dark:bg-red-300'}
+      inactiveClassName={isPaid ? 'border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-400/35 dark:bg-emerald-500/15 dark:text-emerald-200' : 'border-red-200 bg-red-100 text-red-700 dark:border-red-400/35 dark:bg-red-500/15 dark:text-red-200'}
+    >
+      {isPaid ? 'Pago' : 'Pendiente'}
+    </Pill>
+  )
+}
+
+function TreatmentChips({ plan }: Readonly<{ plan: PatientTreatmentPlan }>) {
+  const treatments = plan.treatments.length ? plan.treatments : [{ id: plan.serviceId, name: plan.serviceName }]
+
+  return (
+    <div className="flex flex-wrap gap-2" aria-label="Tratamientos del plan">
+      {treatments.map((treatment) => (
+        <Pill as="span" key={treatment.id} inactiveClassName="border-primary-200 bg-primary-50 text-primary-700 dark:border-primary-400/30 dark:bg-primary-500/15 dark:text-primary-200">
+          {treatment.name}
+        </Pill>
+      ))}
+    </div>
+  )
+}
+
+function PlanDetailItem({ children, Icon, label }: Readonly<{ children: ReactNode; Icon: LucideIcon; label: string }>) {
+  return (
+    <div className="rounded-2xl border border-ui-border bg-ui-surface-muted p-3">
+      <Text variant="caption" className="mb-1 inline-flex items-center gap-2">
+        <Icon aria-hidden="true" size={15} />
+        {label}
+      </Text>
+      <div className="text-sm font-bold text-ui-text">{children}</div>
+    </div>
+  )
+}
+
+function getPlanActions({ onDelete, onEdit, onMarkAsPaid, plan }: Pick<PatientTreatmentPlanCardProps, 'onDelete' | 'onEdit' | 'onMarkAsPaid' | 'plan'>): MenuButtonOption[] {
+  return [
+    {
+      disabled: !onEdit,
+      Icon: Pencil,
+      label: 'Editar plan',
+      onSelect: onEdit ? () => onEdit(plan) : undefined,
+    },
+    {
+      disabled: !onMarkAsPaid || plan.isPaid === true,
+      Icon: CheckCircle2,
+      label: 'Marcar como pagado',
+      onSelect: onMarkAsPaid ? () => onMarkAsPaid(plan) : undefined,
+    },
+    {
+      disabled: !onDelete,
+      Icon: Trash2,
+      label: 'Eliminar plan',
+      onSelect: onDelete ? () => onDelete(plan) : undefined,
+      tone: 'danger',
+    },
+  ]
+}
+
 function formatPlanDate(date: string | null) {
   if (!date) return 'Sin fecha'
 
@@ -59,8 +129,9 @@ function formatPlanDate(date: string | null) {
   return new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(planDate)
 }
 
-function PatientTreatmentPlanCard({ onSelect, plan, variant = 'compact' }: Readonly<PatientTreatmentPlanCardProps>) {
+function PatientTreatmentPlanCard({ onDelete, onEdit, onMarkAsPaid, onSelect, plan, variant = 'compact' }: Readonly<PatientTreatmentPlanCardProps>) {
   const progressPercent = getProgressPercent(plan)
+  const actions = getPlanActions({ onDelete, onEdit, onMarkAsPaid, plan })
 
   if (variant === 'extended') {
     return (
@@ -68,7 +139,7 @@ function PatientTreatmentPlanCard({ onSelect, plan, variant = 'compact' }: Reado
         <div className="flex flex-col gap-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-200 dark:ring-1 dark:ring-primary-300/25">
                 <Sparkles aria-hidden="true" size={20} />
               </div>
               <div className="min-w-0">
@@ -76,7 +147,42 @@ function PatientTreatmentPlanCard({ onSelect, plan, variant = 'compact' }: Reado
                 <Text variant="caption">Sesión {plan.completedSessions} de {plan.totalSessions}</Text>
               </div>
             </div>
-            <PlanStatusPill plan={plan} />
+            <div className="flex shrink-0 items-center gap-2">
+              <PlanStatusPill plan={plan} />
+              <MenuButton
+                aria-label={`Acciones del plan ${plan.serviceName}`}
+                Icon={MoreVertical}
+                iconOnly
+                options={actions}
+                panelOffset="tight"
+                panelPlacement="bottom-end"
+                size="md"
+                triggerSize="sm"
+                variant="ghost"
+              />
+            </div>
+          </div>
+
+          <TreatmentChips plan={plan} />
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <PlanDetailItem Icon={CalendarDays} label="Creado">
+              {formatPlanDate(plan.createdAt)}
+            </PlanDetailItem>
+            <PlanDetailItem Icon={CalendarDays} label="Inicio">
+              {formatPlanDate(plan.startDate)}
+            </PlanDetailItem>
+            <PlanDetailItem Icon={Clock} label="Frecuencia">
+              {plan.frequency ? FREQUENCY_LABEL[plan.frequency] : 'Sin frecuencia'}
+            </PlanDetailItem>
+            {plan.professional ? (
+              <PlanDetailItem Icon={UserRound} label="Profesional">
+                {plan.professional.name}
+              </PlanDetailItem>
+            ) : null}
+            <PlanDetailItem Icon={ReceiptText} label="Costo total">
+              {plan.totalCost !== null ? `$${formatCostInput(plan.totalCost)}` : 'Sin costo'}
+            </PlanDetailItem>
           </div>
 
           <div className="space-y-2">
@@ -89,16 +195,14 @@ function PatientTreatmentPlanCard({ onSelect, plan, variant = 'compact' }: Reado
             </div>
           </div>
 
-          <div className="grid gap-3 text-sm text-ui-text-muted sm:grid-cols-2">
-            <span className="inline-flex items-center gap-2"><CalendarDays aria-hidden="true" size={16} />{formatPlanDate(plan.startDate)}</span>
-            <span className="inline-flex items-center gap-2"><Clock aria-hidden="true" size={16} />{plan.frequency ? FREQUENCY_LABEL[plan.frequency] : 'Sin frecuencia'}</span>
-            {plan.totalCost !== null ? <span className="inline-flex items-center gap-2"><ReceiptText aria-hidden="true" size={16} />${formatCostInput(plan.totalCost)}</span> : null}
-            {plan.isPaid !== null ? (
-              <span className={composeClassName('inline-flex items-center gap-2 font-bold', plan.isPaid ? 'text-emerald-700' : 'text-red-700')}>
-                {plan.isPaid ? <CheckCircle2 aria-hidden="true" size={16} /> : <XCircle aria-hidden="true" size={16} />}
-                {plan.isPaid ? 'Pago' : 'Pendiente'}
-              </span>
-            ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ui-border bg-ui-surface-muted p-3">
+            <div className="inline-flex items-center gap-2 text-sm font-bold text-ui-text-muted">
+              {plan.isPaid === true ? <CheckCircle2 aria-hidden="true" className="text-emerald-700 dark:text-emerald-300" size={16} /> : null}
+              {plan.isPaid === false ? <XCircle aria-hidden="true" className="text-red-700 dark:text-red-300" size={16} /> : null}
+              {plan.isPaid === null ? <ReceiptText aria-hidden="true" size={16} /> : null}
+              Estado de pago
+            </div>
+            <PaymentStatusPill isPaid={plan.isPaid} />
           </div>
 
           {plan.notes ? (
@@ -115,7 +219,7 @@ function PatientTreatmentPlanCard({ onSelect, plan, variant = 'compact' }: Reado
   const content = (
     <>
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-200 dark:ring-1 dark:ring-primary-300/25">
           <Sparkles aria-hidden="true" size={18} />
         </div>
         <div className="min-w-0 text-left">

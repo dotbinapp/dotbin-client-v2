@@ -9,10 +9,10 @@ interface StatusBadgeProps extends ComponentProps<'span'> {
 }
 
 const STATUS_BADGE_TONE_CLASS: Record<StatusBadgeTone, string> = {
-  danger: 'border-red-200 bg-red-100 text-red-700',
+  danger: 'border-red-200 bg-red-100 text-red-700 dark:border-red-400/35 dark:bg-red-500/15 dark:text-red-200',
   neutral: 'border-ui-border bg-ui-surface-muted text-ui-text-muted',
-  success: 'border-green-200 bg-green-100 text-green-700',
-  warning: 'border-amber-200 bg-amber-100 text-amber-700',
+  success: 'border-green-200 bg-green-100 text-green-700 dark:border-green-400/35 dark:bg-green-500/15 dark:text-green-200',
+  warning: 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-400/35 dark:bg-amber-500/15 dark:text-amber-200',
 }
 
 function StatusBadge({ children, className = '', tone = 'neutral', ...props }: Readonly<StatusBadgeProps>) {

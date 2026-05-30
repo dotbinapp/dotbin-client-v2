@@ -2,11 +2,11 @@ import type { ComponentProps, ElementType, ReactNode } from 'react'
 import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
-type BaseContainerSurface = 'glass' | 'solid' | 'subtle' | 'transparent'
-type BaseContainerPadding = 'none' | 'sm' | 'md' | 'lg'
-type BaseContainerRadius = 'lg' | 'xl' | '2xl' | 'full' | 'none'
+export type BaseContainerSurface = 'glass' | 'solid' | 'subtle' | 'transparent'
+export type BaseContainerPadding = 'none' | 'sm' | 'md' | 'lg'
+export type BaseContainerRadius = 'lg' | 'xl' | '2xl' | 'full' | 'none'
 
-interface BaseContainerProps<TElement extends ElementType = 'div'> {
+export interface BaseContainerProps<TElement extends ElementType = 'div'> {
   as?: TElement
   children: ReactNode
   className?: string

@@ -69,7 +69,7 @@ function PatientDetailHeader({ canEditPatient = false, canViewPatient, isError, 
       ) : null}
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:pr-40">
-        <div className="flex h-30 w-30 shrink-0 items-center justify-center rounded-full bg-gray-300 text-xl font-black text-ui-text-muted">
+        <div className="flex h-30 w-30 shrink-0 items-center justify-center rounded-full bg-gray-300 text-xl font-black text-ui-text-muted dark:bg-slate-700 dark:text-slate-200 dark:ring-1 dark:ring-slate-500/40">
           {getPatientInitials(patient.fullName)}
         </div>
 

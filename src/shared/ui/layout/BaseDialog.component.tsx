@@ -6,7 +6,7 @@ import { Toast } from '../atoms'
 import { themeClass } from '../../styles/theme.styles'
 import { composeClassName } from '../utils/className.utils'
 
-type BaseDialogSize = 'sm' | 'md' | 'lg' | 'xl'
+type BaseDialogSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
 interface BaseDialogProps {
   children: ReactNode
@@ -24,6 +24,7 @@ const DIALOG_SIZE_CLASS: Record<BaseDialogSize, string> = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
+  '2xl': 'max-w-6xl',
 }
 
 const CLOSED_BY_LIGHT_DISMISS = { closedby: 'any' as const }
